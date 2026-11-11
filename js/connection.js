@@ -32,7 +32,7 @@ export async function connect({ extraUuids = [], requireUuid = null, progress = 
   progress(`${deviceName} に接続中…`);
   const res = await transport.connect(device, requireUuid ? [requireUuid] : services);
   if (!res.ok) {
-    if (res.reason === 'no-char') throw new ConnError('no-char', 'サービスは見つかりましたが、送信用（write）・受信用（notify）の入口がありません。別の UUID を試してください。');
+    if (res.reason === 'no-char') throw new ConnError('no-char', 'サービスは見つかりましたが、送信（WRITE）と受信（NOTIFY）に対応した項目がありません。別のサービスの UUID を試してください。');
     if (requireUuid) throw new ConnError('uuid-not-found', `入力した UUID のサービスが「${deviceName}」に見つかりませんでした。UUID と、選んだ機器が正しいか確認してください。`);
     return { status: 'need-uuid', deviceName };
   }

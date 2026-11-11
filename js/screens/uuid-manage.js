@@ -17,7 +17,7 @@ function render() {
   const known = $('um-known'); known.innerHTML = '';
   for (const k of KNOWN_SERVICES) {
     known.append(el('div', { class: 'list-item' },
-      el('div', {}, el('div', { class: 'mono' }, shortUuid(normalizeUuid(k.uuid))), el('div', { class: 'muted small' }, `${k.products} ／ ${k.status}`))));
+      el('div', {}, el('div', { class: 'mono' }, shortUuid(normalizeUuid(k.uuid))), el('div', { class: 'muted small' }, k.products))));
   }
 }
 

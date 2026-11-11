@@ -1,5 +1,5 @@
 // ステータス画面（リアルタイムの車両データ）
-import { $, el, keepAwake } from '../ui.js';
+import { $, el, keepAwake, alertDialog } from '../ui.js';
 import { PIDS, DERIVED, PID_GROUPS } from '../config/pids.js';
 
 let token = 0;
@@ -20,7 +20,11 @@ function build(obd) {
     for (const d of defs) {
       const ok = d.pid ? obd.isSupported(d.pid) : d.needs.every((k) => { const p = PIDS.find((x) => x.key === k); return k === 'baro' || obd.isSupported(p.pid); });
       const v = el('span', { class: 'v' }, ok ? '--' : '非対応'), bar = el('i');
-      box.append(el('div', { class: 'pid' + (ok ? '' : ' na') }, el('div', { class: 'n' }, d.name), el('div', {}, v, ok && d.format !== 'duration' ? el('span', { class: 'u' }, d.unit) : null), el('div', { class: 'bar' }, bar)));
+      const help = () => alertDialog(`${d.desc || ''}\n\n単位：${d.format === 'duration' ? '時:分:秒' : d.unit}${ok ? '' : '\n\nこの車は、この項目に対応していません。'}`, d.name);
+      // ブロック全体をタップ領域にする（? アイコンは目印）
+      box.append(el('button', { class: 'pid' + (ok ? '' : ' na'), type: 'button', 'aria-label': `${d.name}の説明`, onclick: help },
+        el('span', { class: 'q', 'aria-hidden': 'true' }, '?'),
+        el('div', { class: 'n' }, d.name), el('div', {}, v, ok && d.format !== 'duration' ? el('span', { class: 'u' }, d.unit) : null), el('div', { class: 'bar' }, bar)));
       cells[d.key] = { v, bar, def: d, ok };
     }
     root.append(el('div', { class: 'group' }, el('h2', {}, g.label), box));
@@ -38,9 +42,9 @@ export default {
   async enter(app) {
     const my = ++token, { obd } = app.session;
     build(obd);
-    keepAwake(true).then((on) => { $('st-wake').textContent = on ? '／画面を点けたままにしています' : ''; });
+    keepAwake(true); // 表示中は画面を消さない
     const targets = PIDS.filter((p) => obd.isSupported(p.pid));
-    if (!targets.length) { $('st-rate').textContent = '表示できる項目がありません'; return; }
+    if (!targets.length) { $('st-rate').textContent = '（この車で表示できる項目がありません）'; return; }
     const values = {};
     let n = 0, t0 = performance.now();
     while (my === token && app.session.obd) {
@@ -51,7 +55,7 @@ export default {
         update(def.key, values[def.key]); n++;
         const d = obd.calcDerived(values); for (const k in d) update(k, d[k]);
         const dt = (performance.now() - t0) / 1000;
-        if (dt > 2) { $('st-rate').textContent = `${(n / dt).toFixed(1)} 項目/秒`; n = 0; t0 = performance.now(); }
+        if (dt > 2) { $('st-rate').textContent = `（更新 ${(n / dt).toFixed(1)} 項目/秒）`; n = 0; t0 = performance.now(); }
       }
     }
   },

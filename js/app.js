@@ -15,7 +15,9 @@ let current = null;
 export const app = {
   session,
   show(id, params = {}) {
-    if (current) { current.leave?.(); $('screen-' + current.id).hidden = true; }
+    current?.leave?.();
+    // 全画面を必ず隠してから表示する（切断後に前の画面が残るバグの対策）
+    document.querySelectorAll('.screen').forEach((el) => { el.hidden = true; });
     current = SCREENS[id];
     $('screen-' + id).hidden = false;
     const hdr = $('app-header');

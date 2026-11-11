@@ -13,7 +13,7 @@ const h4 = (n) => h2(Math.floor(n / 256)) + h2(n % 256);
 const MOCK_UUID_KNOWN = normalizeUuid('fff0');
 const MOCK_UUID_UNKNOWN = normalizeUuid('abcd');
 const SUPPORTED = ['01', '03', '04', '05', '06', '07', '0B', '0C', '0D', '0E', '0F', '10', '11', '13', '14', '15', '1C', '1F', '20', '21', '2F', '33', '3C', '40', '42', '46', '5C'];
-const VIN = 'JDEBUGVIN12345678';
+const VIN = 'YV1DEBUG0K1234567'; // WMI=YV1（ボルボ）、10桁目 K=2019年式
 const DTCS = ['P0301', 'P0420', 'P1234', 'U0100'];
 
 function bitmap(base) {

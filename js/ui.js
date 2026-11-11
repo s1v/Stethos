@@ -7,10 +7,10 @@ export function toast(msg, { error = false, ms = 4000 } = {}) {
   clearTimeout(toastTimer); toastTimer = setTimeout(() => { t.hidden = true; }, ms);
 }
 
-export function confirmDialog(msg, { ok = 'OK', danger = false, cancel = 'キャンセル', alertOnly = false } = {}) {
+export function confirmDialog(msg, { ok = 'OK', danger = false, cancel = 'キャンセル', alertOnly = false, title = '' } = {}) {
   return new Promise((resolve) => {
     const d = $('dialog'), okb = $('dlg-ok'), cb = $('dlg-cancel');
-    $('dlg-msg').textContent = msg; okb.textContent = ok; cb.textContent = cancel; cb.hidden = alertOnly;
+    $('dlg-title').textContent = title; $('dlg-title').hidden = !title; $('dlg-msg').textContent = msg; okb.textContent = ok; cb.textContent = cancel; cb.hidden = alertOnly;
     okb.className = 'btn ' + (danger ? 'danger' : 'primary');
     d.hidden = false;
     const done = (v) => { d.hidden = true; okb.onclick = cb.onclick = null; resolve(v); };
@@ -18,7 +18,7 @@ export function confirmDialog(msg, { ok = 'OK', danger = false, cancel = 'キャ
   });
 }
 
-export const alertDialog = (msg) => confirmDialog(msg, { alertOnly: true });
+export const alertDialog = (msg, title = '') => confirmDialog(msg, { alertOnly: true, title });
 
 export function busy(msg) { $('busy-msg').textContent = msg || ''; $('busy').hidden = !msg; }
 

@@ -2,76 +2,71 @@
 
 > No install needed. Read live vehicle data from BLE OBD2 adapters right in your browser via Web Bluetooth.
 
-**Stethos**（聴診器 / Stethoscope に由来）は、ELM327 互換の **BLE** OBD-II アダプターから車両データを読み取る、インストール不要の Web アプリ（PWA）です。
+**Stethos（ステトス）** は、車の OBD-II ポートに挿した Bluetooth アダプターから、車の状態をスマホのブラウザで読み取るアプリです。名前は「聴診器（Stethoscope）」に由来します。アプリのインストールは不要で、URL を開くだけで使えます。
+
+👉 **アプリを開く：** `https://ユーザー名.github.io/リポジトリ名/`
+
+---
 
 ## できること
-- ホーム：アダプター名、VIN、DTC 件数、MIL（チェックランプ）、ECU 電圧、対応 PID 数
-- ステータス：車速・回転数・負荷・スロットル・各種温度・MAF・MAP／ブースト圧・燃料補正・O2・燃料残量・電圧・稼働時間（リアルタイム、Wake Lock 対応）
-- 診断情報：DTC の読み取り（Mode 03）と消去（Mode 04、確認ダイアログあり）
-- 未登録アダプターでも、サービス UUID を入力して接続・保存できる
+- **ホーム**：車両（メーカー・年式の推定、VIN）、故障コードの件数、チェックランプの状態をひと目で確認
+- **ステータス**：車速・エンジン回転数・水温・吸気温・ブースト圧・燃料補正・バッテリー電圧などをリアルタイム表示（各項目をタップすると説明を表示）
+- **診断情報**：故障コード（DTC）の一覧と説明、故障コードの消去
 
-## 動作環境
-| 環境 | 対応 |
+## 用意するもの
+| もの | 条件 |
 |---|---|
-| Android + Chrome / Edge / Samsung Internet | ◯ |
-| iPhone + Safari / Chrome | ✕（WebKit が Web Bluetooth 非対応） |
-| iPhone + **Bluefy** | ◯ |
-| PC + Chrome / Edge | ◯（開発・デバッグ用） |
+| 車 | OBD-II 対応車（国内では 2010 年前後以降の多くの車） |
+| アダプター | **ELM327 互換の BLE（Bluetooth Low Energy）対応アダプター** |
+| スマホ / PC | 下の「使えるブラウザ」を参照 |
 
-対応アダプター：**ELM327 互換の BLE 版のみ**（Bluetooth Classic / Wi-Fi 版は不可）
+> ⚠ Bluetooth Classic 版・Wi-Fi 版のアダプターは使えません。製品の説明に「BLE」「Bluetooth 4.0 以上」「iPhone 対応」などとあるものが目安です。
 
-## GitHub Pages への公開（初回）
-1. zip を展開し、中身をリポジトリのルートにアップロードする
-   - ⚠ `.github` フォルダは名前が「.」で始まるため、macOS の Finder では表示されないことがあります（`Command + Shift + .` で表示）。アップロード漏れに注意してください。
-2. リポジトリの **Settings → Pages** を開く
-3. **Source** を「**GitHub Actions**」にする
-4. **Actions** タブでワークフロー（Deploy to GitHub Pages）が成功したことを確認する
-5. `https://ユーザー名.github.io/リポジトリ名/` を開く
+### 使えるブラウザ
+| 端末 | ブラウザ |
+|---|---|
+| Android | **Chrome**（Edge / Samsung Internet も可） |
+| iPhone / iPad | **Bluefy**（App Store で無料）※ Safari・iPhone 版 Chrome は使えません |
+| PC | Chrome / Edge |
 
-以降は `main` ブランチへの push で自動デプロイされます（Actions タブから手動実行も可）。
-全てのパスは相対パスなので、サブパス（`/リポジトリ名/`）でもそのまま動きます。
+## 使い方
+1. アダプターを車の OBD ポート（多くは運転席の足元）に挿す
+2. エンジン（イグニッション）を ON にする
+3. 他の OBD アプリを閉じる（アダプターは同時に 1 つのアプリとしかつながりません）
+4. Stethos を開いて「**接続する**」を押す
+5. 一覧からアダプター（「OBDII」「OBDBLE」などの名前）を選ぶ
 
-### 更新時
-`sw.js` の `VERSION` を変更してから push すると、利用者の画面に「更新があります」が表示されます。
+### ホーム画面に追加すると便利です
+- Android（Chrome）：メニュー → 「ホーム画面に追加」
+- 追加すると全画面のアプリのように使え、オフラインでも起動できます
 
-## ファイル構成
-```
-index.html / manifest.webmanifest / sw.js / css/style.css / icons/
-js/app.js            起動・画面の切り替え・メニュー生成
-js/connection.js     接続の流れ（UUID 宣言 → 選択 → 確認 → 初期化）
-js/ble.js            Web Bluetooth の接続処理
-js/elm327.js         ELM327 のコマンド送受信・初期化
-js/obd.js            PID の取得・計算、DTC の解析
-js/storage.js        localStorage（保存済み UUID）、UUID の正規化
-js/ui.js             通知・ダイアログ・Wake Lock
-js/screens/          各画面
-js/config/known-uuids.js  既知のサービス UUID
-js/config/pids.js         PID の定義（名前・単位・計算式・表示範囲）
-js/config/dtc-codes.js    共通 DTC の説明文
-js/config/menu.js         メニュー項目（将来のカスタム画面はここに追加）
-js/debug/mock-adapter.js  デバッグモード用の疑似アダプター
-docs/spec.md         仕様書
-```
+### 「UUID の入力」画面が出たら
+アプリに登録されていないアダプターです。画面の案内に従って、アダプターの「サービス UUID」を入力してください（無料アプリ「nRF Connect」で調べられます）。一度接続に成功すれば保存されるので、**次回からは入力不要**です。
 
-## 既知の UUID を追加する
-`js/config/known-uuids.js` に 1 行追加するだけです。キャラクタリスティックは write / notify の性質から自動判別するので、サービス UUID のみで OK です。
-接続に成功したアダプターの情報（製品名・サービス UUID）は Issue で報告してください。
+## うまくいかないとき
+| 症状 | 確認すること |
+|---|---|
+| 「このブラウザは対応していません」 | Android は Chrome、iPhone は Bluefy で開いてください |
+| 一覧にアダプターが出ない | イグニッション ON か、他のアプリがアダプターにつないでいないか、スマホの Bluetooth と位置情報（Android）がオンか |
+| 「ELM327 の応答がありません」 | ELM327 互換ではない機器を選んでいる可能性があります |
+| 「車両から応答がありません」 | イグニッションが ON か、アダプターが奥まで挿さっているか |
+| ステータスに「非対応」が多い | 車が対応していない項目です（車種によって異なります） |
+| 途中で切れる | スマホの画面を消したり、別のアプリに切り替えたりすると切断されます |
 
-## デバッグモード
-- トップ画面の「デバッグモードで起動」、または URL に `?debug=1`（`&scenario=unknown` などで状況指定）
-- 状況：`normal` / `nodtc` / `unknown`（UUID 入力画面。疑似 UUID は `ABCD`） / `connect-error` / `no-elm` / `disconnect`
-- Web Bluetooth 非対応ブラウザでも使えます
+## 安全・注意事項
+- **走行中は画面を操作しないでください。** 運転中の確認は同乗者が行ってください。
+- 故障コードの消去は、原因が直っていなければ再び記録されます。車検・点検前の消去はおすすめしません。
+- 汎用 OBD で読めるのは主にエンジン系（排ガス関連）の情報です。すべての故障を検出できるわけではありません。
+- 本アプリは無保証です。表示内容は参考情報としてご利用ください。
 
-### デバッグモードの削除手順
-1. `js/debug/` フォルダを削除
-2. `index.html` の `<!-- DEBUG-START -->` 〜 `<!-- DEBUG-END -->` を削除
-3. `js/app.js` 末尾の `// DEBUG-START` 〜 `// DEBUG-END` を削除
-4. （任意）`sw.js` の `ASSETS` から `./js/debug/mock-adapter.js` を削除し、`VERSION` を更新
+## プライバシー
+- 車から読み取ったデータは**端末の中だけで処理**され、外部には送信されません。
+- 例外として、ホーム画面の「車種をオンラインで調べる」を押したときだけ、VIN（車台番号）を米国運輸省 NHTSA の公開サービスに送信します。
+- 保存されるのは、接続に成功したアダプターの UUID（端末のブラウザ内）だけです。
 
-ヘッダーの DEBUG バッジは `session.debug` が true のときだけ表示されるため、そのままで問題ありません。
+## アダプターの動作報告のお願い
+「UUID の入力」が必要だったアダプターで接続に成功したら、**製品名とサービス UUID** を Issue で教えてください。アプリに登録して、他の人が入力なしで使えるようにします。
 
-## 注意
-- 走行中は画面を操作しないでください（表示専用の設計です）。
-- DTC の消去は、原因が直っていなければ再び記録されます。
-- 汎用 OBD で読めるのは主にエンジン系（排ガス関連）です。メーカー独自データ（Mode 22）は今後の「おまけ」扱いです。
-- 「ELM327」は ELM Electronics の製品です。本アプリは「ELM327 互換」アダプターに対応しています。
+---
+「ELM327」は ELM Electronics 社の製品名です。本アプリは「ELM327 互換」アダプターに対応しています。
+開発者向けの情報は [SPEC.md](./SPEC.md) を参照してください。

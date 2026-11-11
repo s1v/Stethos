@@ -1,13 +1,13 @@
 // Stethos Service Worker
 // アプリを更新したら VERSION を変更してください（「更新があります」表示のきっかけになります）
-const VERSION = 'stethos-v1.0.0';
+const VERSION = 'stethos-v0.2.0';
 const ASSETS = [
   './', './index.html', './manifest.webmanifest', './css/style.css',
   './icons/icon-192.png', './icons/icon-512.png', './icons/icon-maskable-512.png',
-  './js/app.js', './js/ble.js', './js/elm327.js', './js/obd.js', './js/storage.js', './js/ui.js', './js/connection.js',
+  './js/app.js', './js/ble.js', './js/elm327.js', './js/obd.js', './js/storage.js', './js/ui.js', './js/connection.js', './js/vehicle.js',
   './js/screens/top.js', './js/screens/uuid-input.js', './js/screens/uuid-manage.js',
   './js/screens/home.js', './js/screens/status.js', './js/screens/dtc.js',
-  './js/config/known-uuids.js', './js/config/pids.js', './js/config/dtc-codes.js', './js/config/menu.js',
+  './js/config/known-uuids.js', './js/config/pids.js', './js/config/dtc-codes.js', './js/config/menu.js', './js/config/wmi.js',
   './js/debug/mock-adapter.js'
 ];
 
