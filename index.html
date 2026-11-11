@@ -72,7 +72,7 @@
   </div>
   <!-- DEBUG-END -->
 
-  <p class="foot muted">走行中は画面を操作しないでください。<br><span class="small">Stethos v0.0.3</span></p>
+  <p class="foot muted">走行中は画面を操作しないでください。<br><span class="small">Stethos v0.0.4</span></p>
 </section>
 
 <!-- ========== UUID 入力 ========== -->
@@ -145,6 +145,16 @@
   <div id="st-groups"></div>
 </section>
 
+<!-- ========== マイページ ========== -->
+<section id="screen-mypage" class="screen" hidden>
+  <p class="muted small">空の枠をタップすると項目を配置できます。配置した項目をタップすると、説明・変更・外すを選べます。配置はこの端末に保存されます。<span id="mp-rate"></span></p>
+  <div id="mp-grid" class="pids"></div>
+  <div class="row gap">
+    <button id="mp-add" class="btn">枠を追加</button>
+    <button id="mp-clear" class="btn danger">すべて外す</button>
+  </div>
+</section>
+
 <!-- ========== 診断情報 ========== -->
 <section id="screen-dtc" class="screen" hidden>
   <div id="d-summary" class="summary unk">
@@ -165,6 +175,7 @@
 </main>
 
 <div id="dialog" class="dialog" hidden><div class="dlg-box"><h3 id="dlg-title" hidden></h3><p id="dlg-msg"></p><div class="row gap end"><button id="dlg-cancel" class="btn">キャンセル</button><button id="dlg-ok" class="btn primary">OK</button></div></div></div>
+<div id="sheet" class="sheet" hidden><div class="sheet-box"><div class="sheet-head"><h3 id="sheet-title"></h3><button id="sheet-close" class="sheet-x" aria-label="閉じる">×</button></div><div id="sheet-body" class="sheet-body"></div></div></div>
 <div id="busy" class="busy" hidden><div class="spinner"></div><p id="busy-msg">接続中…</p></div>
 <div id="toast" class="toast" hidden></div>
 

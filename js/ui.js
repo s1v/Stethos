@@ -7,15 +7,40 @@ export function toast(msg, { error = false, ms = 4000 } = {}) {
   clearTimeout(toastTimer); toastTimer = setTimeout(() => { t.hidden = true; }, ms);
 }
 
+let closeDialog = null;
 export function confirmDialog(msg, { ok = 'OK', danger = false, cancel = 'キャンセル', alertOnly = false, title = '' } = {}) {
   return new Promise((resolve) => {
     const d = $('dialog'), okb = $('dlg-ok'), cb = $('dlg-cancel');
     $('dlg-title').textContent = title; $('dlg-title').hidden = !title; $('dlg-msg').textContent = msg; okb.textContent = ok; cb.textContent = cancel; cb.hidden = alertOnly;
     okb.className = 'btn ' + (danger ? 'danger' : 'primary');
     d.hidden = false;
-    const done = (v) => { d.hidden = true; okb.onclick = cb.onclick = null; resolve(v); };
+    const done = (v) => { d.hidden = true; okb.onclick = cb.onclick = d.onclick = null; closeDialog = null; resolve(v); };
     okb.onclick = () => done(true); cb.onclick = () => done(false);
+    // 枠の外（背景）をタップしたら閉じる（確認ダイアログではキャンセル扱い）
+    d.onclick = (e) => { if (e.target === d) done(alertOnly); };
+    closeDialog = () => done(alertOnly ? true : false);
   });
+}
+
+/** 下から出るシート。build(body, done) で中身を作り、done(値) で閉じる。背景・× で閉じると null */
+let closeSheet = null;
+export function sheet(title, build) {
+  return new Promise((resolve) => {
+    const s = $('sheet'), body = $('sheet-body');
+    $('sheet-title').textContent = title; body.innerHTML = ''; s.hidden = false; body.scrollTop = 0;
+    const done = (v) => { s.hidden = true; s.onclick = $('sheet-close').onclick = null; closeSheet = null; resolve(v); };
+    s.onclick = (e) => { if (e.target === s) done(null); };
+    $('sheet-close').onclick = () => done(null);
+    closeSheet = () => done(null);
+    build(body, done);
+  });
+}
+
+/** ダイアログ・シートが開いていれば閉じて true（ブラウザの「戻る」用） */
+export function closeOverlay() {
+  if (closeDialog) { closeDialog(); return true; }
+  if (closeSheet) { closeSheet(); return true; }
+  return false;
 }
 
 export const alertDialog = (msg, title = '') => confirmDialog(msg, { alertOnly: true, title });

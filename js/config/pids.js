@@ -4,6 +4,8 @@
 // format: 'duration'（秒→時:分:秒） / 'enum'（enum の対応表で文字表示）
 // mask: 先頭 1 バイトが「どのセンサーの値があるか」のビット（値は B 以降）
 // desc: 説明（ステータス画面でタップすると表示）
+// min,max はインジケーター（バー）の両端。規格上の範囲ではなく、一般的な車で実際に取りうる範囲を目安に設定している
+// DERIVED の needs は必須の項目、optional は取れれば使う項目
 export const PID_GROUPS = [
   { id: 'drive', label: '走行' },
   { id: 'engine', label: 'エンジン' },
@@ -155,7 +157,7 @@ export const PIDS = [
     desc: '燃料タンクまわりの蒸気の圧力です。給油口のキャップの閉め忘れなどの検出に使われます。' },
   { pid: '53', key: 'evapPressAbs', name: 'エバポ系 蒸気圧（絶対）', unit: 'kPa', bytes: 2, calc: (A, B) => ab(A, B) / 200, min: 0, max: 330, decimals: 1, group: 'fuel',
     desc: '燃料タンクまわりの蒸気の圧力（絶対圧）です。' },
-  { pid: '54', key: 'evapPress2', name: 'エバポ系 蒸気圧（広範囲）', unit: 'Pa', bytes: 2, calc: s16, min: -32768, max: 32767, decimals: 0, group: 'fuel',
+  { pid: '54', key: 'evapPress2', name: 'エバポ系 蒸気圧（広範囲）', unit: 'Pa', bytes: 2, calc: s16, min: -5000, max: 5000, decimals: 0, group: 'fuel',
     desc: '燃料タンクまわりの蒸気の圧力（測定範囲の広いセンサー）です。' },
 
   // ---- 排ガス・O2 センサー ----
@@ -198,11 +200,11 @@ export const PIDS = [
 // 他の項目から計算する項目
 const socFromVolt = (v) => Math.max(0, Math.min(100, (v - 11.8) / (12.7 - 11.8) * 100));
 export const DERIVED = [
-  { key: 'boost', name: 'ブースト圧', unit: 'kPa', needs: ['map'], calc: (v) => v.map - (v.baro ?? 101), min: -100, max: 150, decimals: 0, group: 'air',
+  { key: 'boost', name: 'ブースト圧', unit: 'kPa', needs: ['map'], optional: ['baro'], calc: (v) => v.map - (v.baro ?? 101), min: -100, max: 150, decimals: 0, group: 'air',
     desc: '吸気圧（MAP）から大気圧を引いた値で、ターボがどれだけ空気を押し込んでいるかを表します。マイナスは負圧（アクセルを戻しているとき）です。大気圧が取れない車は 101 kPa として計算します。' },
-  { key: 'battSoc', name: '12V バッテリー充電量（推定）', unit: '%', needs: ['adapterVolt'], calc: (v) => (v.rpm ? null : socFromVolt(v.adapterVolt)), min: 0, max: 100, decimals: 0, group: 'battery',
+  { key: 'battSoc', name: '12V バッテリー充電量（推定）', unit: '%', needs: ['adapterVolt'], optional: ['rpm'], calc: (v) => (v.rpm ? null : socFromVolt(v.adapterVolt)), min: 0, max: 100, decimals: 0, group: 'battery',
     desc: 'エンジン停止中（イグニッション ON）のバッテリー電圧から推定した充電量です（12.7 V ≒ 100%、11.8 V ≒ 0%）。\n\nエンジン作動中は発電の電圧が乗るため推定できず「--」になります。正確な値は、エンジン停止後しばらく置いてから確認してください。\n\n※劣化具合（寿命）は OBD では測れません。' },
-  { key: 'charging', name: '充電状態', unit: '', needs: ['adapterVolt'], format: 'enum', enum: { 0: '停止中', 1: '充電中', 2: '充電不足', 3: '過充電の疑い' },
+  { key: 'charging', name: '充電状態', unit: '', needs: ['adapterVolt'], optional: ['rpm'], format: 'enum', enum: { 0: '停止中', 1: '充電中', 2: '充電不足', 3: '過充電の疑い' },
     calc: (v) => (!v.rpm ? 0 : v.adapterVolt > 15.0 ? 3 : v.adapterVolt >= 13.2 ? 1 : 2), group: 'battery',
     desc: 'エンジン作動中のバッテリー電圧から、発電機（オルタネーター）で充電できているかを判定します。\n\n・充電中：13.2〜15.0 V\n・充電不足：13.2 V 未満（発電機の不調や電装品の使いすぎ）\n・過充電の疑い：15.0 V 超\n\n※充電制御（アイドリングストップ車など）のある車では、正常でも 12 V 台になることがあります。' },
 ];
@@ -223,3 +225,8 @@ export function countDisplayable(isSupported) {
   const b = DERIVED.filter((d) => isDerivedSupported(d, isSupported)).length;
   return { supported: a + b, total: PIDS.length + DERIVED.length };
 }
+
+/** key → 定義（PIDS / DERIVED 共通） */
+export const ALL_ITEMS = [...PIDS, ...DERIVED];
+export const findItem = (key) => ALL_ITEMS.find((d) => d.key === key);
+export const isItemSupported = (d, isSupported) => (d.needs ? isDerivedSupported(d, isSupported) : isDefSupported(d, isSupported));

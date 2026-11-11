@@ -1,5 +1,5 @@
 // 起動・画面の切り替え
-import { $, toast, confirmDialog, alertDialog, busy, el } from './ui.js';
+import { $, toast, confirmDialog, alertDialog, busy, el, closeOverlay } from './ui.js';
 import { session, connect, disconnect } from './connection.js';
 import { MENU_ITEMS } from './config/menu.js';
 import top from './screens/top.js';
@@ -8,8 +8,9 @@ import uuidManage from './screens/uuid-manage.js';
 import home from './screens/home.js';
 import status from './screens/status.js';
 import dtc from './screens/dtc.js';
+import mypage from './screens/mypage.js';
 
-const SCREENS = Object.fromEntries([top, uuidInput, uuidManage, home, status, dtc].map((s) => [s.id, s]));
+const SCREENS = Object.fromEntries([top, uuidInput, uuidManage, home, status, mypage, dtc].map((s) => [s.id, s]));
 let current = null;
 const lastParams = {}; // 画面ごとの直近のパラメーター（戻る・進むで再利用）
 
@@ -119,8 +120,10 @@ function setupSW() {
 window.addEventListener('popstate', async (e) => {
   const target = SCREENS[e.state?.screen] ? e.state.screen : 'top';
   $('menu').hidden = true;
-  // ダイアログ・処理中表示が出ているときは移動しない
-  if (!$('dialog').hidden || !$('busy').hidden) { record(current?.id || 'top', 'push'); return; }
+  // ダイアログ・シートが開いていれば、それを閉じるだけ（画面は移動しない）
+  if (closeOverlay()) { record(current?.id || 'top', 'push'); return; }
+  // 処理中表示が出ているときは移動しない
+  if (!$('busy').hidden) { record(current?.id || 'top', 'push'); return; }
   const tgt = SCREENS[target];
   if (current?.connected && !tgt.connected) {
     // 接続中にトップ側へ戻る → 切断の確認（キャンセルなら今の画面に留まる）

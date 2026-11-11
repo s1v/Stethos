@@ -45,3 +45,14 @@ export function setVehicleCache(vin, info) {
     localStorage.setItem(VKEY, JSON.stringify(m));
   } catch { /* noop */ }
 }
+
+// マイページの配置（枠ごとの項目 key。空の枠は null）
+const MKEY = 'stethos.mypage.v1';
+export const MYPAGE_DEFAULT_SLOTS = 12;
+export function getMyPage() {
+  try { const v = JSON.parse(localStorage.getItem(MKEY)); if (Array.isArray(v?.slots)) return v.slots; } catch { /* noop */ }
+  return new Array(MYPAGE_DEFAULT_SLOTS).fill(null);
+}
+export function setMyPage(slots) {
+  try { localStorage.setItem(MKEY, JSON.stringify({ slots })); } catch { /* noop */ }
+}
