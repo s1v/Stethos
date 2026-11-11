@@ -1,6 +1,9 @@
 // Stethos Service Worker
 // アプリを更新したら VERSION を変更してください（「更新があります」表示のきっかけになります）
-const VERSION = 'stethos-v0.2.0';
+// BUILD は自動更新（Issue → known-uuids の追加）で 1 ずつ増やされます
+const APP_VERSION = '0.0.2';
+const BUILD = 0;
+const VERSION = `stethos-v${APP_VERSION}-${BUILD}`;
 const ASSETS = [
   './', './index.html', './manifest.webmanifest', './css/style.css',
   './icons/icon-192.png', './icons/icon-512.png', './icons/icon-maskable-512.png',

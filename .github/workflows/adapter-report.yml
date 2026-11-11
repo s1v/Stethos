@@ -1,0 +1,55 @@
+# アダプターの動作報告 Issue に「accepted」ラベルを付けると、
+# js/config/known-uuids.js に UUID を追加するプルリクエストを自動で作成する。
+# ラベルを付けられるのはリポジトリの管理者だけなので、第三者が勝手に登録することはできない。
+name: Add known UUID from issue
+
+on:
+  issues:
+    types: [labeled]
+
+permissions:
+  contents: write
+  pull-requests: write
+  issues: write
+
+jobs:
+  add-uuid:
+    if: github.event.label.name == 'accepted' && contains(github.event.issue.labels.*.name, 'adapter-report')
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 20
+      - name: Update known-uuids.js
+        id: update
+        env:
+          ISSUE_BODY: ${{ github.event.issue.body }}
+          ISSUE_NUMBER: ${{ github.event.issue.number }}
+        run: node .github/scripts/add-known-uuid.mjs
+      - name: Create pull request
+        if: steps.update.outputs.changed == 'true'
+        env:
+          GH_TOKEN: ${{ github.token }}
+          ISSUE_NUMBER: ${{ github.event.issue.number }}
+          UUID: ${{ steps.update.outputs.uuid }}
+          PRODUCT: ${{ steps.update.outputs.product }}
+        run: |
+          BRANCH="adapter/issue-${ISSUE_NUMBER}"
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git checkout -b "$BRANCH"
+          git add js/config/known-uuids.js sw.js
+          git commit -m "Add known UUID ${UUID} (${PRODUCT}) from #${ISSUE_NUMBER}"
+          git push -f origin "$BRANCH"
+          URL=$(gh pr create --base main --head "$BRANCH" \
+            --title "既知の UUID を追加：${PRODUCT}" \
+            --body "#${ISSUE_NUMBER} の動作報告から自動作成しました。内容を確認してマージしてください。マージすると自動でデプロイされます。Closes #${ISSUE_NUMBER}")
+          gh issue comment "$ISSUE_NUMBER" --body "ご報告ありがとうございます！登録用のプルリクエストを作成しました：${URL}"
+      - name: Comment when skipped
+        if: steps.update.outputs.changed != 'true'
+        env:
+          GH_TOKEN: ${{ github.token }}
+          ISSUE_NUMBER: ${{ github.event.issue.number }}
+          REASON: ${{ steps.update.outputs.reason }}
+        run: gh issue comment "$ISSUE_NUMBER" --body "自動登録は行いませんでした：${REASON}"

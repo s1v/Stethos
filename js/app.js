@@ -11,10 +11,21 @@ import dtc from './screens/dtc.js';
 
 const SCREENS = Object.fromEntries([top, uuidInput, uuidManage, home, status, dtc].map((s) => [s.id, s]));
 let current = null;
+const lastParams = {}; // 画面ごとの直近のパラメーター（戻る・進むで再利用）
+
+// ブラウザの履歴（戻る・進む）。URL は変えず state に画面 ID を持たせる
+function record(id, mode) {
+  if (mode === 'none') return;
+  try { history[mode === 'replace' ? 'replaceState' : 'pushState']({ screen: id }, ''); } catch { /* noop */ }
+}
 
 export const app = {
   session,
-  show(id, params = {}) {
+  /** @param {{history?: 'push'|'replace'|'none'}} [o] */
+  show(id, params = {}, { history: mode = 'push' } = {}) {
+    if (SCREENS[id].connected && !session.obd) id = 'top'; // 未接続で接続後の画面には行かない
+    lastParams[id] = params;
+    record(id, current?.id === id ? 'replace' : mode);
     current?.leave?.();
     // 全画面を必ず隠してから表示する（切断後に前の画面が残るバグの対策）
     document.querySelectorAll('.screen').forEach((el) => { el.hidden = true; });
@@ -62,7 +73,7 @@ export const app = {
 
 function errorMessage(e) {
   switch (e.code) {
-    case 'connect-failed': return '機器が見つからないか、接続できませんでした。\n\n・イグニッションが ON になっているか\n・他の OBD アプリを閉じたか\n・ドングルが奥まで挿さっているか\nを確認して、もう一度お試しください。';
+    case 'connect-failed': return '機器が見つからないか、接続できませんでした。\n\n・イグニッションが ON になっているか\n・他の OBD アプリを閉じたか\n・アダプターが奥まで挿さっているか\nを確認して、もう一度お試しください。';
     default: return e.message || String(e);
   }
 }
@@ -104,10 +115,28 @@ function setupSW() {
   navigator.serviceWorker.addEventListener('controllerchange', () => { if (!reloaded) { reloaded = true; location.reload(); } });
 }
 
+// 戻る・進む
+window.addEventListener('popstate', async (e) => {
+  const target = SCREENS[e.state?.screen] ? e.state.screen : 'top';
+  $('menu').hidden = true;
+  // ダイアログ・処理中表示が出ているときは移動しない
+  if (!$('dialog').hidden || !$('busy').hidden) { record(current?.id || 'top', 'push'); return; }
+  const tgt = SCREENS[target];
+  if (current?.connected && !tgt.connected) {
+    // 接続中にトップ側へ戻る → 切断の確認（キャンセルなら今の画面に留まる）
+    record(current.id, 'push');
+    await app.disconnectWithConfirm();
+    return;
+  }
+  if (tgt.connected && !session.obd) { record(current?.id || 'top', 'replace'); return; } // 切断済みのセッションには戻らない
+  if (target === 'uuid-input' && !lastParams['uuid-input']?.deviceName) { app.show('top', {}, { history: 'replace' }); return; }
+  app.show(target, lastParams[target] || {}, { history: 'none' });
+});
+
 buildMenu();
 setupSW();
 Object.values(SCREENS).forEach((s) => s.init?.(app));
-app.show('top');
+app.show('top', {}, { history: 'replace' });
 
 // DEBUG-START（デバッグモードを削除するときはこのブロックごと削除）
 import('./debug/mock-adapter.js').then((m) => m.installDebug(app)).catch(() => {});

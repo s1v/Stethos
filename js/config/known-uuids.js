@@ -10,6 +10,7 @@ export const KNOWN_SERVICES = [
   { uuid: 'ffb0', products: '一部の BLE シリアルモジュール', status: '公開情報ベース' },
   { uuid: '49535343-fe7d-4ae5-8fa9-9fafd205e455', products: 'Microchip（ISSC）Transparent UART', status: '公開情報ベース' },
   { uuid: '0000ffe5-0000-1000-8000-00805f9b34fb', products: '一部の BLE シリアルモジュール', status: '公開情報ベース' },
+  // @auto-insert（この行より上に Issue からの自動追加が入ります。消さないでください）
   // TODO: JFIND JF327 の UUID を nRF Connect で確認後に記入（status: '実機確認済み'）
   // { uuid: '????', products: 'JFIND JF327', status: '実機確認済み' },
 ];

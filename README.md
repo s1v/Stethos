@@ -2,9 +2,9 @@
 
 > No install needed. Read live vehicle data from BLE OBD2 adapters right in your browser via Web Bluetooth.
 
-**Stethos（ステトス）** は、車の OBD-II ポートに挿した Bluetooth アダプターから、車の状態をスマホのブラウザで読み取るアプリです。名前は「聴診器（Stethoscope）」に由来します。アプリのインストールは不要で、URL を開くだけで使えます。
+**Stethos** は、車の OBD-II ポートに挿した BLE（Bluetooth 5.1）対応アダプターから、車の状態をスマホのブラウザで読み取るアプリです。アプリのインストールは不要で、URL を開くだけで使えます。
 
-👉 **アプリを開く：** `https://ユーザー名.github.io/リポジトリ名/`
+**アプリを開く：<https://s1v.github.io/Stethos/>**
 
 ---
 
@@ -20,7 +20,7 @@
 | アダプター | **ELM327 互換の BLE（Bluetooth Low Energy）対応アダプター** |
 | スマホ / PC | 下の「使えるブラウザ」を参照 |
 
-> ⚠ Bluetooth Classic 版・Wi-Fi 版のアダプターは使えません。製品の説明に「BLE」「Bluetooth 4.0 以上」「iPhone 対応」などとあるものが目安です。
+> Bluetooth Classic 版・Wi-Fi 版のアダプターは使えません。製品の説明に「BLE」「Bluetooth 4.0 以上」「iPhone 対応」などとあるものが目安です。
 
 ### 使えるブラウザ
 | 端末 | ブラウザ |
@@ -62,11 +62,12 @@
 ## プライバシー
 - 車から読み取ったデータは**端末の中だけで処理**され、外部には送信されません。
 - 例外として、ホーム画面の「車種をオンラインで調べる」を押したときだけ、VIN（車台番号）を米国運輸省 NHTSA の公開サービスに送信します。
-- 保存されるのは、接続に成功したアダプターの UUID（端末のブラウザ内）だけです。
+- 端末のブラウザ内に保存されるのは、接続に成功したアダプターの UUID と、調べた車種の情報（次回から調べ直さないため）だけです。
 
-## アダプターの動作報告のお願い
-「UUID の入力」が必要だったアダプターで接続に成功したら、**製品名とサービス UUID** を Issue で教えてください。アプリに登録して、他の人が入力なしで使えるようにします。
+## アダプターの動作報告・不具合の報告
+- 「UUID の入力」が必要だったアダプターで接続に成功したら、[**アダプターの動作報告**](https://github.com/s1v/Stethos/issues/new?template=adapter-report.yml) から製品名とサービス UUID を教えてください。確認後アプリに登録し、他の人が入力なしで使えるようにします。
+- 動作がおかしいときは [**不具合の報告**](https://github.com/s1v/Stethos/issues/new?template=bug-report.yml) からお知らせください。
 
 ---
 「ELM327」は ELM Electronics 社の製品名です。本アプリは「ELM327 互換」アダプターに対応しています。
-開発者向けの情報は [SPEC.md](./SPEC.md) を参照してください。
+開発者向けの情報は [docs/SPEC.md](./docs/SPEC.md) を参照してください。

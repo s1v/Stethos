@@ -1,0 +1,35 @@
+name: 不具合の報告
+description: 動作がおかしいときはこちら
+title: "[不具合] "
+labels: ["bug"]
+body:
+  - type: textarea
+    id: what
+    attributes:
+      label: 起きたこと
+      description: どの画面で、何をしたら、どうなったか
+    validations:
+      required: true
+  - type: textarea
+    id: expected
+    attributes:
+      label: 本来どうなってほしいか
+  - type: input
+    id: env
+    attributes:
+      label: 端末とブラウザ
+      placeholder: 例）Pixel 8 / Chrome、iPhone 15 / Bluefy
+    validations:
+      required: true
+  - type: input
+    id: adapter
+    attributes:
+      label: アダプターの製品名
+  - type: input
+    id: car
+    attributes:
+      label: 車種（任意）
+  - type: textarea
+    id: message
+    attributes:
+      label: 表示されたエラーメッセージ・スクリーンショット

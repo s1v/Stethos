@@ -32,3 +32,16 @@ export function saveUuid(uuid, deviceName) {
 export function removeUuid(uuid) {
   try { localStorage.setItem(KEY, JSON.stringify(getSavedUuids().filter((x) => x.uuid !== uuid))); } catch { /* noop */ }
 }
+
+// 車両情報（オンラインで調べた結果）を VIN ごとに保存
+const VKEY = 'stethos.vehicles.v1';
+export function getVehicleCache(vin) {
+  try { return (JSON.parse(localStorage.getItem(VKEY)) || {})[vin] || null; } catch { return null; }
+}
+export function setVehicleCache(vin, info) {
+  try {
+    const m = JSON.parse(localStorage.getItem(VKEY)) || {};
+    m[vin] = { ...info, savedAt: new Date().toISOString() };
+    localStorage.setItem(VKEY, JSON.stringify(m));
+  } catch { /* noop */ }
+}

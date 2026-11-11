@@ -2,7 +2,7 @@
 
 > No install needed. Read live vehicle data from BLE OBD2 adapters right in your browser via Web Bluetooth.
 
-利用者向けの説明は [README.md](./README.md) を参照。本書は仕様と開発・運用の手順をまとめたもの。
+利用者向けの説明は [README.md](../README.md) を参照。公開 URL：<https://s1v.github.io/Stethos/>本書は仕様と開発・運用の手順をまとめたもの。
 
 ---
 
@@ -11,6 +11,8 @@
 |---|---|
 | アプリ名 | **Stethos**（聴診器 / Stethoscope に由来。「車の聴診器」） |
 | 形態 | GitHub Pages で公開する静的 Web アプリ（HTML / CSS / JS、SPA、ビルド不要） |
+| バージョン | 0.0.2（`sw.js` の `APP_VERSION` とトップ画面のフッター表示） |
+| リポジトリ | https://github.com/s1v/Stethos |
 | PWA | **必須**（ホーム画面への追加、全画面表示、オフラインでの起動） |
 | 配信 | ストア配信なし（URL を開くだけで使える） |
 | 対象車両 | 車種を限定しない（OBD-II 対応車） |
@@ -38,6 +40,13 @@
 
 ## 4. 画面構成（SPA）
 ページを移動すると BLE の接続が切れるため、**1 ページ内で表示を切り替える**。画面切り替え時は全画面を一度非表示にしてから対象を表示する。
+
+**ブラウザの戻る・進む（History API）**
+- 画面を切り替えるたびに `history.pushState({screen})` で履歴に積む（URL は変えない）。`popstate` で該当画面を表示する
+- 接続中の画面（ホーム / ステータス / 診断情報）どうしは普通に戻る・進むできる
+- 接続中にトップ側の画面へ戻ろうとした場合は、切断の確認ダイアログを出す（キャンセルなら今の画面に留まる）
+- 切断後に、接続中だった画面へ「進む」ことはできない（トップに留まる）
+- ダイアログや処理中表示が出ている間は移動しない
 
 ### 4.1 画面一覧
 | 画面 | 役割 | 表示タイミング |
@@ -88,7 +97,7 @@
 | 項目 | 内容 |
 |---|---|
 | 接続中のアダプター | 機器名 |
-| 車両 | VIN からメーカーと年式を推定して表示（オフライン）。VIN も小さく表示。「車種をオンラインで調べる」ボタンで NHTSA vPIC API を使い車種名を取得（利用者が押したときだけ VIN を送信） |
+| 車両 | VIN からメーカーと年式を推定して表示（オフライン）。VIN も小さく表示。「車種をオンラインで調べる」ボタンで NHTSA vPIC API を使い車種名を取得（利用者が押したときだけ VIN を送信。調べている間のボタン表示は「車種を調べる」）。**結果は VIN ごとに localStorage（`stethos.vehicles.v1`）に保存**し、次回以降は保存した車種を表示してボタンは出さない（見つからなかった場合も保存し、再照会しない） |
 | **故障コード（DTC）** | 件数（0 件なら「異常なし」）。タップで診断情報画面へ |
 | チェックランプ（MIL） | 点灯 / 消灯。DTC と横並び |
 | 対応表示項目数 | ステータス画面の表示項目のうち車が対応している数（例：18 / 20 項目）。タップでステータス画面へ |
@@ -170,7 +179,8 @@
 | （JF327 の UUID） | JFIND JF327 | 実機確認後に記入 |
 
 - 未確認の UUID を宣言しても害はないため、候補は多めに入れておく。
-- 動作報告は GitHub の Issue で受け付け、`status` を更新する（`status` は管理用で画面には出さない）。
+- 動作報告は GitHub の Issue（テンプレート「アダプターの動作報告」）で受け付ける。`status` は管理用で画面には出さない。
+- Issue からの自動登録の仕組みは「開発・運用ガイド G」を参照。
 
 ## 7. UUID 入力・管理の仕様
 - 入力するのは**サービスの UUID のみ**
@@ -278,8 +288,11 @@
 │  ├ screens/         top / uuid-input / uuid-manage / home / status / dtc
 │  ├ config/          known-uuids / pids / dtc-codes / wmi / menu
 │  └ debug/mock-adapter.js   デバッグモード用の疑似アダプター
+├ .github/ISSUE_TEMPLATE/   Issue テンプレート（動作報告 / 不具合 / 要望）
+├ .github/workflows/adapter-report.yml   動作報告 Issue → 既知 UUID 追加の PR を自動作成
+├ .github/scripts/add-known-uuid.mjs     上記ワークフローの処理本体
 ├ README.md          利用者向け
-└ SPEC.md            本書
+└ docs/SPEC.md       本書
 ```
 
 ## B. GitHub Pages への公開
@@ -291,11 +304,11 @@ GitHub Actions（`.github/workflows/deploy.yml`）でデプロイする。`main`
 2. リポジトリの **Settings → Pages** を開く
 3. **Source** を「**GitHub Actions**」にする
 4. **Actions** タブでワークフローが成功したことを確認する
-5. `https://ユーザー名.github.io/リポジトリ名/` を開く
-6. README 冒頭の URL を実際のものに書き換える
+5. <https://s1v.github.io/Stethos/> を開く
 
 ## C. 更新時の注意
-- `sw.js` の `VERSION` を変更してから push する（利用者の画面に「更新があります」が表示される）
+- `sw.js` の `APP_VERSION` と `index.html` フッターのバージョン表記を更新してから push する（キャッシュ名が変わり、利用者の画面に「更新があります」が表示される）
+- Service Worker はキャッシュ優先で配信するため、**バージョン（または `BUILD`）を変えないと利用者に変更が届かない**
 - ファイルを追加したら `sw.js` の `ASSETS` にも追加する
 
 ## D. 既知の UUID を追加する
@@ -315,3 +328,32 @@ GitHub Actions（`.github/workflows/deploy.yml`）でデプロイする。`main`
 2. `index.html` の `<!-- DEBUG-START -->` 〜 `<!-- DEBUG-END -->` を削除
 3. `js/app.js` 末尾の `// DEBUG-START` 〜 `// DEBUG-END` を削除
 4. `sw.js` の `ASSETS` から `./js/debug/mock-adapter.js` を削除し、`VERSION` を更新
+
+## G. Issue テンプレートと既知 UUID の自動登録
+**テンプレート**（`.github/ISSUE_TEMPLATE/`）
+- `adapter-report.yml`：アダプターの動作報告（製品名・サービス UUID・機器名・動作結果・端末・車種）。ラベル `adapter-report` が付く
+- `bug-report.yml`：不具合の報告（ラベル `bug`）
+- `feature-request.yml`：要望（ラベル `enhancement`）
+- `config.yml`：空の Issue を無効化
+
+**自動登録の流れ**
+1. 利用者が「アダプターの動作報告」で Issue を作成
+2. 管理者が内容を確認し、Issue に **`accepted` ラベル**を付ける
+3. ワークフロー `adapter-report.yml` が動き、`add-known-uuid.mjs` が本文から UUID・製品名を取り出して
+   - 形式チェック（不正・重複なら Issue にその旨をコメントして終了）
+   - `known-uuids.js` の `// @auto-insert` の上に 1 行追加
+   - `sw.js` の `BUILD` を +1（利用者のキャッシュを更新するため）
+4. ブランチ `adapter/issue-番号` にコミットし、プルリクエストを作成。Issue に PR の URL をコメント
+5. 管理者が PR をマージ → `main` への push でデプロイされ、Issue は自動でクローズ
+
+- ラベルを付けられるのは書き込み権限のある人だけなので、第三者が勝手に登録することはできない。最終的にマージするかどうかも管理者が判断する
+- 製品名はコードに埋め込むため、記号（`' " \` $ < > { } \`）を除去して 60 文字までに制限する
+
+**初回だけ必要な設定**
+1. **Settings → Actions → General → Workflow permissions** で「Read and write permissions」を選び、「Allow GitHub Actions to create and approve pull requests」にチェックを入れる
+2. **Issues → Labels** でラベル `adapter-report` と `accepted` を作成する（`bug` `enhancement` は標準で存在する）
+
+## H. GitHub Topics
+リポジトリの検索・分類用のタグ。ファイルでは設定できないので、リポジトリのトップページ右側の **About** の歯車アイコン → **Topics** で次を入力する。
+`obd2` `elm327` `web-bluetooth` `ble` `car` `vehicle-diagnostics` `pwa` `github-pages`
+（gh コマンドを使う場合：`gh repo edit s1v/Stethos --add-topic obd2,elm327,web-bluetooth,ble,car,vehicle-diagnostics,pwa,github-pages`）
