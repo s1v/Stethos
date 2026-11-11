@@ -44,17 +44,18 @@ export class Obd {
   isSupported(pid) { return this.supported.has(pid); }
 
   async readPid(def) {
+    if (def.cmd === 'ATRV') return this.elm.readVoltage();
     const b = await this.mode01Raw(def.pid);
     if (!b || b.length < 1) return null;
+    if (def.mask && b.length < 2) return null;
+    while (b.length < (def.bytes || 1)) b.push(0); // 短い応答は 0 で補う
     return def.calc(...b);
   }
 
   calcDerived(values) {
     const out = {};
     for (const d of DERIVED) {
-      const v = { ...values };
-      if (d.key === 'boost' && v.baro == null && v.map != null) v.baro = d.fallbackBaro;
-      if (d.needs.every((k) => v[k] != null)) out[d.key] = d.calc(v);
+      if (d.needs.every((k) => values[k] != null)) out[d.key] = d.calc(values);
     }
     return out;
   }

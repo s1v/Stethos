@@ -5,6 +5,7 @@
 import { ConnError } from '../ble.js';
 import { normalizeUuid } from '../storage.js';
 import { $ } from '../ui.js';
+import { PIDS } from '../config/pids.js';
 
 const sleep = (ms) => new Promise((r) => setTimeout(r, ms));
 const h2 = (n) => Math.max(0, Math.min(255, Math.round(n))).toString(16).padStart(2, '0').toUpperCase();
@@ -12,7 +13,26 @@ const h4 = (n) => h2(Math.floor(n / 256)) + h2(n % 256);
 
 const MOCK_UUID_KNOWN = normalizeUuid('fff0');
 const MOCK_UUID_UNKNOWN = normalizeUuid('abcd');
-const SUPPORTED = ['01', '03', '04', '05', '06', '07', '0B', '0C', '0D', '0E', '0F', '10', '11', '13', '14', '15', '1C', '1F', '20', '21', '2F', '33', '3C', '40', '42', '46', '5C'];
+// デバッグでは全ステータス項目に対応している車として振る舞う
+const SUPPORTED = [...new Set(['01', '03', '13', '20', '40', '60', '80', 'A0', ...PIDS.filter((p) => p.pid).map((p) => p.pid)])];
+const ENUM_MOCK = { '51': 1, '1C': 11 }; // ガソリン / JOBD・OBD-II
+
+/** 定義の計算式から逆算して、表示範囲内のそれらしい値になるバイト列を作る */
+function encodeGeneric(def, target, t) {
+  if (def.format === 'enum') return h2(ENUM_MOCK[def.pid] ?? 1);
+  const bytes = def.bytes || 1;
+  if (def.key === 'odometer') { const n = Math.round((45678.9 + t * 0.02) * 10); return [24, 16, 8, 0].map((s) => h2((n >>> s) & 255)).join(''); }
+  const offs = def.mask ? 1 : 0, nvar = Math.min(2, bytes - offs), N = nvar === 1 ? 256 : 65536;
+  const arr = new Array(bytes).fill(0); if (def.mask) arr[0] = 0x01;
+  let best = 0, bd = Infinity;
+  for (let x = 0; x < N; x++) {
+    if (nvar === 1) arr[offs] = x; else { arr[offs] = x >> 8; arr[offs + 1] = x & 255; }
+    const d = Math.abs(def.calc(...arr) - target);
+    if (d < bd) { bd = d; best = x; }
+  }
+  if (nvar === 1) arr[offs] = best; else { arr[offs] = best >> 8; arr[offs + 1] = best & 255; }
+  return arr.map(h2).join('');
+}
 const VIN = 'YV1DEBUG0K1234567'; // WMI=YV1（ボルボ）、10桁目 K=2019年式
 const DTCS = ['P0301', 'P0420', 'P1234', 'U0100'];
 
@@ -62,8 +82,9 @@ export class MockTransport {
     const full = resp + '\r\r>';
     // 分割して返す（受信バッファ処理の確認用）
     const mid = Math.floor(full.length / 2);
-    this.timers.push(setTimeout(() => !this.closed && this._dataCb(full.slice(0, mid)), 25 + Math.random() * 40));
-    this.timers.push(setTimeout(() => !this.closed && this._dataCb(full.slice(mid)), 60 + Math.random() * 40));
+    const d1 = 25 + Math.random() * 40; // 2 つ目は必ず 1 つ目の後に届くようにする
+    this.timers.push(setTimeout(() => !this.closed && this._dataCb(full.slice(0, mid)), d1));
+    this.timers.push(setTimeout(() => !this.closed && this._dataCb(full.slice(mid)), d1 + 15 + Math.random() * 20));
   }
 
   respond(cmd) {
@@ -71,7 +92,7 @@ export class MockTransport {
     const wave = (p, ph = 0) => (Math.sin((t + ph) * 2 * Math.PI / p) + 1) / 2;
     if (cmd === 'ATZ') return 'ELM327 v1.5';
     if (cmd === 'ATI') return 'ELM327 v1.5';
-    if (cmd === 'ATRV') return (13.8 + wave(9) * 0.6).toFixed(1) + 'V';
+    if (cmd === 'ATRV') return this.volt().toFixed(1) + 'V';
     if (cmd === 'ATDPN') return 'A6';
     if (cmd.startsWith('AT')) return 'OK';
     if (cmd === '03') {
@@ -90,19 +111,30 @@ export class MockTransport {
     const base = parseInt(pid, 16);
     if (base % 0x20 === 0 && (base === 0 || SUPPORTED.includes(pid))) return '41' + pid + bitmap(base);
     if (!SUPPORTED.includes(pid)) return 'NO DATA';
-    const speed = wave(40) * 110, rpm = 750 + wave(12) * 3800, load = 15 + wave(12) * 70;
-    const map = 35 + wave(12) * 140;
+    // 60 秒周期で「エンジン停止 15 秒 → 作動 45 秒」を繰り返す（バッテリー項目の確認用）
+    const on = this.engineOn();
+    const speed = on ? wave(40) * 110 : 0, rpm = on ? 750 + wave(12) * 3800 : 0, load = on ? 15 + wave(12) * 70 : 0;
+    const map = on ? 35 + wave(12) * 140 : 101;
     const data = {
       '01': h2((this.cleared ? 0 : 0x80 | DTCS.length)) + '076500',
       '04': h2(load * 2.55), '05': h2(Math.min(90, 40 + t * 0.5) + 40), '06': h2(128 + (wave(3) - 0.5) * 12), '07': h2(130),
       '0B': h2(map), '0C': h4(Math.round(rpm * 4)), '0D': h2(speed), '0E': h2(140), '0F': h2(25 + wave(30) * 10 + 40),
-      '10': h4(Math.round((2 + wave(12) * 60) * 100)), '11': h2((10 + wave(12) * 70) * 2.55), '13': '03', '1C': '06',
+      '10': h4(Math.round((on ? 2 + wave(12) * 60 : 0) * 100)), '11': h2((on ? 10 + wave(12) * 70 : 8) * 2.55), '13': '03',
       '14': h2(wave(1.3) * 180) + 'FF', '15': h2(130 + wave(7) * 20) + 'FF', '1F': h4(Math.floor(t) % 65536),
       '21': '0000', '2F': h2(62 * 2.55), '33': h2(101), '3C': h4(Math.round((400 + wave(20) * 300 + 40) * 10)),
-      '42': h4(Math.round((13.8 + wave(9) * 0.6) * 1000)), '46': h2(18 + 40), '5C': h2(Math.min(105, 30 + t * 0.4) + 40),
+      '42': h4(Math.round(this.volt() * 1000)), '46': h2(18 + 40), '5C': h2(Math.min(105, 30 + t * 0.4) + 40),
+      '5B': h2(68 * 2.55), '74': '01' + h4(on ? Math.round((20000 + wave(12) * 150000) / 10) : 0) + '0000',
     };
-    return '41' + pid + (data[pid] || '00');
+    if (data[pid]) return '41' + pid + data[pid];
+    const def = PIDS.find((p) => p.pid === pid);
+    if (!def) return '41' + pid + '00';
+    const ph = parseInt(pid, 16);
+    const target = def.min + (def.max - def.min) * (0.25 + 0.4 * wave(15 + (ph % 9), ph));
+    return '41' + pid + encodeGeneric(def, target, t);
   }
+
+  engineOn() { return ((Date.now() - this.t0) / 1000) % 60 > 15; }
+  volt() { const w = Math.sin((Date.now() - this.t0) / 1000 / 9 * 2 * Math.PI); return this.engineOn() ? 14.1 + w * 0.3 : 12.45 + w * 0.05; }
 
   disconnect() { this.closed = true; this.timers.forEach(clearTimeout); this.timers = []; }
 }

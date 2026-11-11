@@ -22,7 +22,12 @@ export function decodeVin(vin) {
  * 北米向け以外の車は車種名が返らないことがある
  */
 export async function lookupVinOnline(vin) {
-  const r = await fetch(`https://vpic.nhtsa.dot.gov/api/vehicles/DecodeVinValues/${encodeURIComponent(vin)}?format=json`);
+  // 応答がないまま待ち続けないよう 10 秒で打ち切る
+  const ctrl = new AbortController();
+  const timer = setTimeout(() => ctrl.abort(), 10000);
+  let r;
+  try { r = await fetch(`https://vpic.nhtsa.dot.gov/api/vehicles/DecodeVinValues/${encodeURIComponent(vin)}?format=json`, { signal: ctrl.signal }); }
+  finally { clearTimeout(timer); }
   if (!r.ok) throw new Error(`HTTP ${r.status}`);
   const x = (await r.json()).Results?.[0] || {};
   const clean = (v) => (v && v !== '0' && !/not applicable/i.test(v) ? v : null);

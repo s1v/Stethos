@@ -5,7 +5,7 @@ import { decodeVin, lookupVinOnline } from '../vehicle.js';
 import { getVehicleCache, setVehicleCache } from '../storage.js';
 
 let token = 0;
-const LOOKUP_LABEL = '車種をオンラインで調べる ›';
+const LOOKUP_LABEL = '車種を調べる ›';
 
 const onlineText = (r) => [r.make, r.model, r.trim].filter(Boolean).join(' ') + (r.year ? ` ／ ${r.year} 年式` : '');
 
@@ -32,7 +32,7 @@ export default {
     $('h-items-tile').onclick = () => app.show('status');
     $('h-lookup').onclick = async () => {
       const vin = app.session.vin; if (!vin) return;
-      const btn = $('h-lookup'); btn.disabled = true; btn.textContent = '車種を調べる';
+      const btn = $('h-lookup'); btn.disabled = true; btn.textContent = '調べています…';
       try {
         const r = await lookupVinOnline(vin);
         setVehicleCache(vin, r); // 結果を保存（次回からは調べない）
