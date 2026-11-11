@@ -21,6 +21,5 @@ export default {
       app.connect({ extraUuids: n ? [n] : [] });
     };
     $('btn-manage').onclick = () => app.show('uuid-manage');
-    $('btn-settings').onclick = () => app.show('settings');
   },
 };

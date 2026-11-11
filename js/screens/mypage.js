@@ -14,15 +14,18 @@ function pickItem(title) {
   const sup = (pid) => app_.session.obd.isSupported(pid);
   const used = new Set(slots.filter(Boolean));
   return sheet(title, (body, done) => {
+    // カテゴリごとに折りたたむ（初期状態はすべて閉じる）
     for (const g of PID_GROUPS) {
       const items = ALL_ITEMS.filter((d) => d.group === g.id);
       if (!items.length) continue;
-      body.append(el('div', { class: 'pick-group' }, g.label));
+      const okCount = items.filter((d) => isItemSupported(d, sup)).length;
+      const list = el('div', { class: 'pick-list' });
       for (const d of items) {
         const ok = isItemSupported(d, sup);
-        body.append(el('button', { class: 'pick-item' + (ok ? '' : ' na'), type: 'button', disabled: ok ? null : '', onclick: () => done(d.key) },
+        list.append(el('button', { class: 'pick-item' + (ok ? '' : ' na'), type: 'button', disabled: ok ? null : '', onclick: () => done(d.key) },
           el('span', {}, d.name), el('span', { class: 'pick-note' }, !ok ? '非対応' : used.has(d.key) ? '配置済み' : d.unit && d.format !== 'enum' && d.format !== 'duration' ? d.unit : '')));
       }
+      body.append(el('details', { class: 'pick-cat' }, el('summary', {}, el('span', {}, g.label), el('span', { class: 'pick-note' }, `${okCount} / ${items.length}`)), list));
     }
   });
 }

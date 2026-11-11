@@ -168,3 +168,13 @@ header{position:sticky;top:0;z-index:10;background:rgba(11,17,32,.92);backdrop-f
 .seg button:last-child{border-right:0}
 .seg button[aria-checked="true"]{background:var(--acc);color:var(--acc-ink);font-weight:700}
 #set-preview .pid{cursor:default}
+
+/* 項目選択シートのカテゴリ（折りたたみ） */
+.pick-cat{border-bottom:1px solid var(--line)}
+.pick-cat summary{list-style:none;display:flex;justify-content:space-between;align-items:center;gap:8px;min-height:48px;padding:10px;cursor:pointer;font-weight:600}
+.pick-cat summary::-webkit-details-marker{display:none}
+.pick-cat summary::after{content:"";width:7px;height:7px;border-right:2px solid var(--muted);border-bottom:2px solid var(--muted);transform:rotate(45deg);transition:transform .2s;margin-left:4px;flex:none}
+.pick-cat[open] summary::after{transform:rotate(-135deg)}
+.pick-cat summary .pick-note{margin-left:auto}
+.pick-list{padding:0 0 6px 10px}
+.pick-list .pick-item:last-child{border-bottom:0}
