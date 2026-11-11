@@ -1,0 +1,38 @@
+// Stethos Service Worker
+// アプリを更新したら VERSION を変更してください（「更新があります」表示のきっかけになります）
+const VERSION = 'stethos-v1.0.0';
+const ASSETS = [
+  './', './index.html', './manifest.webmanifest', './css/style.css',
+  './icons/icon-192.png', './icons/icon-512.png', './icons/icon-maskable-512.png',
+  './js/app.js', './js/ble.js', './js/elm327.js', './js/obd.js', './js/storage.js', './js/ui.js', './js/connection.js',
+  './js/screens/top.js', './js/screens/uuid-input.js', './js/screens/uuid-manage.js',
+  './js/screens/home.js', './js/screens/status.js', './js/screens/dtc.js',
+  './js/config/known-uuids.js', './js/config/pids.js', './js/config/dtc-codes.js', './js/config/menu.js',
+  './js/debug/mock-adapter.js'
+];
+
+self.addEventListener('install', (e) => {
+  e.waitUntil(caches.open(VERSION).then((c) =>
+    // 1 件ずつ追加（debug フォルダを削除してもインストールが失敗しないように）
+    Promise.all(ASSETS.map((a) => c.add(a).catch(() => {})))
+  ));
+});
+
+self.addEventListener('activate', (e) => {
+  e.waitUntil(caches.keys()
+    .then((keys) => Promise.all(keys.filter((k) => k !== VERSION).map((k) => caches.delete(k))))
+    .then(() => self.clients.claim()));
+});
+
+self.addEventListener('message', (e) => { if (e.data === 'SKIP_WAITING') self.skipWaiting(); });
+
+self.addEventListener('fetch', (e) => {
+  const req = e.request;
+  if (req.method !== 'GET' || new URL(req.url).origin !== location.origin) return;
+  e.respondWith(
+    caches.match(req, { ignoreSearch: req.mode === 'navigate' }).then((hit) => hit || fetch(req).then((res) => {
+      if (res.ok) { const copy = res.clone(); caches.open(VERSION).then((c) => c.put(req, copy)); }
+      return res;
+    }).catch(() => (req.mode === 'navigate' ? caches.match('./index.html') : Response.error())))
+  );
+});

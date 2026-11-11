@@ -1,0 +1,144 @@
+<!doctype html>
+<html lang="ja">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<meta name="theme-color" content="#0f172a">
+<meta name="description" content="No install needed. Read live vehicle data from BLE OBD2 adapters right in your browser via Web Bluetooth.">
+<title>Stethos</title>
+<link rel="manifest" href="./manifest.webmanifest">
+<link rel="icon" href="./icons/icon-192.png">
+<link rel="apple-touch-icon" href="./icons/icon-192.png">
+<link rel="stylesheet" href="./css/style.css">
+</head>
+<body>
+<div id="update-banner" class="banner" hidden>更新があります <button id="update-btn" class="btn small">再読み込み</button></div>
+
+<header id="app-header" hidden>
+  <div class="hl">
+    <div id="hdr-title" class="hdr-title">ホーム</div>
+    <div class="hdr-sub"><span id="hdr-conn" class="conn on">● 接続中</span> <span id="hdr-debug" class="badge-debug" hidden>DEBUG</span></div>
+  </div>
+  <button id="menu-btn" class="menu-btn" aria-label="メニュー"><span></span><span></span><span></span></button>
+  <nav id="menu" class="menu" hidden></nav>
+</header>
+
+<main>
+<!-- ========== トップ ========== -->
+<section id="screen-top" class="screen" hidden>
+  <div class="logo"><img src="./icons/icon-192.png" alt="" width="72" height="72"><h1>Stethos</h1><p class="muted">ブラウザで使う車の聴診器（ELM327 互換 BLE アダプター対応）</p></div>
+  <div id="unsupported" class="card warn" hidden>
+    <b>このブラウザは Web Bluetooth に対応していません。</b>
+    <ul><li>Android：<b>Chrome</b>（Edge / Samsung Internet も可）</li><li>iPhone：<b>Bluefy</b>（無料の Web Bluetooth 対応ブラウザ）</li><li>PC：Chrome / Edge</li></ul>
+    <p class="muted">デバッグモードはこのブラウザでも使えます。</p>
+  </div>
+  <button id="btn-connect" class="btn primary big">接続する</button>
+  <div class="card">
+    <h2>接続の前に</h2>
+    <ul class="check">
+      <li>ドングルを車の OBD ポートに挿している</li>
+      <li>エンジン（イグニッション）が ON</li>
+      <li>他の OBD アプリは閉じている</li>
+      <li>次の画面で「OBDII」などの名前の機器を選ぶ</li>
+    </ul>
+  </div>
+  <details class="card">
+    <summary>詳細設定（任意）</summary>
+    <label class="lbl" for="adv-uuid">今回の接続で使うサービス UUID</label>
+    <input id="adv-uuid" class="inp" placeholder="例: FFF0 または 128bit UUID" autocomplete="off" spellcheck="false">
+    <p id="adv-uuid-msg" class="hint"></p>
+  </details>
+  <button id="btn-manage" class="btn link">保存した UUID を管理 ›</button>
+  <!-- DEBUG-START -->
+  <div id="debug-entry" class="card debug">
+    <h2>デバッグモード</h2>
+    <p class="muted">実機なしで疑似アダプターを使って動作を確認します（URL に <code>?debug=1</code> でも起動）。</p>
+    <label class="lbl" for="debug-scenario">状況</label>
+    <select id="debug-scenario" class="inp">
+      <option value="normal">通常（DTC あり）</option>
+      <option value="nodtc">DTC 0 件</option>
+      <option value="unknown">未登録アダプター（UUID 入力画面）</option>
+      <option value="connect-error">接続エラー</option>
+      <option value="no-elm">ELM327 の応答なし</option>
+      <option value="disconnect">接続 20 秒後に切断</option>
+    </select>
+    <button id="btn-debug" class="btn">デバッグモードで起動</button>
+  </div>
+  <!-- DEBUG-END -->
+  <p class="foot muted">走行中は画面を操作しないでください。</p>
+</section>
+
+<!-- ========== UUID 入力 ========== -->
+<section id="screen-uuid-input" class="screen" hidden>
+  <h1 class="pg">UUID の入力</h1>
+  <div class="card">
+    <p>選んだ機器：<b id="ui-device">-</b></p>
+    <p>この機器は登録済みの UUID に一致しませんでした。アダプターの<b>サービス UUID</b>を入力してください。</p>
+    <p id="ui-debug-hint" class="muted" hidden></p>
+  </div>
+  <details class="card" open>
+    <summary>UUID の調べ方（nRF Connect）</summary>
+    <ol>
+      <li>スマホに「nRF Connect for Mobile」（無料）を入れる</li>
+      <li>SCAN して、アダプター（OBDII など）の CONNECT を押す</li>
+      <li>Generic Access / Generic Attribute 以外のサービスを探す</li>
+      <li>WRITE と NOTIFY のキャラクタリスティックを持つサービスの UUID を入力する</li>
+      <li>nRF Connect で切断してから、このアプリで接続する</li>
+    </ol>
+  </details>
+  <label class="lbl" for="ui-uuid">サービス UUID</label>
+  <input id="ui-uuid" class="inp" placeholder="例: FFF0" autocomplete="off" spellcheck="false">
+  <p id="ui-msg" class="hint"></p>
+  <p id="ui-error" class="err" hidden></p>
+  <p class="muted">「接続」を押すと機器の一覧がもう一度開きます。<b>同じアダプターを選び直してください。</b></p>
+  <button id="ui-connect" class="btn primary big" disabled>接続</button>
+  <button id="ui-back" class="btn link">‹ トップに戻る</button>
+</section>
+
+<!-- ========== UUID 管理 ========== -->
+<section id="screen-uuid-manage" class="screen" hidden>
+  <h1 class="pg">UUID 管理</h1>
+  <h2>保存した UUID</h2>
+  <div id="um-saved"></div>
+  <h2>既知の UUID（参考・削除不可）</h2>
+  <div id="um-known"></div>
+  <button id="um-back" class="btn link">‹ トップに戻る</button>
+</section>
+
+<!-- ========== ホーム ========== -->
+<section id="screen-home" class="screen" hidden>
+  <div class="grid">
+    <div class="tile wide"><div class="t-l">接続中のアダプター</div><div id="h-device" class="t-v sm">-</div></div>
+    <div class="tile wide"><div class="t-l">車両（VIN）</div><div id="h-vin" class="t-v sm mono">-</div></div>
+    <button id="h-dtc-tile" class="tile wide tap"><div class="t-l">故障コード（DTC）</div><div id="h-dtc" class="t-v">-</div><div class="t-s">タップで診断情報へ ›</div></button>
+    <div class="tile"><div class="t-l">チェックランプ（MIL）</div><div id="h-mil" class="t-v">-</div></div>
+    <div class="tile"><div class="t-l">ECU 電圧</div><div id="h-volt" class="t-v">-</div></div>
+    <div class="tile"><div class="t-l">対応 PID 数</div><div id="h-pids" class="t-v">-</div></div>
+  </div>
+</section>
+
+<!-- ========== ステータス ========== -->
+<section id="screen-status" class="screen" hidden>
+  <p class="muted small">更新：<span id="st-rate">-</span> <span id="st-wake"></span></p>
+  <div id="st-groups"></div>
+</section>
+
+<!-- ========== 診断情報 ========== -->
+<section id="screen-dtc" class="screen" hidden>
+  <div class="card"><div class="row"><span>MIL：<b id="d-mil">-</b></span><span>件数：<b id="d-count">-</b></span></div></div>
+  <div id="d-list"></div>
+  <div class="row gap">
+    <button id="d-reload" class="btn">再読み込み</button>
+    <button id="d-clear" class="btn danger">DTC を消去</button>
+  </div>
+  <p class="muted small">汎用 OBD で読めるのは主にエンジン系（排ガス関連）の故障コードです。メーカー独自コードは説明文なしで表示します。</p>
+</section>
+</main>
+
+<div id="dialog" class="dialog" hidden><div class="dlg-box"><p id="dlg-msg"></p><div class="row gap end"><button id="dlg-cancel" class="btn">キャンセル</button><button id="dlg-ok" class="btn primary">OK</button></div></div></div>
+<div id="busy" class="busy" hidden><div class="spinner"></div><p id="busy-msg">接続中…</p></div>
+<div id="toast" class="toast" hidden></div>
+
+<script type="module" src="./js/app.js"></script>
+</body>
+</html>
