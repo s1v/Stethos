@@ -1,5 +1,5 @@
 // マイページ（利用者が選んだ項目を好きな位置に並べるカスタム画面）
-import { $, el, keepAwake, sheet } from '../ui.js';
+import { $, el, keepAwake, sheet, setRate } from '../ui.js';
 import { PID_GROUPS, ALL_ITEMS, findItem, isItemSupported } from '../config/pids.js';
 import { getMyPage, setMyPage } from '../storage.js';
 import { resolveTargets, startPolling } from '../poller.js';
@@ -67,9 +67,9 @@ function render() {
     grid.append(c.node);
   });
   const targets = resolveTargets(Object.keys(cards), obd);
-  $('mp-rate').textContent = '';
+  setRate(null);
   stop = startPolling(app_.session, targets, (k, v) => cards[k]?.forEach((c) => c.update(v)),
-    (r) => { $('mp-rate').textContent = `（更新 ${r.toFixed(1)} 項目/秒）`; });
+    setRate);
 }
 
 export default {

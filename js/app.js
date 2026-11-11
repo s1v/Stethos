@@ -1,5 +1,5 @@
 // 起動・画面の切り替え
-import { $, toast, confirmDialog, alertDialog, busy, el, closeOverlay } from './ui.js';
+import { $, toast, confirmDialog, alertDialog, busy, el, closeOverlay, setRate } from './ui.js';
 import { session, connect, disconnect } from './connection.js';
 import { MENU_ITEMS } from './config/menu.js';
 import top from './screens/top.js';
@@ -31,6 +31,7 @@ export const app = {
     lastParams[id] = params;
     record(id, current?.id === id ? 'replace' : mode);
     current?.leave?.();
+    setRate(null); // 更新速度は取得中の画面でだけ表示
     // 全画面を必ず隠してから表示する（切断後に前の画面が残るバグの対策）
     document.querySelectorAll('.screen').forEach((el) => { el.hidden = true; });
     current = SCREENS[id];

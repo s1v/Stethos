@@ -178,3 +178,4 @@ header{position:sticky;top:0;z-index:10;background:rgba(11,17,32,.92);backdrop-f
 .pick-cat summary .pick-note{margin-left:auto}
 .pick-list{padding:0 0 6px 10px}
 .pick-list .pick-item:last-child{border-bottom:0}
+.hdr-rate{color:var(--muted);font-variant-numeric:tabular-nums;margin-left:6px}

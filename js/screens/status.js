@@ -1,5 +1,5 @@
 // ステータス画面（リアルタイムの車両データ）
-import { $, el, keepAwake } from '../ui.js';
+import { $, el, keepAwake, setRate } from '../ui.js';
 import { PIDS, DERIVED, PID_GROUPS, isDefSupported, isDerivedSupported } from '../config/pids.js';
 import { resolveTargets, startPolling } from '../poller.js';
 import { createCard } from './parts/pid-card.js';
@@ -29,10 +29,10 @@ export default {
     if (naCount) root.append(el('details', { class: 'fold' }, el('summary', {}, `この車が対応していない項目（${naCount}）`), el('div', { class: 'fold-body' }, naBox)));
 
     const targets = resolveTargets(Object.keys(cards), obd);
-    $('st-rate').textContent = targets.length ? '' : '（この車で表示できる項目がありません）';
+    $('st-empty').hidden = targets.length > 0;
     keepAwake(true); // 表示中は画面を消さない
     stop = startPolling(app.session, targets, (k, v) => cards[k]?.update(v),
-      (r) => { $('st-rate').textContent = `（更新 ${r.toFixed(1)} 項目/秒・全 ${targets.length} 項目を順に更新）`; });
+      setRate);
   },
   leave() { stop(); keepAwake(false); },
 };

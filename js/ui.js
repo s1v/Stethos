@@ -65,3 +65,9 @@ export async function keepAwake(on) {
   try { lock = await navigator.wakeLock.request('screen'); return true; } catch { return false; }
 }
 document.addEventListener('visibilitychange', () => { if (wanted && document.visibilityState === 'visible') keepAwake(true); });
+
+/** ヘッダーに更新速度を表示（null で消す） */
+export function setRate(r) {
+  const e = document.getElementById('hdr-rate');
+  if (e) e.textContent = r == null ? '' : `更新 ${r.toFixed(1)} 項目/秒`;
+}

@@ -17,7 +17,7 @@
 <header id="app-header" hidden>
   <div class="hl">
     <div id="hdr-title" class="hdr-title">ホーム</div>
-    <div class="hdr-sub"><span id="hdr-conn" class="conn on">● 接続中</span> <span id="hdr-debug" class="badge-debug" hidden>DEBUG</span></div>
+    <div class="hdr-sub"><span id="hdr-conn" class="conn on">● 接続中</span> <span id="hdr-rate" class="hdr-rate"></span> <span id="hdr-debug" class="badge-debug" hidden>DEBUG</span></div>
   </div>
   <div class="hr">
   <button id="hdr-help" class="hdr-help" aria-label="この画面の説明" hidden>?</button>
@@ -75,7 +75,7 @@
   </div>
   <!-- DEBUG-END -->
 
-  <p class="foot muted">走行中は画面を操作しないでください。<br><span class="small">Stethos v0.0.6</span></p>
+  <p class="foot muted">走行中は画面を操作しないでください。<br><span class="small">Stethos v0.0.7</span></p>
 </section>
 
 <!-- ========== UUID 入力 ========== -->
@@ -144,13 +144,12 @@
 
 <!-- ========== ステータス ========== -->
 <section id="screen-status" class="screen" hidden>
-  <p class="muted small">各項目をタップすると説明を表示します。<span id="st-rate"></span></p>
+  <p id="st-empty" class="muted small" hidden>この車で表示できる項目がありません。</p>
   <div id="st-groups"></div>
 </section>
 
 <!-- ========== マイページ ========== -->
 <section id="screen-mypage" class="screen" hidden>
-  <p class="muted small"><span id="mp-rate"></span></p>
   <div id="mp-grid" class="pids"></div>
   <div class="row gap"><button id="mp-add" class="btn">枠を追加</button></div>
 </section>
@@ -174,7 +173,7 @@
     <p class="small muted" style="margin-top:0">配置したすべての項目を外し、枠の数を初期状態（12 枠）に戻します。</p>
     <button id="set-mp-reset" class="btn danger">マイページをリセット</button>
   </div>
-  <p class="foot muted small">Stethos v0.0.6</p>
+  <p class="foot muted small">Stethos v0.0.7</p>
 </section>
 
 <!-- ========== 診断情報 ========== -->
