@@ -9,10 +9,13 @@ import home from './screens/home.js';
 import status from './screens/status.js';
 import dtc from './screens/dtc.js';
 import mypage from './screens/mypage.js';
+import settings, { applySettings } from './screens/settings.js';
 
-const SCREENS = Object.fromEntries([top, uuidInput, uuidManage, home, status, mypage, dtc].map((s) => [s.id, s]));
+const SCREENS = Object.fromEntries([top, uuidInput, uuidManage, home, status, mypage, dtc, settings].map((s) => [s.id, s]));
 let current = null;
-const lastParams = {}; // 画面ごとの直近のパラメーター（戻る・進むで再利用）
+const lastParams = {};
+// 接続中として扱う画面か（neutral の画面＝設定は、接続中ならヘッダー付きで表示）
+const isConnScreen = (s) => !!s && (s.connected || (s.neutral && !!session.obd)); // 画面ごとの直近のパラメーター（戻る・進むで再利用）
 
 // ブラウザの履歴（戻る・進む）。URL は変えず state に画面 ID を持たせる
 function record(id, mode) {
@@ -33,8 +36,11 @@ export const app = {
     current = SCREENS[id];
     $('screen-' + id).hidden = false;
     const hdr = $('app-header');
-    hdr.hidden = !current.connected;
-    if (current.connected) {
+    const withHeader = isConnScreen(current);
+    hdr.hidden = !withHeader;
+    // 画面に説明があればヘッダーに「?」を出す
+    $('hdr-help').hidden = !current.help;
+    if (withHeader) {
       $('hdr-title').textContent = current.title;
       $('hdr-debug').hidden = !session.debug;
       [...$('menu').children].forEach((b) => b.classList.toggle('active', b.dataset.screen === id));
@@ -96,6 +102,7 @@ function buildMenu() {
     else if (item.action === 'disconnect') b.onclick = () => { m.hidden = true; app.disconnectWithConfirm(); };
     m.append(b);
   }
+  $('hdr-help').onclick = () => { if (current?.help) alertDialog(current.help.text, current.help.title); };
   $('menu-btn').onclick = (e) => { e.stopPropagation(); m.hidden = !m.hidden; };
   document.addEventListener('click', (e) => { if (!m.contains(e.target)) m.hidden = true; });
 }
@@ -125,7 +132,7 @@ window.addEventListener('popstate', async (e) => {
   // 処理中表示が出ているときは移動しない
   if (!$('busy').hidden) { record(current?.id || 'top', 'push'); return; }
   const tgt = SCREENS[target];
-  if (current?.connected && !tgt.connected) {
+  if (isConnScreen(current) && !tgt.connected && !tgt.neutral) {
     // 接続中にトップ側へ戻る → 切断の確認（キャンセルなら今の画面に留まる）
     record(current.id, 'push');
     await app.disconnectWithConfirm();
@@ -136,6 +143,7 @@ window.addEventListener('popstate', async (e) => {
   app.show(target, lastParams[target] || {}, { history: 'none' });
 });
 
+applySettings();
 buildMenu();
 setupSW();
 Object.values(SCREENS).forEach((s) => s.init?.(app));

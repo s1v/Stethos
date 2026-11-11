@@ -5,5 +5,6 @@ export const MENU_ITEMS = [
   { type: 'screen', screen: 'status', label: 'ステータス' },
   { type: 'screen', screen: 'mypage', label: 'マイページ' },
   { type: 'screen', screen: 'dtc', label: '診断情報' },
+  { type: 'screen', screen: 'settings', label: '設定' },
   { type: 'action', action: 'disconnect', label: '切断', danger: true },
 ];

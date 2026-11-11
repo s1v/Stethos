@@ -1,7 +1,7 @@
 // マイページ（利用者が選んだ項目を好きな位置に並べるカスタム画面）
-import { $, el, keepAwake, sheet, confirmDialog } from '../ui.js';
+import { $, el, keepAwake, sheet } from '../ui.js';
 import { PID_GROUPS, ALL_ITEMS, findItem, isItemSupported } from '../config/pids.js';
-import { getMyPage, setMyPage, MYPAGE_DEFAULT_SLOTS } from '../storage.js';
+import { getMyPage, setMyPage } from '../storage.js';
 import { resolveTargets, startPolling } from '../poller.js';
 import { createCard, showHelp } from './parts/pid-card.js';
 
@@ -71,15 +71,14 @@ function render() {
 
 export default {
   id: 'mypage', title: 'マイページ', connected: true,
+  // ヘッダーの「?」で表示する説明
+  help: {
+    title: 'マイページの使い方',
+    text: '好きな項目を選んで、好きな位置に並べられる自分専用の画面です。\n\n・空の枠（＋）をタップ → 配置する項目を選ぶ\n・配置した項目をタップ → 説明を見る／別の項目に変更／この枠から外す\n・「枠を追加」で枠を 3 つずつ増やせます\n\n配置はこの端末に保存され、次回も同じ並びで表示されます。リセットは「設定」から行えます。\n\n配置した項目だけを取得するので、ステータス画面より速く更新されます。',
+  },
   init(app) {
     app_ = app;
     $('mp-add').onclick = () => { slots.push(null, null, null); save(); render(); };
-    $('mp-clear').onclick = async () => {
-      if (!slots.some(Boolean)) return;
-      if (!(await confirmDialog('配置したすべての項目を外しますか？（枠の数は初期状態に戻ります）', { ok: 'すべて外す', danger: true }))) return;
-      slots = new Array(MYPAGE_DEFAULT_SLOTS).fill(null);
-      save(); render();
-    };
   },
   enter() {
     slots = getMyPage();

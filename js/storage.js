@@ -56,3 +56,14 @@ export function getMyPage() {
 export function setMyPage(slots) {
   try { localStorage.setItem(MKEY, JSON.stringify({ slots })); } catch { /* noop */ }
 }
+
+// 設定
+const SKEY = 'stethos.settings.v1';
+const SETTINGS_DEFAULT = { pidSize: 's' }; // pidSize: s（小）/ m（中）/ l（大）
+export function getSettings() {
+  try { return { ...SETTINGS_DEFAULT, ...(JSON.parse(localStorage.getItem(SKEY)) || {}) }; } catch { return { ...SETTINGS_DEFAULT }; }
+}
+export function setSetting(key, value) {
+  try { localStorage.setItem(SKEY, JSON.stringify({ ...getSettings(), [key]: value })); } catch { /* noop */ }
+}
+export function resetMyPage() { setMyPage(new Array(MYPAGE_DEFAULT_SLOTS).fill(null)); }

@@ -19,7 +19,10 @@
     <div id="hdr-title" class="hdr-title">ホーム</div>
     <div class="hdr-sub"><span id="hdr-conn" class="conn on">● 接続中</span> <span id="hdr-debug" class="badge-debug" hidden>DEBUG</span></div>
   </div>
+  <div class="hr">
+  <button id="hdr-help" class="hdr-help" aria-label="この画面の説明" hidden>?</button>
   <button id="menu-btn" class="menu-btn" aria-label="メニュー"><span></span><span></span><span></span></button>
+  </div>
   <nav id="menu" class="menu" hidden></nav>
 </header>
 
@@ -54,6 +57,7 @@
 
   <button id="btn-connect" class="btn primary big">接続する</button>
   <button id="btn-manage" class="btn link center">保存した UUID を管理 ›</button>
+  <button id="btn-settings" class="btn link center">設定 ›</button>
 
   <!-- DEBUG-START -->
   <div id="debug-entry" class="card debug">
@@ -72,7 +76,7 @@
   </div>
   <!-- DEBUG-END -->
 
-  <p class="foot muted">走行中は画面を操作しないでください。<br><span class="small">Stethos v0.0.4</span></p>
+  <p class="foot muted">走行中は画面を操作しないでください。<br><span class="small">Stethos v0.0.5</span></p>
 </section>
 
 <!-- ========== UUID 入力 ========== -->
@@ -147,12 +151,33 @@
 
 <!-- ========== マイページ ========== -->
 <section id="screen-mypage" class="screen" hidden>
-  <p class="muted small">空の枠をタップすると項目を配置できます。配置した項目をタップすると、説明・変更・外すを選べます。配置はこの端末に保存されます。<span id="mp-rate"></span></p>
+  <p class="muted small"><span id="mp-rate"></span></p>
   <div id="mp-grid" class="pids"></div>
-  <div class="row gap">
-    <button id="mp-add" class="btn">枠を追加</button>
-    <button id="mp-clear" class="btn danger">すべて外す</button>
+  <div class="row gap"><button id="mp-add" class="btn">枠を追加</button></div>
+</section>
+
+<!-- ========== 設定 ========== -->
+<section id="screen-settings" class="screen" hidden>
+  <h1 id="set-h1" class="pg">設定</h1>
+  <h2>表示</h2>
+  <div class="card">
+    <div class="lbl" style="margin-top:0">ステータス項目の文字サイズ</div>
+    <div id="set-size" class="seg" role="radiogroup" aria-label="ステータス項目の文字サイズ">
+      <button type="button" role="radio" data-v="s">小</button>
+      <button type="button" role="radio" data-v="m">中</button>
+      <button type="button" role="radio" data-v="l">大</button>
+    </div>
+    <p class="hint">ステータス画面・マイページの各項目に反映されます。</p>
+    <div class="lbl">プレビュー</div>
+    <div id="set-preview" class="pids"></div>
   </div>
+  <h2>マイページ</h2>
+  <div class="card">
+    <p class="small muted" style="margin-top:0">配置したすべての項目を外し、枠の数を初期状態（12 枠）に戻します。</p>
+    <button id="set-mp-reset" class="btn danger">マイページをリセット</button>
+  </div>
+  <p class="foot muted small">Stethos v0.0.5</p>
+  <button id="set-back" class="btn link center" hidden>‹ トップに戻る</button>
 </section>
 
 <!-- ========== 診断情報 ========== -->
