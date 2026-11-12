@@ -3,6 +3,7 @@ import { $, confirmDialog, toast } from '../ui.js';
 import { getSettings, setSetting, resetMyPage } from '../storage.js';
 import { findItem } from '../config/pids.js';
 import { createCard } from './parts/pid-card.js';
+import { renderReportCard } from '../report.js';
 
 /** 文字サイズを画面に反映（起動時にも呼ぶ） */
 export function applySettings() {
@@ -49,5 +50,5 @@ export default {
       const c = createCard(findItem(key), true, { onClick: () => {} }); c.update(val); box.append(c.node);
     }
   },
-  enter() { renderSize(); renderMulti(); },
+  enter() { renderSize(); renderMulti(); renderReportCard($('set-report')); },
 };

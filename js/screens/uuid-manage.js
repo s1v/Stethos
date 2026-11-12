@@ -2,8 +2,10 @@
 import { $, el, confirmDialog } from '../ui.js';
 import { getSavedUuids, removeUuid, normalizeUuid, shortUuid } from '../storage.js';
 import { KNOWN_SERVICES } from '../config/known-uuids.js';
+import { renderReportCard } from '../report.js';
 
 function render() {
+  renderReportCard($('um-report'));
   const saved = $('um-saved'); saved.innerHTML = '';
   const list = getSavedUuids();
   if (!list.length) saved.append(el('p', { class: 'muted' }, '保存した UUID はありません。'));

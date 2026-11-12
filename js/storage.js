@@ -94,3 +94,6 @@ export function setUnitPref(key, unit) {
   const p = getUnitPrefs(); if (unit) p[key] = unit; else delete p[key];
   try { localStorage.setItem(UKEY, JSON.stringify(p)); } catch { /* noop */ }
 }
+
+// 旧版（v0.0.25）で保存していた VIN を消す（VIN は毎回車から読む）
+try { localStorage.removeItem('stethos.lastVehicle.v1'); } catch { /* noop */ }

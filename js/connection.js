@@ -4,6 +4,7 @@ import { Elm327 } from './elm327.js';
 import { Obd } from './obd.js';
 import { KNOWN_SERVICES } from './config/known-uuids.js';
 import { getSavedUuids, saveUuid, normalizeUuid, getSettings } from './storage.js';
+import { saveLastConnection } from './report.js';
 
 export const knownUuids = () => KNOWN_SERVICES.map((k) => normalizeUuid(k.uuid)).filter(Boolean);
 
@@ -54,6 +55,10 @@ export async function connect({ extraUuids = [], requireUuid = null, progress = 
   let vin = null;
   try { vin = await obd.readVin(); } catch { /* noop */ }
 
+  // 動作報告用に保存（Issue に入れるのはアダプターの情報だけ）
+  try {
+    saveLastConnection({ deviceName, serviceUuid: res.serviceUuid, multiState: obd.multiState, debug });
+  } catch { /* noop */ }
   Object.assign(session, { transport, elm, obd, deviceName, vin, debug, userClosing: false });
   return { status: 'ok', deviceName, warning: init.vehicleOk ? null : '車両から応答がありません。イグニッションが ON か確認してください。' };
 }
@@ -63,3 +68,4 @@ export function disconnect() {
   try { session.transport?.disconnect(); } catch { /* noop */ }
   Object.assign(session, { transport: null, elm: null, obd: null, vin: null });
 }
+

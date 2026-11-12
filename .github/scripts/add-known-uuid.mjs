@@ -25,11 +25,10 @@ function normalizeUuid(input) {
 
 const uuid = normalizeUuid(field('サービス UUID'));
 // 製品名はコードに埋め込むので、記号を除去して長さを制限する
-const product = field('製品名').replace(/[\\'"`$<>{}\r\n]/g, '').slice(0, 60).trim();
+const product = field('製品名（任意）').replace(/[\\'"`$<>{}\r\n]/g, '').slice(0, 60).trim();
 const result = field('動作結果');
 
 if (!uuid) { out('changed', 'false'); out('reason', 'サービス UUID の形式が正しくありません。'); process.exit(0); }
-if (!product) { out('changed', 'false'); out('reason', '製品名が空です。'); process.exit(0); }
 
 const path = 'js/config/known-uuids.js';
 let src = readFileSync(path, 'utf8');
@@ -37,8 +36,8 @@ const short = /^0000([0-9a-f]{4})-0000-1000-8000-00805f9b34fb$/.exec(uuid)?.[1];
 const existing = [...src.matchAll(/uuid:\s*'([^']+)'/g)].map((m) => normalizeUuid(m[1]));
 if (existing.includes(uuid)) { out('changed', 'false'); out('reason', `UUID ${short || uuid} はすでに登録されています。`); process.exit(0); }
 
-const status = result === '問題なく使えた' ? `動作報告あり（#${issue}）` : `一部動作の報告あり（#${issue}）`;
-const line = `  { uuid: '${short || uuid}', products: '${product}', status: '${status}' },\n`;
+const status = result === '問題なく使えた' ? `動作報告あり（#${issue}）` : `接続のみ確認（データ取得不可の報告あり #${issue}）`;
+const line = `  { uuid: '${short || uuid}', products: '${product || '利用者の報告'}', status: '${status}' },\n`;
 const marker = '  // @auto-insert';
 if (!src.includes(marker)) { out('changed', 'false'); out('reason', 'known-uuids.js に @auto-insert の目印が見つかりません。'); process.exit(0); }
 src = src.replace(marker, line + marker);
@@ -48,5 +47,5 @@ writeFileSync(path, src);
 const sw = readFileSync('sw.js', 'utf8').replace(/const BUILD = (\d+);/, (_, n) => `const BUILD = ${Number(n) + 1};`);
 writeFileSync('sw.js', sw);
 
-out('changed', 'true'); out('uuid', short ? short.toUpperCase() : uuid); out('product', product);
+out('changed', 'true'); out('uuid', short ? short.toUpperCase() : uuid); out('product', product || '（製品名なし）');
 console.log('added', uuid, product);

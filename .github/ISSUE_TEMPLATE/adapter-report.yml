@@ -1,5 +1,5 @@
 name: アダプターの動作報告
-description: 「UUID の入力」が必要だったアダプターで接続できたら教えてください（アプリに登録して、次の人が入力なしで使えるようにします）
+description: 接続できたアダプターの UUID を教えてください（アプリの「UUID 管理」や「設定」の「このアダプターの動作を報告」から開くと、UUID が自動で入ります）
 title: "[アダプター] "
 labels: ["adapter-report"]
 body:
@@ -7,15 +7,13 @@ body:
     attributes:
       value: |
         ご協力ありがとうございます。内容を確認後、アプリの「既知の UUID」に登録します。
-        VIN（車台番号）などの個人を特定できる情報は書かないでください。
+        使っていて困ったことがある場合は、「不具合の報告」からお知らせください。
   - type: input
     id: product
     attributes:
-      label: 製品名
-      description: パッケージや販売ページに書かれている名前
+      label: 製品名（任意）
+      description: 分かる場合だけ。製品名がないアダプターは空欄で構いません
       placeholder: 例）JFIND JF327
-    validations:
-      required: true
   - type: input
     id: uuid
     attributes:
@@ -24,31 +22,15 @@ body:
       placeholder: 例）FFF0 または e7810a71-73ae-499d-8c15-faa9aef0c3f2
     validations:
       required: true
-  - type: input
-    id: device-name
-    attributes:
-      label: 一覧に表示された機器名
-      placeholder: 例）OBDII
   - type: dropdown
     id: result
     attributes:
       label: 動作結果
       options:
         - 問題なく使えた
-        - 一部の項目が表示されない
         - 接続はできたがデータが取れない
     validations:
       required: true
-  - type: input
-    id: env
-    attributes:
-      label: 端末とブラウザ
-      placeholder: 例）Pixel 8 / Chrome
-  - type: input
-    id: car
-    attributes:
-      label: 車種（任意）
-      placeholder: 例）2019 年式 V90 Cross Country
   - type: textarea
     id: notes
     attributes:

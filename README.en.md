@@ -12,9 +12,8 @@ English | [日本語](./README.md)
 
 ## Features
 - **Home**: vehicle (estimated make/model year, VIN) and "Car status" (trouble codes, check engine light, battery, coolant temperature) at a glance, plus mini gauges for speed, RPM, coolant temperature and voltage
-- **Status**: real-time display of the items your car supports (up to 184 items — speed, RPM, coolant, boost, fuel, emissions, odometer, etc.) by category. Only the selected category is fetched. Tap an item for its description; units such as °C/°F and kPa/bar/psi can be switched
-- **Battery**: 12V battery voltage, estimated charge (engine off), alternator charging check, hybrid battery level (supported cars only)
-- **My page**: build your own screens with any items in any position, including gauges and graphs (multiple presets, saved on the device)
+- **Status**: real-time display of the items your car supports (up to 184 items — speed, RPM, coolant, boost, fuel, emissions, odometer, etc.) by category. Only the selected category is fetched. Tap an item for its description; units such as °C/°F and kPa/bar/psi can be switched. Battery items (12V battery voltage, estimated charge with the engine off, alternator charging check, hybrid battery level on supported cars) are also here
+- **My page**: build your own screens with any status items in any position, including gauges and graphs (multiple presets, saved on the device)
 - **Settings**: language, multi-PID communication on/off, status text size (S/M/L), reset My page
 - **Diagnostics**: list of trouble codes (DTCs) with descriptions, clearing codes
 - **Language**: switch between 日本語 / English on the top screen and in Settings (chosen from your browser language on first launch)
@@ -74,7 +73,7 @@ Your adapter isn't registered in the app. Follow the on-screen guide to enter th
 - Only UUIDs of adapters that connected successfully, looked-up vehicle info, your settings and My page layout are stored in your browser.
 
 ## Adapter & bug reports
-- If you connected with an adapter that required "Enter UUID", please tell us its product name and service UUID via [**Adapter report**](https://github.com/s1v/Stethos/issues/new?template=adapter-report.yml). After review it will be registered so others can connect without input.
+- If your adapter connected successfully, please report it. Press "**Report this adapter**" in "UUID management" or "Settings" to open a GitHub report form with the UUID filled in. You can also write one directly via [**Adapter report**](https://github.com/s1v/Stethos/issues/new?template=adapter-report.yml). After review it will be registered so others can connect without input.
 - For bugs, use [**Bug report**](https://github.com/s1v/Stethos/issues/new?template=bug-report.yml). Reports in English are welcome.
 
 ---

@@ -321,3 +321,8 @@ button.hc-row{cursor:pointer}
 .connect-panel>.card,.connect-panel>.fold{margin:0 0 10px}
 .connect-panel>.btn.big{margin-top:2px}
 .connect-panel>.btn.link{display:block;width:100%;padding-bottom:2px}
+
+/* 動作報告：最後に接続したアダプターの情報 */
+.kv{display:grid;grid-template-columns:auto 1fr;gap:4px 12px;margin:4px 0 12px;font-size:.9rem}
+.kv dt{color:var(--muted)}
+.kv dd{margin:0;word-break:break-all}

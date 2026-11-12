@@ -775,5 +775,20 @@ export const EN = {
  "接続中…": "Connecting…",
  "お試しモード": "Trial mode",
  "車やアダプターがなくても、疑似アダプターで画面や動作を試せます（URL に": "Try the screens and features with a mock adapter, without a car or adapter (also starts with",
- "お試しで起動": "Start trial"
+ "お試しで起動": "Start trial",
+ "ステータス一覧": "Status list",
+ "アダプターの動作報告": "Adapter report",
+ "最後に接続したアダプター": "Last connected adapter",
+ "まだ接続したアダプターはありません。接続に成功すると、ここから動作を報告できます。": "No adapter connected yet. After a successful connection you can report it here.",
+ "機器名": "Device name",
+ "サービス UUID": "Service UUID",
+ "ELM327 の応答": "ELM327 response",
+ "通信方式": "Protocol",
+ "接続日時": "Connected at",
+ "このアダプターの動作を報告 ›": "Report this adapter ›",
+ "お試しモードの接続は報告できません。": "Trial mode connections cannot be reported.",
+ "GitHub の報告フォームを、上の情報を入力した状態で開きます。\n\n・送信には GitHub のアカウントが必要です\n・「動作結果」を選んでから送信してください（製品名は分かる場合だけ）\n・車や端末の情報（VIN など）は送りません\n・接続中にこのアプリから離れると、切断されることがあります": "Opens the GitHub report form with the information above filled in.\n\n- A GitHub account is required to submit\n- Choose \"Result\" before submitting (product name only if known)\n- No vehicle or device info (VIN etc.) is sent\n- Leaving this app while connected may disconnect the adapter",
+ "報告フォームを開く": "Open report form",
+ "報告フォームを開けませんでした。ポップアップのブロックを確認してください。": "Could not open the report form. Check your pop-up blocker.",
+ "報告していただいたアダプターは、確認後にアプリへ登録し、次の人が UUID の入力なしで使えるようにします。": "Reported adapters are registered in the app after review, so others can connect without entering a UUID."
 };

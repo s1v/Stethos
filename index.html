@@ -17,7 +17,7 @@
 <header id="app-header" hidden>
   <div class="hl">
     <div id="hdr-title" class="hdr-title">ホーム</div>
-    <div class="hdr-sub"><span id="hdr-conn" class="conn on">● 接続中</span> <span id="hdr-rate" class="hdr-rate"></span> <span id="hdr-debug" class="badge-debug" hidden>DEBUG</span></div>
+    <div class="hdr-sub"><span id="hdr-conn" class="conn on">● 接続中</span> <span id="hdr-rate" class="hdr-rate"></span> <span id="hdr-debug" class="badge-debug" hidden>TEST</span></div>
   </div>
   <div class="hr">
   <button id="hdr-preset" class="hdr-help hdr-preset" aria-label="プリセットを切り替え" title="プリセットを切り替え" hidden><svg viewBox="0 0 24 24" aria-hidden="true"><rect x="3" y="4" width="8" height="7" rx="1.5"/><rect x="13" y="4" width="8" height="7" rx="1.5"/><rect x="3" y="13" width="8" height="7" rx="1.5"/><rect x="13" y="13" width="8" height="7" rx="1.5"/></svg></button>
@@ -82,7 +82,7 @@
   </div>
   <!-- DEBUG-END -->
 
-  <p class="foot muted">走行中は画面を操作しないでください。<br><span class="small">Stethos v0.0.20</span></p>
+  <p class="foot muted">走行中は画面を操作しないでください。<br><span class="small">Stethos v0.0.26</span></p>
 </section>
 
 <!-- ========== UUID 入力 ========== -->
@@ -124,6 +124,8 @@
 <!-- ========== UUID 管理 ========== -->
 <section id="screen-uuid-manage" class="screen" hidden>
   <h1 class="pg">UUID 管理</h1>
+  <h2>アダプターの動作報告</h2>
+  <div class="card"><div class="lbl" style="margin-top:0">最後に接続したアダプター</div><div id="um-report"></div></div>
   <h2>保存した UUID</h2>
   <div id="um-saved"></div>
   <details class="fold">
@@ -142,7 +144,7 @@
       <div id="h-vin" class="t-s muted mono">-</div>
       <button id="h-lookup" class="btn link small-link" hidden>車種を調べる &rsaquo;</button>
     </div>
-    <button id="h-items-tile" class="tile tap"><div class="t-l">対応表示項目数</div><div id="h-items" class="t-v sm">-</div><div class="t-s">タップでステータス一覧へ &rsaquo;</div></button>
+    <button id="h-items-tile" class="tile tap"><div class="t-l">対応表示項目数</div><div id="h-items" class="t-v sm">-</div><div class="t-s">ステータス一覧 &rsaquo;</div></button>
   </div>
   <!-- 車の状態（健康診断カード） -->
   <section id="hc" class="health unk" aria-label="車の状態">
@@ -197,12 +199,14 @@
     <p id="set-multi-state" class="hint"></p>
     <p class="hint">複数の項目（最大 6 個）を 1 回の問い合わせでまとめて取得し、更新を速くします。CAN 通信の車（2008 年ごろ以降のほとんどの車）で使えます。表示がおかしいときや、更新が止まるときはオフにしてください。</p>
   </div>
+  <h2>アダプターの動作報告</h2>
+  <div class="card"><div class="lbl" style="margin-top:0">最後に接続したアダプター</div><div id="set-report"></div></div>
   <h2>マイページ</h2>
   <div class="card">
     <p class="small muted" style="margin-top:0">すべてのプリセットを削除し、空のマイページ 1 つ（12 枠）に戻します。</p>
     <button id="set-mp-reset" class="btn danger">マイページをリセット</button>
   </div>
-  <p class="foot muted small">Stethos v0.0.20</p>
+  <p class="foot muted small">Stethos v0.0.26</p>
 </section>
 
 <!-- ========== 診断情報 ========== -->
