@@ -30,11 +30,31 @@ html[data-theme="modern"] .pid .v.txt,html[data-theme="modern"] .pid .v.hex{colo
 html[data-theme="modern"] .conn.on{text-transform:uppercase;letter-spacing:.06em;text-shadow:0 0 8px var(--ok)}
 /* バー・メーター・グラフ */
 html[data-theme="modern"] .bar{height:4px;background:rgba(95,224,183,.12)}
-html[data-theme="modern"] .bar i,html[data-theme="modern"] .vbar i{background:var(--acc);box-shadow:0 0 8px rgba(110,240,196,.6)}
+html[data-theme="modern"] .bar i,html[data-theme="modern"] .vbar i{box-shadow:0 0 8px rgba(124,170,255,.45)}
 html[data-theme="modern"] .vbar{background:rgba(95,224,183,.12)}
 html[data-theme="modern"] .mtr-track{stroke:rgba(95,224,183,.14);stroke-width:6}
-html[data-theme="modern"] .mtr-fill{stroke:var(--acc);stroke-width:6;filter:drop-shadow(0 0 2px rgba(110,240,196,.8))}
+html[data-theme="modern"] .mtr-fill{stroke:url(#stethos-mtr-grad);stroke-width:6;filter:drop-shadow(0 0 2px rgba(124,170,255,.7))}
 html[data-theme="modern"] .mtr-needle{stroke:var(--fg);stroke-width:2}
 html[data-theme="modern"] .mtr-hub{fill:var(--acc)}
 html[data-theme="modern"] .gr-line{stroke:var(--acc);stroke-width:1.4;filter:drop-shadow(0 0 2px rgba(110,240,196,.7))}
 html[data-theme="modern"] .gr-area{fill:rgba(110,240,196,.08)}
+
+/* グラデーション：ミント → スカイブルー → ラベンダー */
+html[data-theme="modern"]{--g-a:#6ef0c4;--g-b:#5ab8ff;--g-c:#b18cff;
+  --grad:linear-gradient(90deg,var(--g-a),var(--g-b) 55%,var(--g-c));--grad-v:linear-gradient(0deg,var(--g-a),var(--g-b) 55%,var(--g-c));
+  --mg0:#6ef0c4;--mg1:#5ab8ff;--mg2:#b18cff;--shift-display:flex}
+html[data-theme="modern"] .mtr-red{stroke-width:6;opacity:.3}
+/* 縦バーは画像のようなブロック区切り */
+html[data-theme="modern"] .vbar i{-webkit-mask:repeating-linear-gradient(0deg,#000 0 14px,transparent 14px 18px);mask:repeating-linear-gradient(0deg,#000 0 14px,transparent 14px 18px)}
+/* 見出し・主ボタンの文字もグラデーション */
+html[data-theme="modern"] h2,html[data-theme="modern"] .logo h1{background:linear-gradient(90deg,var(--g-a),var(--g-b),var(--g-c));-webkit-background-clip:text;background-clip:text;color:transparent}
+html[data-theme="modern"] .btn.primary{border-image:none;background:linear-gradient(var(--bg),var(--bg)) padding-box,linear-gradient(90deg,var(--g-a),var(--g-b),var(--g-c)) border-box;border:2px solid transparent}
+html[data-theme="modern"] .btn.primary::after{background:var(--g-b);box-shadow:0 0 8px var(--g-b)}
+html[data-theme="modern"] .seg button[aria-checked="true"]{background:linear-gradient(90deg,var(--g-a),var(--g-b))}
+/* 角の文字の欠け対策：角丸を少し小さくし、内側の余白を広げる */
+html[data-theme="modern"] .pid,html[data-theme="modern"] .mtr,html[data-theme="modern"] .cat{border-radius:10px!important}
+html[data-theme="modern"] .pid{padding:9px 10px 10px}
+html[data-theme="modern"] .pid .n{padding-right:2px}
+html[data-theme="modern"] .btn{padding-left:22px;padding-right:22px;white-space:nowrap}
+html[data-theme="modern"] .btn.link{border:0!important;background:none!important;box-shadow:none!important;padding-left:2px;padding-right:2px}
+html[data-theme="modern"] .btn.link::after{content:none}

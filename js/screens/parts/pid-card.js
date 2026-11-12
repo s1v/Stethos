@@ -104,7 +104,7 @@ export function createCard(d, ok, { onClick } = {}) {
   const update = (x) => {
     last = x; latest.set(d.key, x);
     draw();
-    if (hasBar && x != null) bar.style.width = `${Math.max(0, Math.min(100, ((x - d.min) / (d.max - d.min)) * 100))}%`;
+    if (hasBar && x != null) { const pct = Math.max(0, Math.min(100, ((x - d.min) / (d.max - d.min)) * 100)); bar.style.width = `${pct}%`; bar.style.setProperty('--pct', pct); }
   };
   draw();
   const card = { node, update, key: d.key, refresh: draw };

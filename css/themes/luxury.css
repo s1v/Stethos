@@ -17,11 +17,15 @@ html[data-theme="luxury"] .pid .v.hex{font-family:ui-monospace,Menlo,monospace}
 html[data-theme="luxury"] .pid .n,html[data-theme="luxury"] .mtr-n,html[data-theme="luxury"] .t-l{letter-spacing:.08em;font-size:calc(.7rem * var(--pz))}
 html[data-theme="luxury"] .btn.primary{background:linear-gradient(180deg,#e3c98a,#b8924a);border:0;color:var(--acc-ink);letter-spacing:.08em}
 html[data-theme="luxury"] .bar{height:2px}
-html[data-theme="luxury"] .bar i,html[data-theme="luxury"] .vbar i{background:linear-gradient(90deg,#8a6f35,#e3c98a)}
-html[data-theme="luxury"] .vbar i{background:linear-gradient(0deg,#8a6f35,#e3c98a)}
 html[data-theme="luxury"] .mtr-track{stroke:rgba(201,169,97,.18);stroke-width:2}
-html[data-theme="luxury"] .mtr-fill{stroke:var(--acc);stroke-width:2.5}
+html[data-theme="luxury"] .mtr-fill{stroke:url(#stethos-mtr-grad);stroke-width:2.5}
 html[data-theme="luxury"] .mtr-needle{stroke:var(--acc);stroke-width:1.5}
 html[data-theme="luxury"] .mtr-hub{fill:var(--acc)}
 html[data-theme="luxury"] .gr-line{stroke:var(--acc);stroke-width:1}
 html[data-theme="luxury"] .gr-area{fill:rgba(201,169,97,.08)}
+
+/* シャンパンゴールドのグラデーション。カードにもごく薄い光沢 */
+html[data-theme="luxury"]{--grad:linear-gradient(90deg,#7a5f2a,#c9a961 55%,#fff1c9);--grad-v:linear-gradient(0deg,#7a5f2a,#c9a961 55%,#fff1c9);--mg0:#7a5f2a;--mg1:#c9a961;--mg2:#fff1c9}
+html[data-theme="luxury"] .mtr-red{stroke-width:2;opacity:.5}
+html[data-theme="luxury"] .card,html[data-theme="luxury"] .tile,html[data-theme="luxury"] .pid,html[data-theme="luxury"] .mtr,html[data-theme="luxury"] .cat{background:linear-gradient(160deg,#16203a,#0e1426 60%)}
+html[data-theme="luxury"] .slot-empty{background:transparent}

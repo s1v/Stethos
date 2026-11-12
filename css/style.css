@@ -343,3 +343,21 @@ button.hc-row{cursor:pointer}
 .theme-sw.t-minimal{background:#f4f4f5;color:#111114;font-weight:300}
 .theme-sw.t-luxury{background:#10172a;color:#c9a961;font-family:"Hiragino Mincho ProN","Yu Mincho","Noto Serif JP",serif;font-weight:400;border:1px solid rgba(201,169,97,.35)}
 .theme-sw.t-modern{background:#000;color:#6ef0c4;font-family:ui-monospace,Menlo,monospace;font-weight:700;letter-spacing:.06em;border:2px solid #5fe0b7;border-radius:12px}
+
+/* グラデーション（テーマが --grad / --grad-v / --mg0〜2 を決める。未指定ならアクセント色の単色） */
+.bar i{background:var(--grad,var(--acc));background-size:calc(10000% / max(var(--pct,100),1)) 100%;background-repeat:no-repeat}
+.vbar i{background:var(--grad-v,var(--acc));background-size:100% calc(10000% / max(var(--pct,100),1));background-position:bottom;background-repeat:no-repeat}
+.mg0{stop-color:var(--mg0,var(--acc))}.mg1{stop-color:var(--mg1,var(--acc))}.mg2{stop-color:var(--mg2,var(--acc))}
+/* メーターの上限付近の演出 */
+.mtr-red{fill:none;stroke:var(--ng);stroke-width:7;opacity:.28}
+.mtr-peak{stroke:var(--ng);stroke-width:2;stroke-linecap:round;display:none}
+.mtr-peak.on{display:var(--peak-display,none)}
+.mtr.hot .mtr-v{color:var(--ng)!important}
+.mtr.max .mtr-v{animation:mtr-flash .5s steps(1) infinite}
+@keyframes mtr-flash{50%{opacity:.35}}
+.shift{display:var(--shift-display,none);justify-content:center;gap:4px;margin:2px 0 2px}
+.shift .sl{width:9px;height:9px;border-radius:50%;background:var(--s2);border:1px solid var(--line)}
+.shift .sl.on.g{background:#22c55e;box-shadow:0 0 6px #22c55e}
+.shift .sl.on.y{background:#facc15;box-shadow:0 0 6px #facc15}
+.shift .sl.on.r{background:#ef4444;box-shadow:0 0 6px #ef4444}
+.mtr.max .shift .sl{animation:mtr-flash .25s steps(1) infinite}

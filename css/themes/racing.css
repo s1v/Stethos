@@ -19,12 +19,18 @@ html[data-theme="racing"] .pid .v.txt,html[data-theme="racing"] .pid .v.hex{font
 html[data-theme="racing"] .pid .n,html[data-theme="racing"] .mtr-n{text-transform:uppercase;letter-spacing:.05em;font-weight:600}
 html[data-theme="racing"] .btn.primary{background:linear-gradient(90deg,#ff3b1f,#ff8a00);border:0;font-style:italic;text-transform:uppercase;letter-spacing:.05em}
 html[data-theme="racing"] .bar{height:5px;background:var(--s2)}
-html[data-theme="racing"] .bar i,html[data-theme="racing"] .vbar i{background:linear-gradient(90deg,#ffd000,#ff8a00 60%,#ff2d1f)}
-html[data-theme="racing"] .vbar i{background:linear-gradient(0deg,#ffd000,#ff8a00 60%,#ff2d1f)}
 /* メーター：太い弧（黄→赤）、赤い針 */
 html[data-theme="racing"] .mtr-track{stroke:#26262b;stroke-width:9;stroke-linecap:butt}
-html[data-theme="racing"] .mtr-fill{stroke:var(--warn);stroke-width:9;stroke-linecap:butt}
+html[data-theme="racing"] .mtr-fill{stroke:url(#stethos-mtr-grad);stroke-width:9;stroke-linecap:butt}
 html[data-theme="racing"] .mtr-needle{stroke:var(--acc);stroke-width:3}
 html[data-theme="racing"] .mtr-hub{fill:var(--acc)}
 html[data-theme="racing"] .gr-line{stroke:var(--warn);stroke-width:1.6}
 html[data-theme="racing"] .gr-area{fill:rgba(255,138,0,.14)}
+
+/* 白 → 黄 → オレンジ → 赤。上限に近づくほど赤くなり、レッドゾーン・ピークホールド・シフトランプを表示 */
+html[data-theme="racing"]{--grad:linear-gradient(90deg,#f4f4f5,#ffd000 45%,#ff8a00 75%,#ff2d1f);--grad-v:linear-gradient(0deg,#f4f4f5,#ffd000 45%,#ff8a00 75%,#ff2d1f);--mg0:#ffd000;--mg1:#ff8a00;--mg2:#ff1f1f;--peak-display:inline;--shift-display:flex}
+html[data-theme="racing"] .mtr-red{stroke-width:9;stroke-linecap:butt;opacity:.45}
+html[data-theme="racing"] .mtr{background:radial-gradient(120% 90% at 50% 40%,rgba(255,59,31,calc(.04 + var(--heat,0) * .22)),transparent 70%),var(--s1)}
+html[data-theme="racing"] .mtr.hot .mtr-needle{stroke:#fff;filter:drop-shadow(0 0 3px #ff2d1f)}
+html[data-theme="racing"] .shift .sl{border-radius:2px!important;width:12px;height:6px}
+html[data-theme="racing"] header{background:linear-gradient(90deg,rgba(255,59,31,.18),transparent 45%),var(--hdr-bg)}

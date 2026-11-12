@@ -49,3 +49,5 @@ html[data-theme="terminal"] .mtr-v::before{content:"[";color:var(--muted);margin
 html[data-theme="terminal"] .mtr-v::after{content:"]";color:var(--muted);margin-left:.2em}
 html[data-theme="terminal"] .mtr-n::before{content:"# "}
 html[data-theme="terminal"] .mtr-n{text-transform:uppercase}
+
+html[data-theme="terminal"] .mtr-red{stroke-width:9;stroke-linecap:butt;stroke-dasharray:1.2 2.6;opacity:.4}

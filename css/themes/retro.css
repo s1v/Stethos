@@ -20,12 +20,12 @@ html[data-theme="retro"] .pid .v.txt,html[data-theme="retro"] .pid .v.hex{font-s
 html[data-theme="retro"] .pid .n,html[data-theme="retro"] .mtr-n,html[data-theme="retro"] .t-l{text-transform:uppercase;letter-spacing:.06em}
 /* LED ブロックのバー */
 html[data-theme="retro"] .bar{height:6px;border-radius:0;background:#0f1a10}
-html[data-theme="retro"] .bar i{background:repeating-linear-gradient(90deg,var(--acc) 0 5px,transparent 5px 7px);box-shadow:0 0 6px rgba(57,255,106,.5)}
+html[data-theme="retro"] .bar i{-webkit-mask:repeating-linear-gradient(90deg,#000 0 5px,transparent 5px 7px);mask:repeating-linear-gradient(90deg,#000 0 5px,transparent 5px 7px);filter:drop-shadow(0 0 3px rgba(57,255,106,.5))}
 html[data-theme="retro"] .vbar{border-radius:0;background:#0f1a10}
-html[data-theme="retro"] .vbar i{background:repeating-linear-gradient(0deg,var(--acc) 0 6px,transparent 6px 9px)}
+html[data-theme="retro"] .vbar i{-webkit-mask:repeating-linear-gradient(0deg,#000 0 6px,transparent 6px 9px);mask:repeating-linear-gradient(0deg,#000 0 6px,transparent 6px 9px)}
 /* メーター：太めの目盛り風トラックと発光 */
 html[data-theme="retro"] .mtr-track{stroke:#132415;stroke-linecap:butt;stroke-dasharray:4 2}
-html[data-theme="retro"] .mtr-fill{stroke:var(--acc);stroke-linecap:butt;stroke-dasharray:4 2;filter:drop-shadow(0 0 2px rgba(57,255,106,.8))}
+html[data-theme="retro"] .mtr-fill{stroke:url(#stethos-mtr-grad);stroke-linecap:butt;stroke-dasharray:4 2;filter:drop-shadow(0 0 2px rgba(57,255,106,.8))}
 html[data-theme="retro"] .mtr-needle{stroke:var(--warn)}
 html[data-theme="retro"] .mtr-hub{fill:var(--warn)}
 html[data-theme="retro"] .gr-line{stroke:var(--acc);filter:drop-shadow(0 0 2px rgba(57,255,106,.7))}
@@ -35,3 +35,8 @@ html[data-theme="retro"] .seg button[aria-checked="true"]{box-shadow:0 0 10px rg
 /* 角の丸みを全要素で 4px に統一（スピナーだけは円のまま） */
 html[data-theme="retro"] *,html[data-theme="retro"] *::before,html[data-theme="retro"] *::after{border-radius:4px!important}
 html[data-theme="retro"] .spinner{border-radius:50%!important}
+
+/* 緑 → 琥珀 → 赤の LED（上限に近づくほど赤く） */
+html[data-theme="retro"]{--grad:linear-gradient(90deg,#39ff6a 0 60%,#ffb000 80%,#ff4433);--grad-v:linear-gradient(0deg,#39ff6a 0 60%,#ffb000 80%,#ff4433);--mg0:#39ff6a;--mg1:#9dff3a;--mg2:#ff4433;--shift-display:flex}
+html[data-theme="retro"] .mtr-red{stroke-linecap:butt;stroke-dasharray:4 2}
+html[data-theme="retro"] .shift .sl{border-radius:2px!important}

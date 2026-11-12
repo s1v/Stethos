@@ -29,3 +29,5 @@ html[data-theme="minimal"] .mtr-hub{r:2}
 html[data-theme="minimal"] .gr-line{stroke-width:1}
 html[data-theme="minimal"] .gr-area{fill:rgba(17,17,20,.05)}
 html[data-theme="minimal"] .logo img{filter:grayscale(1)}
+
+html[data-theme="minimal"] .mtr-red{stroke-width:2;opacity:.4}
