@@ -3,7 +3,7 @@ import { BleTransport, ConnError } from './ble.js';
 import { Elm327 } from './elm327.js';
 import { Obd } from './obd.js';
 import { KNOWN_SERVICES } from './config/known-uuids.js';
-import { getSavedUuids, saveUuid, normalizeUuid } from './storage.js';
+import { getSavedUuids, saveUuid, normalizeUuid, getSettings } from './storage.js';
 
 export const knownUuids = () => KNOWN_SERVICES.map((k) => normalizeUuid(k.uuid)).filter(Boolean);
 
@@ -50,6 +50,7 @@ export async function connect({ extraUuids = [], requireUuid = null, progress = 
   progress('車両情報を取得中…');
   const obd = new Obd(elm);
   try { await obd.loadSupported(); } catch { /* noop */ }
+  try { await obd.detectMulti(getSettings().multiPid); } catch { /* 使えなければ 1 個ずつ */ }
   let vin = null;
   try { vin = await obd.readVin(); } catch { /* noop */ }
 

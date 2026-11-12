@@ -278,3 +278,8 @@ button.hc-row{cursor:pointer}
 .style-item.current span:nth-child(2){color:var(--acc);font-weight:700}
 .sz{display:grid;grid-template-columns:repeat(2,10px);grid-auto-rows:10px;gap:2px;width:22px;flex:none}
 .sz i{background:var(--acc);border-radius:2px}
+
+/* ヘッダー：プリセット切り替えボタン・名前のタップ */
+.hdr-preset{display:flex;align-items:center;justify-content:center}
+.hdr-preset svg{width:20px;height:20px;fill:none;stroke:var(--fg);stroke-width:1.8}
+.hdr-title.tap{cursor:pointer;text-decoration:underline dotted var(--muted);text-underline-offset:4px}

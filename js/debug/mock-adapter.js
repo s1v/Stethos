@@ -21,13 +21,13 @@ const ENUM_MOCK = { '51': 1, '1C': 11 }; // ガソリン / JOBD・OBD-II
 function encodeGeneric(def, target, t) {
   if (def.format === 'enum') return h2(ENUM_MOCK[def.pid] ?? 1);
   if (def.format === 'hex') return ['3A', '0F', 'C2', '01'].join(''); // 16 進表示の項目は固定の疑似データ
-  if (def.format === 'text') return { '13': '33', '1D': '11', '4F': '0280FA10', '64': 'A0C8B4AA96' }[def.pid] || '00000000';
+  if (def.format === 'text') return { '13': '33', '1D': '11', '4F': '0280FA10', '64': 'A0C8B4AA96', '65': '0F03', '90': '400012', '91': '0100120003', '92': 'FF0F', '8B': '073F', 'A9': '01000000', '81': '1F' + '00000E10'.repeat(10) }[def.pid] || '00000000';
   const bytes = def.bytes || 1;
   if (def.key === 'runtimeTotal') return '01' + h2(0) + h2(0x12) + h2(0x34) + h2(0x56) + '00'.repeat(8);
   if (def.key === 'gearRatio') return '0000' + h4(1650 + Math.round(Math.sin(t / 5) * 600));
   if (def.key === 'odometer') { const n = Math.round((45678.9 + t * 0.02) * 10); return [24, 16, 8, 0].map((s) => h2((n >>> s) & 255)).join(''); }
-  const offs = def.mask ? 1 : 0, nvar = Math.min(2, bytes - offs), N = nvar === 1 ? 256 : 65536;
-  const arr = new Array(bytes).fill(0); if (def.mask) arr[0] = 0x01;
+  const offs = def.at ?? (def.mask ? 1 : 0), nvar = def.n ?? Math.min(2, bytes - offs), N = nvar === 1 ? 256 : 65536;
+  const arr = new Array(bytes).fill(0); if (def.mask) arr[0] = def.at != null ? 0x7F : 0x01; // フィールド指定の項目は全フィールドありとして返す
   let best = 0, bd = Infinity;
   for (let x = 0; x < N; x++) {
     if (nvar === 1) arr[offs] = x; else { arr[offs] = x >> 8; arr[offs + 1] = x & 255; }
@@ -53,6 +53,15 @@ function encodeDtc(c) {
   const t = 'PCBU'.indexOf(c[0]);
   const a = (t << 6) | (Number(c[1]) << 4) | parseInt(c[2], 16);
   return h2(a) + c.slice(3);
+}
+
+/** CAN の応答形式にする（7 バイトを超えるときは複数フレーム「長さ / 0: / 1: …」） */
+function canFrames(hex) {
+  const n = hex.length / 2;
+  if (n <= 7) return hex;
+  const lines = [n.toString(16).toUpperCase().padStart(3, '0'), '0:' + hex.slice(0, 12)];
+  for (let i = 12, k = 1; i < hex.length; i += 14, k = (k + 1) % 16) lines.push(`${k.toString(16).toUpperCase()}:` + hex.slice(i, i + 14).padEnd(14, '0'));
+  return lines.join('\r');
 }
 
 export class MockTransport {
@@ -111,6 +120,14 @@ export class MockTransport {
       return lines.join('\r');
     }
     if (!cmd.startsWith('01')) return '?';
+    if (cmd.length > 4 && cmd.length % 2 === 0) {
+      // マルチ PID：非対応アダプターのシナリオでは、規格外の応答（最初の PID だけ）を返す
+      const pids = cmd.slice(2).match(/../g);
+      if (this.scenario === 'no-multi') return this.respond('01' + pids[0]);
+      const parts = pids.map((p) => this.respond('01' + p)).filter((r) => r.startsWith('41')).map((r) => r.slice(2));
+      if (!parts.length) return 'NO DATA';
+      return canFrames('41' + parts.join(''));
+    }
     const pid = cmd.slice(2, 4);
     const base = parseInt(pid, 16);
     if (base % 0x20 === 0 && (base === 0 || SUPPORTED.includes(pid))) return '41' + pid + bitmap(base);
@@ -134,6 +151,16 @@ export class MockTransport {
     if (!def) return '41' + pid + '00';
     const ph = parseInt(pid, 16);
     const target = def.min + (def.max - def.min) * (0.25 + 0.4 * wave(15 + (ph % 9), ph));
+    if (def.at != null) {
+      // 複数の値を持つ PID：同じ PID の項目それぞれの値を、決められた位置に詰めて返す
+      const out = new Array(def.bytes).fill(0); out[0] = 0x7F;
+      for (const d of PIDS.filter((p) => p.pid === pid && p.at != null)) {
+        const tg = d.min + (d.max - d.min) * (0.25 + 0.4 * wave(15 + ((ph + d.at) % 9), ph + d.at));
+        const hex = encodeGeneric(d, tg, t);
+        for (let k = 0; k < d.n; k++) out[d.at + k] = parseInt(hex.substr((d.at + k) * 2, 2), 16);
+      }
+      return '41' + pid + out.map(h2).join('');
+    }
     return '41' + pid + encodeGeneric(def, target, t);
   }
 

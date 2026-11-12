@@ -10,7 +10,8 @@ import status from './screens/status.js';
 import dtc from './screens/dtc.js';
 import mypage from './screens/mypage.js';
 import settings, { applySettings } from './screens/settings.js';
-import { openPresetList } from './screens/parts/presets.js';
+import { openPresetList, openFirstPreset, renamePreset } from './screens/parts/presets.js';
+import { getPreset } from './storage.js';
 
 const SCREENS = Object.fromEntries([top, uuidInput, uuidManage, home, status, mypage, dtc, settings].map((s) => [s.id, s]));
 let current = null;
@@ -46,6 +47,8 @@ export const app = {
     hdr.hidden = !withHeader;
     // 画面に説明があればヘッダーに「?」を出す
     $('hdr-help').hidden = !current.help;
+    $('hdr-preset').hidden = id !== 'mypage'; // マイページだけプリセットの切り替えボタンを出す
+    $('hdr-title').classList.toggle('tap', id === 'mypage');
     if (withHeader) {
       $('hdr-title').textContent = current.title;
       $('hdr-debug').hidden = !session.debug;
@@ -106,9 +109,12 @@ function buildMenu() {
     const b = el('button', { class: item.danger ? 'danger' : '' }, item.label);
     if (item.type === 'screen') { b.dataset.screen = item.screen; b.onclick = () => app.show(item.screen); }
     else if (item.action === 'disconnect') b.onclick = () => { m.hidden = true; app.disconnectWithConfirm(); };
-    else if (item.action === 'presets') { b.dataset.screen = item.screen; b.onclick = () => { m.hidden = true; openPresetList(app); }; }
+    else if (item.action === 'presets') { b.dataset.screen = item.screen; b.onclick = () => { m.hidden = true; openFirstPreset(app); }; }
     m.append(b);
   }
+  $('hdr-preset').onclick = () => openPresetList(app);
+  // マイページではヘッダーのプリセット名をタップすると名前を変更できる
+  $('hdr-title').onclick = () => { if (current?.id === 'mypage') renamePreset(getPreset(lastParams.mypage?.presetId)); };
   $('hdr-help').onclick = () => { if (current?.help) alertDialog(current.help.text, current.help.title); };
   $('menu-btn').onclick = (e) => { e.stopPropagation(); m.hidden = !m.hidden; };
   document.addEventListener('click', (e) => { if (!m.contains(e.target)) m.hidden = true; });

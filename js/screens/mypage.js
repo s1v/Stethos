@@ -5,6 +5,7 @@ import { PID_GROUPS, ALL_ITEMS, findItem, isItemSupported } from '../config/pids
 import { getPreset, updatePreset, setLastPreset } from '../storage.js';
 import { resolveTargets, startPolling } from '../poller.js';
 import { showHelp } from './parts/pid-card.js';
+import { setCurrentPresetId } from './parts/presets.js';
 import { createWidget, stylesFor, findStyle } from './parts/widgets.js';
 
 let stop = () => {};
@@ -118,7 +119,7 @@ export default {
   // ヘッダーの「?」で表示する説明
   help: {
     title: 'マイページの使い方',
-    text: '好きな項目を選んで、好きな位置に並べられる自分専用の画面です。\n\n・空の枠（＋）をタップ → 配置する項目を選ぶ\n・配置した項目をタップ → 説明を見る／表示の種類を変更／別の項目に変更／この枠から外す\n・表示の種類：数値（1×1）、大きな数値（2×1）、縦バー（1×2）、グラフ（2×1）、メーター（2×2）、大きなグラフ（2×2）。大きい種類は、空いたマスに詰めて並びます\n・「枠を追加」で枠を 3 つずつ増やせます\n・メニューの「マイページ」からプリセット（複数のマイページ）を切り替え・追加・名前の変更・削除できます\n\n配置はこの端末に保存され、次回も同じ並びで表示されます。リセットは「設定」から行えます。\n\n配置した項目だけを取得するので、ステータス画面より速く更新されます。',
+    text: '好きな項目を選んで、好きな位置に並べられる自分専用の画面です。\n\n・空の枠（＋）をタップ → 配置する項目を選ぶ\n・配置した項目をタップ → 説明を見る／表示の種類を変更／別の項目に変更／この枠から外す\n・表示の種類：数値（1×1）、大きな数値（2×1）、縦バー（1×2）、グラフ（2×1）、メーター（2×2）、大きなグラフ（2×2）。大きい種類は、空いたマスに詰めて並びます\n・「枠を追加」で枠を 3 つずつ増やせます\n・メニューの「マイページ」を押すと、一覧の一番上のプリセットが開きます\n・画面右上の切り替えボタン（≡ の左）でプリセットの切り替え・追加・名前の変更・削除ができます\n・画面上部のプリセット名をタップしても、名前を変更できます\n\n配置はこの端末に保存され、次回も同じ並びで表示されます。リセットは「設定」から行えます。\n\n配置した項目だけを取得するので、ステータス画面より速く更新されます。',
   },
   init(app) {
     app_ = app;
@@ -128,10 +129,10 @@ export default {
   enter(app, params = {}) {
     const p = getPreset(params.presetId);
     presetId = p.id; slots = [...p.slots];
-    setLastPreset(p.id);
+    setLastPreset(p.id); setCurrentPresetId(p.id);
     $('hdr-title').textContent = p.name; // ヘッダーにプリセット名を表示
     render();
     keepAwake(true);
   },
-  leave() { stop(); keepAwake(false); },
+  leave() { stop(); keepAwake(false); setCurrentPresetId(null); },
 };

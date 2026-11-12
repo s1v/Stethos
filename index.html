@@ -20,6 +20,7 @@
     <div class="hdr-sub"><span id="hdr-conn" class="conn on">● 接続中</span> <span id="hdr-rate" class="hdr-rate"></span> <span id="hdr-debug" class="badge-debug" hidden>DEBUG</span></div>
   </div>
   <div class="hr">
+  <button id="hdr-preset" class="hdr-help hdr-preset" aria-label="プリセットを切り替え" title="プリセットを切り替え" hidden><svg viewBox="0 0 24 24" aria-hidden="true"><rect x="3" y="4" width="8" height="7" rx="1.5"/><rect x="13" y="4" width="8" height="7" rx="1.5"/><rect x="3" y="13" width="8" height="7" rx="1.5"/><rect x="13" y="13" width="8" height="7" rx="1.5"/></svg></button>
   <button id="hdr-help" class="hdr-help" aria-label="この画面の説明" hidden>?</button>
   <button id="menu-btn" class="menu-btn" aria-label="メニュー"><span></span><span></span><span></span></button>
   </div>
@@ -70,12 +71,13 @@
       <option value="connect-error">接続エラー</option>
       <option value="no-elm">ELM327 の応答なし</option>
       <option value="disconnect">接続 20 秒後に切断</option>
+      <option value="no-multi">マルチ PID 非対応アダプター</option>
     </select>
     <button id="btn-debug" class="btn">デバッグモードで起動</button>
   </div>
   <!-- DEBUG-END -->
 
-  <p class="foot muted">走行中は画面を操作しないでください。<br><span class="small">Stethos v0.0.13</span></p>
+  <p class="foot muted">走行中は画面を操作しないでください。<br><span class="small">Stethos v0.0.16</span></p>
 </section>
 
 <!-- ========== UUID 入力 ========== -->
@@ -179,12 +181,22 @@
     <div class="lbl">プレビュー</div>
     <div id="set-preview" class="pids"></div>
   </div>
+  <h2>通信</h2>
+  <div class="card">
+    <div class="lbl" style="margin-top:0">マルチ PID 通信</div>
+    <div id="set-multi" class="seg" role="radiogroup" aria-label="マルチ PID 通信">
+      <button type="button" role="radio" data-v="on">オン</button>
+      <button type="button" role="radio" data-v="off">オフ</button>
+    </div>
+    <p id="set-multi-state" class="hint"></p>
+    <p class="hint">複数の項目（最大 6 個）を 1 回の問い合わせでまとめて取得し、更新を速くします。CAN 通信の車（2008 年ごろ以降のほとんどの車）で使えます。表示がおかしいときや、更新が止まるときはオフにしてください。</p>
+  </div>
   <h2>マイページ</h2>
   <div class="card">
     <p class="small muted" style="margin-top:0">すべてのプリセットを削除し、空のマイページ 1 つ（12 枠）に戻します。</p>
     <button id="set-mp-reset" class="btn danger">マイページをリセット</button>
   </div>
-  <p class="foot muted small">Stethos v0.0.13</p>
+  <p class="foot muted small">Stethos v0.0.16</p>
 </section>
 
 <!-- ========== 診断情報 ========== -->

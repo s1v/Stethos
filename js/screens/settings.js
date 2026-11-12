@@ -9,6 +9,15 @@ export function applySettings() {
   document.documentElement.dataset.pidSize = getSettings().pidSize;
 }
 
+const MULTI_TEXT = { on: '状態：使用中（まとめて取得しています）', off: '状態：オフ（1 項目ずつ取得しています）', unsupported: '状態：この車またはアダプターでは使えないため、1 項目ずつ取得しています' };
+let app_ = null;
+function renderMulti() {
+  const on = getSettings().multiPid;
+  for (const b of $('set-multi').children) b.setAttribute('aria-checked', String((b.dataset.v === 'on') === on));
+  const obd = app_?.session?.obd;
+  $('set-multi-state').textContent = obd ? MULTI_TEXT[obd.multiState] : '';
+}
+
 function renderSize() {
   const cur = getSettings().pidSize;
   for (const b of $('set-size').children) b.setAttribute('aria-checked', String(b.dataset.v === cur));
@@ -17,6 +26,16 @@ function renderSize() {
 export default {
   id: 'settings', title: '設定', connected: true,
   init(app) {
+    app_ = app;
+    for (const b of $('set-multi').children) {
+      b.onclick = async () => {
+        const on = b.dataset.v === 'on';
+        setSetting('multiPid', on); renderMulti();
+        // 接続中ならその場で切り替える（オンにしたときは使えるか試す）
+        const obd = app.session.obd;
+        if (obd) { try { await obd.detectMulti(on); } catch { /* noop */ } renderMulti(); }
+      };
+    }
     for (const b of $('set-size').children) {
       b.onclick = () => { setSetting('pidSize', b.dataset.v); applySettings(); renderSize(); };
     }
@@ -30,5 +49,5 @@ export default {
       const c = createCard(findItem(key), true, { onClick: () => {} }); c.update(val); box.append(c.node);
     }
   },
-  enter() { renderSize(); },
+  enter() { renderSize(); renderMulti(); },
 };
