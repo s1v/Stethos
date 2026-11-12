@@ -1,11 +1,11 @@
 // Stethos Service Worker
 // アプリを更新したら VERSION を変更してください（「更新があります」表示のきっかけになります）
 // BUILD は自動更新（Issue → known-uuids の追加）で 1 ずつ増やされます
-const APP_VERSION = '0.0.28';
+const APP_VERSION = '0.0.29';
 const BUILD = 0;
 const VERSION = `stethos-v${APP_VERSION}-${BUILD}`;
 const ASSETS = [
-  './', './index.html', './manifest.webmanifest', './css/style.css',
+  './', './index.html', './manifest.webmanifest', './css/style.css', './css/themes/retro.css', './css/themes/terminal.css', './js/config/themes.js',
   './icons/icon-192.png', './icons/icon-512.png', './icons/icon-maskable-512.png',
   './js/app.js', './js/i18n.js', './js/i18n/en.js', './js/report.js', './js/version.js', './js/ble.js', './js/elm327.js', './js/obd.js', './js/storage.js', './js/ui.js', './js/connection.js', './js/vehicle.js', './js/poller.js',
   './js/screens/top.js', './js/screens/uuid-input.js', './js/screens/uuid-manage.js',

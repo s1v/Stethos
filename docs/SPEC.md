@@ -53,7 +53,7 @@
 | ステータス | カテゴリ一覧 → カテゴリ内の項目をリアルタイム表示 | メニュー・ホームから移動 |
 | マイページ | 利用者が選んだ項目を並べた画面（プリセット複数） | メニューから移動 |
 | 診断情報 | 故障コード（DTC）の一覧・消去 | メニュー・ホームから移動 |
-| 設定 | 言語、文字サイズ、マルチ PID 通信、マイページのリセット | メニューから移動（接続中のみ） |
+| 設定 | 言語、テーマ、文字サイズ、マルチ PID 通信、マイページのリセット | メニューから移動（接続中のみ） |
 
 ### 4.2 画面の遷移
 ```
@@ -454,3 +454,12 @@ GitHub Actions（`.github/workflows/deploy.yml`）でデプロイする。`main`
 **初回だけ必要な設定**
 1. **Settings → Actions → General → Workflow permissions** で「Read and write permissions」を選び、「Allow GitHub Actions to create and approve pull requests」にチェックを入れる
 2. **Issues → Labels** でラベル `adapter-report` と `accepted` を作成する（`bug` `enhancement` は標準で存在する）
+
+
+## テーマ（スキン）
+- 設定画面の「表示 → テーマ」で切り替える。配色・角の形・数字の書体・バー／メーターの描き方を丸ごと変える。**レイアウト（配置・ブロックの大きさ）は変えない**（マイページの配置が崩れないように）。
+- 一覧は `js/config/themes.js`、見た目は `css/themes/<id>.css`。各ファイルは `html[data-theme="<id>"]` の下だけに効く CSS 変数と上書きで作る。
+- 収録テーマ：スタンダード（`css/style.css` そのもの）／レトロデジタル（黒地に緑の 7 セグ風の発光数字、LED ブロックのバー、破線のメーター）／ターミナル（黒地に緑の等幅、角なし、破線枠、`$` `>` などのコンソール風装飾）
+- 外部フォントは使わない（オフライン起動のため）。7 セグ風は等幅＋斜体＋発光で表現する。
+- 選んだテーマは設定（`stethos.settings.v1` の `theme`）に保存。起動時のちらつきを防ぐため、`index.html` の `<head>` で読み込み前に `data-theme` を付ける。`<meta name="theme-color">` もテーマに合わせて変える。
+- テーマを追加するとき：`themes.js` に 1 行、`css/themes/` にファイル、`index.html` の `<link>`、`sw.js` のキャッシュ対象、設定画面のサンプル用 CSS（`.theme-sw.t-<id>`）を足す。

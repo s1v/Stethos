@@ -59,7 +59,7 @@ export function setMyPage(slots) {
 
 // 設定
 const SKEY = 'stethos.settings.v1';
-const SETTINGS_DEFAULT = { pidSize: 's', multiPid: true }; // pidSize: s（小）/ m（中）/ l（大）
+const SETTINGS_DEFAULT = { pidSize: 's', multiPid: true, theme: 'standard' }; // pidSize: s（小）/ m（中）/ l（大）
 export function getSettings() {
   try { return { ...SETTINGS_DEFAULT, ...(JSON.parse(localStorage.getItem(SKEY)) || {}) }; } catch { return { ...SETTINGS_DEFAULT }; }
 }

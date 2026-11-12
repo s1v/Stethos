@@ -1,0 +1,35 @@
+/* テーマ：ターミナル（診断機・ELM327 のコンソール風）
+   html[data-theme="terminal"] のときだけ効く */
+html[data-theme="terminal"]{
+  --bg:#000; --s1:#000; --s2:#0a140a; --line:#1e5c1e;
+  --fg:#33ff33; --muted:#1fa31f; --acc:#33ff33; --acc-ink:#000;
+  --ok:#33ff33; --warn:#e6e600; --ng:#ff3b3b;
+  --ok-bg:rgba(51,255,51,.06); --warn-bg:rgba(230,230,0,.08); --ng-bg:rgba(255,59,59,.10); --acc-bg:rgba(51,255,51,.05);
+  --r:0; --hdr-bg:#000;
+}
+html[data-theme="terminal"] body,html[data-theme="terminal"] button,html[data-theme="terminal"] input,html[data-theme="terminal"] select{
+  font-family:ui-monospace,"SF Mono",Menlo,Consolas,"Noto Sans Mono CJK JP","Osaka-Mono",monospace!important}
+html[data-theme="terminal"] *{border-radius:0!important;box-shadow:none!important}
+html[data-theme="terminal"] .card,html[data-theme="terminal"] .tile,html[data-theme="terminal"] .pid,html[data-theme="terminal"] .mtr{border:1px dashed var(--line)}
+html[data-theme="terminal"] h2::before{content:"$ ";color:var(--muted)}
+html[data-theme="terminal"] .hdr-title::before{content:"> "}
+html[data-theme="terminal"] .hdr-title::after{content:"_";animation:term-blink 1s steps(1) infinite}
+@keyframes term-blink{50%{opacity:0}}
+html[data-theme="terminal"] .pid .v,html[data-theme="terminal"] .pid .deg,html[data-theme="terminal"] .mtr-v,html[data-theme="terminal"] .t-v{font-weight:400;text-shadow:0 0 4px rgba(51,255,51,.5)}
+html[data-theme="terminal"] .pid .n::before{content:"# "}
+html[data-theme="terminal"] .btn{border:1px solid var(--fg)}
+html[data-theme="terminal"] .btn.primary{background:var(--fg);color:#000}
+html[data-theme="terminal"] .btn.primary::before{content:"[ "}
+html[data-theme="terminal"] .btn.primary::after{content:" ]"}
+html[data-theme="terminal"] .seg button[aria-checked="true"]{background:var(--fg);color:#000}
+/* バーは [####----] 風 */
+html[data-theme="terminal"] .bar{height:7px;background:repeating-linear-gradient(90deg,#0d2a0d 0 4px,transparent 4px 6px)}
+html[data-theme="terminal"] .bar i{background:repeating-linear-gradient(90deg,var(--fg) 0 4px,transparent 4px 6px)}
+html[data-theme="terminal"] .vbar{background:repeating-linear-gradient(0deg,#0d2a0d 0 4px,transparent 4px 6px)}
+html[data-theme="terminal"] .vbar i{background:repeating-linear-gradient(0deg,var(--fg) 0 4px,transparent 4px 6px)}
+html[data-theme="terminal"] .mtr-track{stroke:#0d2a0d;stroke-width:5;stroke-linecap:butt}
+html[data-theme="terminal"] .mtr-fill{stroke-width:5;stroke-linecap:butt}
+html[data-theme="terminal"] .mtr-needle{stroke-width:1.5}
+html[data-theme="terminal"] .gr-line{stroke-width:1}
+html[data-theme="terminal"] .gr-area{fill:none}
+html[data-theme="terminal"] .toast,html[data-theme="terminal"] .dlg-box,html[data-theme="terminal"] .sheet-box,html[data-theme="terminal"] .menu{border:1px solid var(--fg);background:#000}

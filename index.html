@@ -10,6 +10,9 @@
 <link rel="icon" href="./icons/icon-192.png">
 <link rel="apple-touch-icon" href="./icons/icon-192.png">
 <link rel="stylesheet" href="./css/style.css">
+<link rel="stylesheet" href="./css/themes/retro.css">
+<link rel="stylesheet" href="./css/themes/terminal.css">
+<script>try{var s=JSON.parse(localStorage.getItem('stethos.settings.v1'))||{};document.documentElement.dataset.theme=s.theme||'standard'}catch(e){}</script>
 </head>
 <body>
 <div id="update-banner" class="banner" hidden>更新があります <button id="update-btn" class="btn small">再読み込み</button></div>
@@ -82,7 +85,7 @@
   </div>
   <!-- DEBUG-END -->
 
-  <p class="foot muted">走行中は画面を操作しないでください。<br><span class="small">Stethos v0.0.28</span></p>
+  <p class="foot muted">走行中は画面を操作しないでください。<br><span class="small">Stethos v0.0.29</span></p>
 </section>
 
 <!-- ========== UUID 入力 ========== -->
@@ -179,7 +182,10 @@
   <div class="card"><div class="lang-seg seg" role="radiogroup" aria-label="Language"><button type="button" role="radio" data-lang="ja">日本語</button><button type="button" role="radio" data-lang="en">English</button></div></div>
   <h2>表示</h2>
   <div class="card">
-    <div class="lbl" style="margin-top:0">ステータス項目の文字サイズ</div>
+    <div class="lbl" style="margin-top:0">テーマ</div>
+    <div id="set-theme" class="theme-list" role="radiogroup" aria-label="テーマ"></div>
+    <p class="hint">配色・形・数字の書体・バーやメーターの描き方が変わります（画面の配置は変わりません）。</p>
+    <div class="lbl">ステータス項目の文字サイズ</div>
     <div id="set-size" class="seg" role="radiogroup" aria-label="ステータス項目の文字サイズ">
       <button type="button" role="radio" data-v="s">小</button>
       <button type="button" role="radio" data-v="m">中</button>
@@ -206,7 +212,7 @@
     <p class="small muted" style="margin-top:0">すべてのプリセットを削除し、空のマイページ 1 つ（12 枠）に戻します。</p>
     <button id="set-mp-reset" class="btn danger">マイページをリセット</button>
   </div>
-  <p class="foot muted small">Stethos v0.0.28<br>© 2026 s1v ／ <a href="https://github.com/s1v/Stethos/blob/main/LICENSE" target="_blank" rel="noopener">GPL-3.0 License</a></p>
+  <p class="foot muted small">Stethos v0.0.29<br>© 2026 s1v ／ <a href="https://github.com/s1v/Stethos/blob/main/LICENSE" target="_blank" rel="noopener">GPL-3.0 License</a></p>
 </section>
 
 <!-- ========== 診断情報 ========== -->

@@ -790,5 +790,10 @@ export const EN = {
  "GitHub の報告フォームを、上の情報を入力した状態で開きます。\n\n・送信には GitHub のアカウントが必要です\n・「動作結果」を選んでから送信してください（製品名は分かる場合だけ）\n・車や端末の情報（VIN など）は送りません\n・接続中にこのアプリから離れると、切断されることがあります": "Opens the GitHub report form with the information above filled in.\n\n- A GitHub account is required to submit\n- Choose \"Result\" before submitting (product name only if known)\n- No vehicle or device info (VIN etc.) is sent\n- Leaving this app while connected may disconnect the adapter",
  "報告フォームを開く": "Open report form",
  "報告フォームを開けませんでした。ポップアップのブロックを確認してください。": "Could not open the report form. Check your pop-up blocker.",
- "報告していただいたアダプターは、確認後にアプリへ登録し、次の人が UUID の入力なしで使えるようにします。": "Reported adapters are registered in the app after review, so others can connect without entering a UUID."
+ "報告していただいたアダプターは、確認後にアプリへ登録し、次の人が UUID の入力なしで使えるようにします。": "Reported adapters are registered in the app after review, so others can connect without entering a UUID.",
+ "テーマ": "Theme",
+ "スタンダード": "Standard",
+ "レトロデジタル": "Retro digital",
+ "ターミナル": "Terminal",
+ "配色・形・数字の書体・バーやメーターの描き方が変わります（画面の配置は変わりません）。": "Changes colors, shapes, number font, and how bars and meters are drawn (the layout stays the same)."
 };

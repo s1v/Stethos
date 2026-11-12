@@ -4,10 +4,20 @@ import { getSettings, setSetting, resetMyPage } from '../storage.js';
 import { findItem } from '../config/pids.js';
 import { createCard } from './parts/pid-card.js';
 import { renderReportCard } from '../report.js';
+import { THEMES } from '../config/themes.js';
 
 /** 文字サイズを画面に反映（起動時にも呼ぶ） */
 export function applySettings() {
-  document.documentElement.dataset.pidSize = getSettings().pidSize;
+  const st = getSettings(), root = document.documentElement;
+  root.dataset.pidSize = st.pidSize;
+  const th = THEMES.find((t) => t.id === st.theme) || THEMES[0];
+  root.dataset.theme = th.id;
+  document.querySelector('meta[name="theme-color"]')?.setAttribute('content', th.themeColor);
+}
+
+function renderTheme() {
+  const cur = getSettings().theme;
+  for (const b of $('set-theme').children) b.setAttribute('aria-checked', String(b.dataset.v === cur));
 }
 
 const MULTI_TEXT = { on: '状態：使用中（まとめて取得しています）', off: '状態：オフ（1 項目ずつ取得しています）', unsupported: '状態：この車またはアダプターでは使えないため、1 項目ずつ取得しています' };
@@ -37,6 +47,16 @@ export default {
         if (obd) { try { await obd.detectMulti(on); } catch { /* noop */ } renderMulti(); }
       };
     }
+    const tl = $('set-theme');
+    for (const t of THEMES) {
+      const b = document.createElement('button');
+      b.type = 'button'; b.className = 'theme-opt'; b.setAttribute('role', 'radio'); b.dataset.v = t.id;
+      const sw = document.createElement('span'); sw.className = 'theme-sw t-' + t.id; sw.textContent = t.sample;
+      const nm = document.createElement('span'); nm.className = 'theme-name'; nm.textContent = t.label;
+      b.append(sw, nm);
+      b.onclick = () => { setSetting('theme', t.id); applySettings(); renderTheme(); };
+      tl.append(b);
+    }
     for (const b of $('set-size').children) {
       b.onclick = () => { setSetting('pidSize', b.dataset.v); applySettings(); renderSize(); };
     }
@@ -50,5 +70,5 @@ export default {
       const c = createCard(findItem(key), true, { onClick: () => {} }); c.update(val); box.append(c.node);
     }
   },
-  enter() { renderSize(); renderMulti(); renderReportCard($('set-report')); },
+  enter() { renderTheme(); renderSize(); renderMulti(); renderReportCard($('set-report')); },
 };
