@@ -12,7 +12,7 @@
 |---|---|
 | アプリ名 | **Stethos**（聴診器 / Stethoscope に由来。「車の聴診器」） |
 | 形態 | GitHub Pages で公開する静的 Web アプリ（HTML / CSS / JS、SPA、ビルド不要） |
-| バージョン | 0.0.26（`sw.js` の `APP_VERSION`、`js/version.js`、トップ画面・設定画面のフッター表示） |
+| バージョン | 0.0.27（`sw.js` の `APP_VERSION`、`js/version.js`、トップ画面・設定画面のフッター表示） |
 | 言語 | 日本語 / English（14 章） |
 | リポジトリ | https://github.com/s1v/Stethos |
 | PWA | **必須**（ホーム画面への追加、全画面表示、オフラインでの起動） |
