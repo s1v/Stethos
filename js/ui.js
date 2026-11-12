@@ -8,11 +8,12 @@ export function toast(msg, { error = false, ms = 4000 } = {}) {
 }
 
 let closeDialog = null;
-export function confirmDialog(msg, { ok = 'OK', danger = false, cancel = 'キャンセル', alertOnly = false, title = '' } = {}) {
+export function confirmDialog(msg, { ok = 'OK', danger = false, cancel = 'キャンセル', alertOnly = false, title = '', extra = null } = {}) {
   return new Promise((resolve) => {
     const d = $('dialog'), okb = $('dlg-ok'), cb = $('dlg-cancel');
     $('dlg-title').textContent = title; $('dlg-title').hidden = !title; $('dlg-msg').textContent = msg; okb.textContent = ok; cb.textContent = cancel; cb.hidden = alertOnly;
     okb.className = 'btn ' + (danger ? 'danger' : 'primary');
+    $('dlg-extra').replaceChildren(...(extra ? [extra] : []));
     d.hidden = false;
     const done = (v) => { d.hidden = true; okb.onclick = cb.onclick = d.onclick = null; closeDialog = null; resolve(v); };
     okb.onclick = () => done(true); cb.onclick = () => done(false);
@@ -70,4 +71,12 @@ document.addEventListener('visibilitychange', () => { if (wanted && document.vis
 export function setRate(r) {
   const e = document.getElementById('hdr-rate');
   if (e) e.textContent = r == null ? '' : `更新 ${r.toFixed(1)} 項目/秒`;
+}
+
+/** 文字を入力するダイアログ。キャンセルなら null */
+export async function promptDialog(title, value = '', { ok = 'OK', placeholder = '' } = {}) {
+  const inp = el('input', { class: 'inp', value, placeholder, maxlength: '30' });
+  setTimeout(() => { inp.focus(); inp.select(); }, 50);
+  const r = await confirmDialog('', { title, ok, extra: inp });
+  return r ? inp.value.trim() : null;
 }

@@ -1,18 +1,24 @@
 // マイページ（利用者が選んだ項目を好きな位置に並べるカスタム画面）
+// 枠（slots）の中身：null（空）／ 'key'（旧形式＝数値 1×1）／ { key, style }（表示の種類つき）
 import { $, el, keepAwake, sheet, setRate } from '../ui.js';
 import { PID_GROUPS, ALL_ITEMS, findItem, isItemSupported } from '../config/pids.js';
-import { getMyPage, setMyPage } from '../storage.js';
+import { getPreset, updatePreset, setLastPreset } from '../storage.js';
 import { resolveTargets, startPolling } from '../poller.js';
-import { createCard, showHelp } from './parts/pid-card.js';
+import { showHelp } from './parts/pid-card.js';
+import { createWidget, stylesFor, findStyle } from './parts/widgets.js';
 
 let stop = () => {};
 let app_ = null;
 let slots = [];
+let presetId = null;
+let ro = null;
+
+const slotOf = (x) => (!x ? null : typeof x === 'string' ? { key: x, style: 'card' } : x);
 
 /** 項目を選ぶシート（車が対応していない項目は選べない） */
 function pickItem(title) {
   const sup = (pid) => app_.session.obd.isSupported(pid);
-  const used = new Set(slots.filter(Boolean));
+  const used = new Set(slots.map(slotOf).filter(Boolean).map((s) => s.key));
   return sheet(title, (body, done) => {
     // カテゴリごとに折りたたむ（初期状態はすべて閉じる）
     for (const g of PID_GROUPS) {
@@ -23,9 +29,20 @@ function pickItem(title) {
       for (const d of items) {
         const ok = isItemSupported(d, sup);
         list.append(el('button', { class: 'pick-item' + (ok ? '' : ' na'), type: 'button', disabled: ok ? null : '', onclick: () => done(d.key) },
-          el('span', {}, d.name), el('span', { class: 'pick-note' }, !ok ? '非対応' : used.has(d.key) ? '配置済み' : d.unit && d.format !== 'enum' && d.format !== 'duration' ? d.unit : '')));
+          el('span', {}, d.name), el('span', { class: 'pick-note' }, !ok ? '非対応' : used.has(d.key) ? '配置済み' : d.unit && !d.format ? d.unit : '')));
       }
       body.append(el('details', { class: 'pick-cat' }, el('summary', {}, el('span', {}, g.label), el('span', { class: 'pick-note' }, `${okCount} / ${items.length}`)), list));
+    }
+  });
+}
+
+/** 表示の種類を選ぶシート（マス数の目安を図で表示） */
+function pickStyle(d, current) {
+  return sheet(`表示の種類：${d.name}`, (body, done) => {
+    for (const s of stylesFor(d)) {
+      const cells = el('span', { class: 'sz', style: `grid-template-columns:repeat(${s.w},10px)`, 'aria-hidden': 'true' }, ...Array.from({ length: s.w * s.h }, () => el('i')));
+      body.append(el('button', { class: 'pick-item style-item' + (s.id === current ? ' current' : ''), type: 'button', onclick: () => done(s.id) },
+        cells, el('span', {}, s.label), el('span', { class: 'pick-note' }, `${s.w}×${s.h} マス`)));
     }
   });
 }
@@ -33,13 +50,33 @@ function pickItem(title) {
 /** 配置済みの枠をタップしたときの操作 */
 function slotMenu(d) {
   return sheet(d.name, (body, done) => {
-    for (const [id, label, cls] of [['help', '説明を見る', ''], ['change', '別の項目に変更', ''], ['remove', 'この枠から外す', ' danger']]) {
+    for (const [id, label, cls] of [['help', '説明を見る', ''], ['style', '表示の種類を変更', ''], ['change', '別の項目に変更', ''], ['remove', 'この枠から外す', ' danger']]) {
       body.append(el('button', { class: 'pick-item' + cls, type: 'button', onclick: () => done(id) }, label));
     }
   });
 }
 
-function save() { setMyPage(slots); }
+function save() { updatePreset(presetId, { slots }); }
+
+/** 項目を選んでから表示の種類を選ぶ。キャンセルなら null */
+async function choose(title) {
+  const k = await pickItem(title); if (!k) return null;
+  const d = findItem(k);
+  const opts = stylesFor(d);
+  const style = opts.length > 1 ? await pickStyle(d, 'card') : 'card';
+  return style ? { key: k, style } : null;
+}
+
+/** 列の数とマスの大きさを画面幅から決める（正方形のマスにそろえるため） */
+function layout() {
+  const grid = $('mp-grid'); if (!grid.isConnected || !grid.clientWidth) return;
+  const pz = parseFloat(getComputedStyle(document.documentElement).getPropertyValue('--pz')) || 1;
+  const gap = 6, min = 104 * pz, W = grid.clientWidth;
+  const cols = Math.max(2, Math.floor((W + gap) / (min + gap)));
+  const cell = (W - gap * (cols - 1)) / cols;
+  grid.style.gridTemplateColumns = `repeat(${cols}, 1fr)`;
+  grid.style.gridAutoRows = `${cell}px`;
+}
 
 function render() {
   stop();
@@ -47,29 +84,33 @@ function render() {
   const sup = (pid) => obd.isSupported(pid);
   const grid = $('mp-grid'); grid.innerHTML = '';
   const cards = {};
-  slots.forEach((key, i) => {
-    const d = key && findItem(key);
+  slots.forEach((raw, i) => {
+    const s = slotOf(raw);
+    const d = s && findItem(s.key);
     if (!d) {
       grid.append(el('button', { class: 'pid slot-empty', type: 'button', 'aria-label': '項目を追加', onclick: async () => {
-        const k = await pickItem('配置する項目を選ぶ'); if (!k) return;
-        slots[i] = k; save(); render();
+        const r = await choose('配置する項目を選ぶ'); if (!r) return;
+        slots[i] = r; save(); render();
       } }, el('span', { class: 'plus' }, '+'), el('span', { class: 'small muted' }, '項目を追加')));
       return;
     }
     const ok = isItemSupported(d, sup);
-    const c = createCard(d, ok, { onClick: async () => {
+    // 文字の項目に後から使えない種類が残っていたら数値に戻す
+    const style = stylesFor(d).some((x) => x.id === s.style) ? s.style : 'card';
+    const c = createWidget(d, ok, style, async () => {
       const act = await slotMenu(d);
       if (act === 'help') showHelp(d, ok);
-      else if (act === 'change') { const k = await pickItem('別の項目を選ぶ'); if (k) { slots[i] = k; save(); render(); } }
+      else if (act === 'style') { const st = await pickStyle(d, style); if (st) { slots[i] = { key: d.key, style: st }; save(); render(); } }
+      else if (act === 'change') { const r = await choose('別の項目を選ぶ'); if (r) { slots[i] = r; save(); render(); } }
       else if (act === 'remove') { slots[i] = null; save(); render(); }
-    } });
+    });
     (cards[d.key] ||= []).push(c);
     grid.append(c.node);
   });
+  layout();
   const targets = resolveTargets(Object.keys(cards), obd);
   setRate(null);
-  stop = startPolling(app_.session, targets, (k, v) => cards[k]?.forEach((c) => c.update(v)),
-    setRate);
+  stop = startPolling(app_.session, targets, (k, v) => cards[k]?.forEach((c) => c.update(v)), setRate);
 }
 
 export default {
@@ -77,14 +118,18 @@ export default {
   // ヘッダーの「?」で表示する説明
   help: {
     title: 'マイページの使い方',
-    text: '好きな項目を選んで、好きな位置に並べられる自分専用の画面です。\n\n・空の枠（＋）をタップ → 配置する項目を選ぶ\n・配置した項目をタップ → 説明を見る／別の項目に変更／この枠から外す\n・「枠を追加」で枠を 3 つずつ増やせます\n\n配置はこの端末に保存され、次回も同じ並びで表示されます。リセットは「設定」から行えます。\n\n配置した項目だけを取得するので、ステータス画面より速く更新されます。',
+    text: '好きな項目を選んで、好きな位置に並べられる自分専用の画面です。\n\n・空の枠（＋）をタップ → 配置する項目を選ぶ\n・配置した項目をタップ → 説明を見る／表示の種類を変更／別の項目に変更／この枠から外す\n・表示の種類：数値（1×1）、大きな数値（2×1）、縦バー（1×2）、グラフ（2×1）、メーター（2×2）、大きなグラフ（2×2）。大きい種類は、空いたマスに詰めて並びます\n・「枠を追加」で枠を 3 つずつ増やせます\n・メニューの「マイページ」からプリセット（複数のマイページ）を切り替え・追加・名前の変更・削除できます\n\n配置はこの端末に保存され、次回も同じ並びで表示されます。リセットは「設定」から行えます。\n\n配置した項目だけを取得するので、ステータス画面より速く更新されます。',
   },
   init(app) {
     app_ = app;
+    if ('ResizeObserver' in window) { ro = new ResizeObserver(() => layout()); ro.observe($('mp-grid')); }
     $('mp-add').onclick = () => { slots.push(null, null, null); save(); render(); };
   },
-  enter() {
-    slots = getMyPage();
+  enter(app, params = {}) {
+    const p = getPreset(params.presetId);
+    presetId = p.id; slots = [...p.slots];
+    setLastPreset(p.id);
+    $('hdr-title').textContent = p.name; // ヘッダーにプリセット名を表示
     render();
     keepAwake(true);
   },

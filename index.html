@@ -75,7 +75,7 @@
   </div>
   <!-- DEBUG-END -->
 
-  <p class="foot muted">走行中は画面を操作しないでください。<br><span class="small">Stethos v0.0.7</span></p>
+  <p class="foot muted">走行中は画面を操作しないでください。<br><span class="small">Stethos v0.0.13</span></p>
 </section>
 
 <!-- ========== UUID 入力 ========== -->
@@ -128,29 +128,40 @@
 
 <!-- ========== ホーム ========== -->
 <section id="screen-home" class="screen" hidden>
+  <!-- 車の状態（健康診断カード） -->
+  <section id="hc" class="health unk" aria-label="車の状態">
+    <div class="hc-head"><span id="hc-icon" class="hc-icon" aria-hidden="true">-</span><div><div class="t-l">車の状態</div><div id="hc-title" class="hc-title">確認中</div></div></div>
+    <div class="hc-rows">
+      <button id="hc-dtc" class="hc-row unk" type="button"><span class="dot"></span><span class="hc-n">故障コード</span><span class="hc-v">-</span><span class="hc-go">&rsaquo;</span></button>
+      <button id="hc-mil" class="hc-row unk" type="button"><span class="dot"></span><span class="hc-n">チェックランプ</span><span class="hc-v">-</span><span class="hc-go">&rsaquo;</span></button>
+      <div id="hc-batt" class="hc-row unk"><span class="dot"></span><span class="hc-n">バッテリー</span><span class="hc-v">-</span></div>
+      <div id="hc-cool" class="hc-row unk"><span class="dot"></span><span class="hc-n">冷却水温</span><span class="hc-v">-</span></div>
+    </div>
+  </section>
+  <!-- ミニメーター -->
+  <div id="h-meters" class="meters"></div>
   <div class="grid">
-    <div class="tile wide"><div class="t-l">接続中のアダプター</div><div id="h-device" class="t-v sm">-</div></div>
+    <div class="tile"><div class="t-l">接続中のアダプター</div><div id="h-device" class="t-v sm">-</div></div>
+    <button id="h-items-tile" class="tile tap"><div class="t-l">対応表示項目数</div><div id="h-items" class="t-v sm">-</div><div class="t-s">タップでステータス一覧へ &rsaquo;</div></button>
     <div class="tile wide">
       <div class="t-l">車両</div>
       <div id="h-vehicle" class="t-v sm">-</div>
       <div id="h-vin" class="t-s muted mono">-</div>
-      <button id="h-lookup" class="btn link small-link" hidden>車種を調べる ›</button>
+      <button id="h-lookup" class="btn link small-link" hidden>車種を調べる &rsaquo;</button>
     </div>
-    <button id="h-dtc-tile" class="tile tap"><div class="t-l">故障コード（DTC）</div><div id="h-dtc" class="t-v">-</div><div class="t-s">タップで診断情報へ ›</div></button>
-    <div class="tile"><div class="t-l">チェックランプ（MIL）</div><div id="h-mil" class="t-v">-</div></div>
-    <button id="h-items-tile" class="tile wide tap"><div class="t-l">対応表示項目数</div><div id="h-items" class="t-v">-</div><div class="t-s">タップでステータス一覧へ ›</div></button>
   </div>
 </section>
 
 <!-- ========== ステータス ========== -->
 <section id="screen-status" class="screen" hidden>
+  <button id="st-back" class="btn link" type="button" hidden>‹ カテゴリ一覧</button>
   <p id="st-empty" class="muted small" hidden>この車で表示できる項目がありません。</p>
   <div id="st-groups"></div>
 </section>
 
 <!-- ========== マイページ ========== -->
 <section id="screen-mypage" class="screen" hidden>
-  <div id="mp-grid" class="pids"></div>
+  <div id="mp-grid" class="pids mp-grid"></div>
   <div class="row gap"><button id="mp-add" class="btn">枠を追加</button></div>
 </section>
 
@@ -170,10 +181,10 @@
   </div>
   <h2>マイページ</h2>
   <div class="card">
-    <p class="small muted" style="margin-top:0">配置したすべての項目を外し、枠の数を初期状態（12 枠）に戻します。</p>
+    <p class="small muted" style="margin-top:0">すべてのプリセットを削除し、空のマイページ 1 つ（12 枠）に戻します。</p>
     <button id="set-mp-reset" class="btn danger">マイページをリセット</button>
   </div>
-  <p class="foot muted small">Stethos v0.0.7</p>
+  <p class="foot muted small">Stethos v0.0.13</p>
 </section>
 
 <!-- ========== 診断情報 ========== -->
@@ -195,7 +206,7 @@
 </section>
 </main>
 
-<div id="dialog" class="dialog" hidden><div class="dlg-box"><h3 id="dlg-title" hidden></h3><p id="dlg-msg"></p><div class="row gap end"><button id="dlg-cancel" class="btn">キャンセル</button><button id="dlg-ok" class="btn primary">OK</button></div></div></div>
+<div id="dialog" class="dialog" hidden><div class="dlg-box"><h3 id="dlg-title" hidden></h3><p id="dlg-msg"></p><div id="dlg-extra"></div><div class="row gap end"><button id="dlg-cancel" class="btn">キャンセル</button><button id="dlg-ok" class="btn primary">OK</button></div></div></div>
 <div id="sheet" class="sheet" hidden><div class="sheet-box"><div class="sheet-head"><h3 id="sheet-title"></h3><button id="sheet-close" class="sheet-x" aria-label="閉じる">×</button></div><div id="sheet-body" class="sheet-body"></div></div></div>
 <div id="busy" class="busy" hidden><div class="spinner"></div><p id="busy-msg">接続中…</p></div>
 <div id="toast" class="toast" hidden></div>

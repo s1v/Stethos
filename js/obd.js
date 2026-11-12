@@ -48,6 +48,7 @@ export class Obd {
     const b = await this.mode01Raw(def.pid);
     if (!b || b.length < 1) return null;
     if (def.mask && b.length < 2) return null;
+    if (def.format === 'hex') return def.calc(...b); // 受け取ったまま表示
     while (b.length < (def.bytes || 1)) b.push(0); // 短い応答は 0 で補う
     return def.calc(...b);
   }

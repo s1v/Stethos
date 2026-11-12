@@ -10,6 +10,7 @@ import status from './screens/status.js';
 import dtc from './screens/dtc.js';
 import mypage from './screens/mypage.js';
 import settings, { applySettings } from './screens/settings.js';
+import { openPresetList } from './screens/parts/presets.js';
 
 const SCREENS = Object.fromEntries([top, uuidInput, uuidManage, home, status, mypage, dtc, settings].map((s) => [s.id, s]));
 let current = null;
@@ -18,18 +19,22 @@ const lastParams = {};
 const isConnScreen = (s) => !!s && (s.connected || (s.neutral && !!session.obd)); // 画面ごとの直近のパラメーター（戻る・進むで再利用）
 
 // ブラウザの履歴（戻る・進む）。URL は変えず state に画面 ID を持たせる
-function record(id, mode) {
+function record(id, mode, params) {
   if (mode === 'none') return;
-  try { history[mode === 'replace' ? 'replaceState' : 'pushState']({ screen: id }, ''); } catch { /* noop */ }
+  // historyParams の画面（ステータスのカテゴリなど）はパラメーターも履歴に持たせる
+  const state = SCREENS[id]?.historyParams ? { screen: id, params } : { screen: id };
+  try { history[mode === 'replace' ? 'replaceState' : 'pushState'](state, ''); } catch { /* noop */ }
 }
+const sameParams = (id, p) => !SCREENS[id]?.historyParams || JSON.stringify(lastParams[id] || {}) === JSON.stringify(p || {});
 
 export const app = {
   session,
   /** @param {{history?: 'push'|'replace'|'none'}} [o] */
   show(id, params = {}, { history: mode = 'push' } = {}) {
     if (SCREENS[id].connected && !session.obd) id = 'top'; // 未接続で接続後の画面には行かない
+    const same = current?.id === id && sameParams(id, params);
     lastParams[id] = params;
-    record(id, current?.id === id ? 'replace' : mode);
+    record(id, same ? 'replace' : mode, params);
     current?.leave?.();
     setRate(null); // 更新速度は取得中の画面でだけ表示
     // 全画面を必ず隠してから表示する（切断後に前の画面が残るバグの対策）
@@ -101,6 +106,7 @@ function buildMenu() {
     const b = el('button', { class: item.danger ? 'danger' : '' }, item.label);
     if (item.type === 'screen') { b.dataset.screen = item.screen; b.onclick = () => app.show(item.screen); }
     else if (item.action === 'disconnect') b.onclick = () => { m.hidden = true; app.disconnectWithConfirm(); };
+    else if (item.action === 'presets') { b.dataset.screen = item.screen; b.onclick = () => { m.hidden = true; openPresetList(app); }; }
     m.append(b);
   }
   $('hdr-help').onclick = () => { if (current?.help) alertDialog(current.help.text, current.help.title); };
@@ -129,9 +135,9 @@ window.addEventListener('popstate', async (e) => {
   const target = SCREENS[e.state?.screen] ? e.state.screen : 'top';
   $('menu').hidden = true;
   // ダイアログ・シートが開いていれば、それを閉じるだけ（画面は移動しない）
-  if (closeOverlay()) { record(current?.id || 'top', 'push'); return; }
+  if (closeOverlay()) { record(current?.id || 'top', 'push', lastParams[current?.id]); return; }
   // 処理中表示が出ているときは移動しない
-  if (!$('busy').hidden) { record(current?.id || 'top', 'push'); return; }
+  if (!$('busy').hidden) { record(current?.id || 'top', 'push', lastParams[current?.id]); return; }
   const tgt = SCREENS[target];
   if (isConnScreen(current) && !tgt.connected && !tgt.neutral) {
     // 接続中にトップ側へ戻る → 切断の確認（キャンセルなら今の画面に留まる）
@@ -141,7 +147,7 @@ window.addEventListener('popstate', async (e) => {
   }
   if (tgt.connected && !session.obd) { record(current?.id || 'top', 'replace'); return; } // 切断済みのセッションには戻らない
   if (target === 'uuid-input' && !lastParams['uuid-input']?.deviceName) { app.show('top', {}, { history: 'replace' }); return; }
-  app.show(target, lastParams[target] || {}, { history: 'none' });
+  app.show(target, (SCREENS[target].historyParams ? e.state?.params : null) || lastParams[target] || {}, { history: 'none' });
 });
 
 applySettings();

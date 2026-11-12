@@ -21,7 +21,7 @@ export default {
       b.onclick = () => { setSetting('pidSize', b.dataset.v); applySettings(); renderSize(); };
     }
     $('set-mp-reset').onclick = async () => {
-      if (!(await confirmDialog('配置したすべての項目を外し、枠の数を初期状態に戻します。', { title: 'マイページをリセットしますか？', ok: 'リセット', danger: true }))) return;
+      if (!(await confirmDialog('すべてのプリセットを削除し、空のマイページ 1 つに戻します。', { title: 'マイページをリセットしますか？', ok: 'リセット', danger: true }))) return;
       resetMyPage(); toast('マイページをリセットしました');
     };
     // プレビュー（固定の値を表示）

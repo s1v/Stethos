@@ -20,7 +20,11 @@ const ENUM_MOCK = { '51': 1, '1C': 11 }; // ガソリン / JOBD・OBD-II
 /** 定義の計算式から逆算して、表示範囲内のそれらしい値になるバイト列を作る */
 function encodeGeneric(def, target, t) {
   if (def.format === 'enum') return h2(ENUM_MOCK[def.pid] ?? 1);
+  if (def.format === 'hex') return ['3A', '0F', 'C2', '01'].join(''); // 16 進表示の項目は固定の疑似データ
+  if (def.format === 'text') return { '13': '33', '1D': '11', '4F': '0280FA10', '64': 'A0C8B4AA96' }[def.pid] || '00000000';
   const bytes = def.bytes || 1;
+  if (def.key === 'runtimeTotal') return '01' + h2(0) + h2(0x12) + h2(0x34) + h2(0x56) + '00'.repeat(8);
+  if (def.key === 'gearRatio') return '0000' + h4(1650 + Math.round(Math.sin(t / 5) * 600));
   if (def.key === 'odometer') { const n = Math.round((45678.9 + t * 0.02) * 10); return [24, 16, 8, 0].map((s) => h2((n >>> s) & 255)).join(''); }
   const offs = def.mask ? 1 : 0, nvar = Math.min(2, bytes - offs), N = nvar === 1 ? 256 : 65536;
   const arr = new Array(bytes).fill(0); if (def.mask) arr[0] = 0x01;

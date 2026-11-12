@@ -1,0 +1,103 @@
+// 表示の種類（ウィジェット）。マイページ・ホームで共通
+// 項目 1 つを、数値・大きな数値・縦バー・グラフ・メーターのいずれかで表示する
+import { el } from '../../ui.js';
+import { createCard, currentUnit, fmt } from './pid-card.js';
+
+/** 表示の種類。w × h はマスの数（横 × 縦） */
+export const STYLES = [
+  { id: 'card', label: '数値', w: 1, h: 1, any: true },
+  { id: 'big', label: '大きな数値', w: 2, h: 1, any: true },
+  { id: 'tall', label: '縦バー', w: 1, h: 2 },
+  { id: 'graph', label: 'グラフ', w: 2, h: 1 },
+  { id: 'meter', label: 'メーター', w: 2, h: 2 },
+  { id: 'graph2', label: '大きなグラフ', w: 2, h: 2 },
+];
+export const findStyle = (id) => STYLES.find((s) => s.id === id) || STYLES[0];
+/** 数値の項目だけがバー・グラフ・メーターを使える（文字の項目は数値・大きな数値のみ） */
+export const stylesFor = (d) => STYLES.filter((s) => s.any || (!d.format && d.min != null));
+
+/** 針式のミニメーター（SVG）。270 度の弧に針を描く */
+export function createMeter(d, ok, { tag = 'div', onClick = null, cls = '' } = {}) {
+  const NS = 'http://www.w3.org/2000/svg';
+  const svg = document.createElementNS(NS, 'svg'); svg.setAttribute('viewBox', '0 0 100 80'); svg.setAttribute('class', 'mtr-svg');
+  const R = 38, CX = 50, CY = 46, A0 = 135, SPAN = 270;
+  const pt = (deg) => { const r = (deg * Math.PI) / 180; return [CX + R * Math.cos(r), CY + R * Math.sin(r)]; };
+  const arc = (from, to) => { const [x1, y1] = pt(from), [x2, y2] = pt(to); return `M${x1} ${y1} A${R} ${R} 0 ${to - from > 180 ? 1 : 0} 1 ${x2} ${y2}`; };
+  svg.innerHTML = `<path d="${arc(A0, A0 + SPAN)}" class="mtr-track"/><path class="mtr-fill" d=""/><line class="mtr-needle" x1="${CX}" y1="${CY}" x2="${CX}" y2="${CY - R + 8}"/><circle cx="${CX}" cy="${CY}" r="3.5" class="mtr-hub"/>`;
+  const fill = svg.querySelector('.mtr-fill'), needle = svg.querySelector('.mtr-needle');
+  const v = el('div', { class: 'mtr-v' }, ok ? '--' : '非対応'), u = el('div', { class: 'mtr-u' }, '');
+  const node = el(tag, { class: 'mtr' + (ok ? '' : ' na') + (cls ? ' ' + cls : ''), ...(tag === 'button' ? { type: 'button', onclick: onClick } : {}) }, svg, el('div', { class: 'mtr-read' }, v, u), el('div', { class: 'mtr-n' }, d.name));
+  const update = (x) => {
+    if (!ok) return;
+    const cu = currentUnit(d); u.textContent = cu.unit;
+    v.textContent = x == null ? '--' : fmt({ ...d, decimals: cu.decimals }, cu.f(x));
+    const p = x == null ? 0 : Math.max(0, Math.min(1, (x - d.min) / (d.max - d.min)));
+    // 針は初期状態で真上（270 度）を向いているので、目標の角度との差だけ回す
+    needle.setAttribute('transform', `rotate(${A0 + SPAN * p - 270} ${CX} ${CY})`);
+    fill.setAttribute('d', p > 0.002 ? arc(A0, A0 + SPAN * p) : '');
+  };
+  update(null);
+  return { node, update };
+}
+
+/** 縦バー（1×2） */
+function createTall(d, ok, onClick) {
+  const v = el('span', { class: 'v' }, ok ? '--' : '非対応'), u = el('span', { class: 'u' }, '');
+  const fill = el('i');
+  const node = el('button', { class: 'pid w-tall' + (ok ? '' : ' na'), type: 'button', onclick: onClick },
+    el('div', { class: 'n' }, d.name), el('div', { class: 'vbar' }, fill), el('div', { class: 'val' }, v, u));
+  const update = (x) => {
+    if (!ok) return;
+    const cu = currentUnit(d); u.textContent = cu.unit;
+    v.textContent = x == null ? '--' : fmt({ ...d, decimals: cu.decimals }, cu.f(x));
+    if (x != null) fill.style.height = `${Math.max(0, Math.min(100, ((x - d.min) / (d.max - d.min)) * 100))}%`;
+  };
+  update(null);
+  return { node, update };
+}
+
+/** グラフ（直近の値の推移。2×1 / 2×2） */
+function createGraph(d, ok, onClick, big) {
+  const N = big ? 120 : 60; // 保持する点の数
+  const hist = [];
+  const NS = 'http://www.w3.org/2000/svg';
+  const svg = document.createElementNS(NS, 'svg'); svg.setAttribute('viewBox', '0 0 100 40'); svg.setAttribute('preserveAspectRatio', 'none'); svg.setAttribute('class', 'gr-svg');
+  svg.innerHTML = '<path class="gr-area" d=""/><polyline class="gr-line" points=""/>';
+  const line = svg.querySelector('.gr-line'), area = svg.querySelector('.gr-area');
+  const v = el('span', { class: 'v' }, ok ? '--' : '非対応'), u = el('span', { class: 'u' }, '');
+  const range = el('div', { class: 'gr-range' });
+  const node = el('button', { class: 'pid w-graph' + (big ? ' w-graph2' : '') + (ok ? '' : ' na'), type: 'button', onclick: onClick },
+    el('div', { class: 'gr-head' }, el('div', { class: 'n' }, d.name), el('div', { class: 'val' }, v, u)), svg, range);
+  const update = (x) => {
+    if (!ok) return;
+    const cu = currentUnit(d); u.textContent = cu.unit;
+    v.textContent = x == null ? '--' : fmt({ ...d, decimals: cu.decimals }, cu.f(x));
+    if (x == null) return;
+    hist.push(x); if (hist.length > N) hist.shift();
+    const y = (val) => 40 - Math.max(0, Math.min(1, (val - d.min) / (d.max - d.min))) * 38 - 1;
+    const pts = hist.map((val, i) => `${(i / (N - 1)) * 100},${y(val)}`).join(' ');
+    line.setAttribute('points', pts);
+    area.setAttribute('d', hist.length > 1 ? `M0,40 L${pts.split(' ').join(' L')} L${((hist.length - 1) / (N - 1)) * 100},40 Z` : '');
+    const lo = Math.min(...hist), hi = Math.max(...hist);
+    const f = (val) => fmt({ ...d, decimals: cu.decimals }, cu.f(val));
+    range.textContent = `最小 ${f(lo)} ／ 最大 ${f(hi)}`;
+  };
+  update(null);
+  return { node, update };
+}
+
+/**
+ * 表示の種類に合わせてブロックを作る
+ * @returns {{node: HTMLElement, update: (v:number|null) => void}}
+ */
+export function createWidget(d, ok, styleId, onClick) {
+  const st = findStyle(styleId);
+  let w;
+  if (st.id === 'meter') w = createMeter(d, ok, { tag: 'button', onClick, cls: 'w-meter' });
+  else if (st.id === 'tall') w = createTall(d, ok, onClick);
+  else if (st.id === 'graph' || st.id === 'graph2') w = createGraph(d, ok, onClick, st.id === 'graph2');
+  else { w = createCard(d, ok, { onClick }); if (st.id === 'big') w.node.classList.add('w-big'); }
+  w.node.style.gridColumn = `span ${st.w}`; w.node.style.gridRow = `span ${st.h}`;
+  w.node.dataset.w = st.w;
+  return w;
+}

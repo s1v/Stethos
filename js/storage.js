@@ -66,4 +66,31 @@ export function getSettings() {
 export function setSetting(key, value) {
   try { localStorage.setItem(SKEY, JSON.stringify({ ...getSettings(), [key]: value })); } catch { /* noop */ }
 }
-export function resetMyPage() { setMyPage(new Array(MYPAGE_DEFAULT_SLOTS).fill(null)); }
+export function resetMyPage() { setMyPage(new Array(MYPAGE_DEFAULT_SLOTS).fill(null)); try { localStorage.removeItem('stethos.mypage.v2'); } catch { /* noop */ } }
+
+// マイページのプリセット（複数のマイページ）。{ presets: [{ id, name, slots }], last: id }
+const PKEY = 'stethos.mypage.v2';
+const newPreset = (name, slots) => ({ id: 'p' + Date.now().toString(36) + Math.random().toString(36).slice(2, 6), name, slots: slots || new Array(MYPAGE_DEFAULT_SLOTS).fill(null) });
+export function getPresets() {
+  try { const v = JSON.parse(localStorage.getItem(PKEY)); if (Array.isArray(v?.presets) && v.presets.length) return v; } catch { /* noop */ }
+  // 旧形式（プリセットなし）からの引き継ぎ
+  const p = newPreset('マイページ 1', getMyPage());
+  return { presets: [p], last: p.id };
+}
+export function savePresets(data) { try { localStorage.setItem(PKEY, JSON.stringify(data)); } catch { /* noop */ } }
+export function getPreset(id) { const d = getPresets(); return d.presets.find((p) => p.id === id) || d.presets.find((p) => p.id === d.last) || d.presets[0]; }
+export function updatePreset(id, patch) {
+  const d = getPresets(); const p = d.presets.find((x) => x.id === id); if (!p) return;
+  Object.assign(p, patch); savePresets(d);
+}
+export function addPreset(name) { const d = getPresets(); const p = newPreset(name); d.presets.push(p); d.last = p.id; savePresets(d); return p; }
+export function removePreset(id) { const d = getPresets(); d.presets = d.presets.filter((p) => p.id !== id); if (!d.presets.length) d.presets.push(newPreset('マイページ 1')); if (d.last === id) d.last = d.presets[0].id; savePresets(d); }
+export function setLastPreset(id) { const d = getPresets(); d.last = id; savePresets(d); }
+
+// 項目ごとの表示単位（key → 単位）
+const UKEY = 'stethos.units.v1';
+export function getUnitPrefs() { try { return JSON.parse(localStorage.getItem(UKEY)) || {}; } catch { return {}; } }
+export function setUnitPref(key, unit) {
+  const p = getUnitPrefs(); if (unit) p[key] = unit; else delete p[key];
+  try { localStorage.setItem(UKEY, JSON.stringify(p)); } catch { /* noop */ }
+}
