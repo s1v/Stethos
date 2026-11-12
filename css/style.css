@@ -282,4 +282,22 @@ button.hc-row{cursor:pointer}
 /* ヘッダー：プリセット切り替えボタン・名前のタップ */
 .hdr-preset{display:flex;align-items:center;justify-content:center}
 .hdr-preset svg{width:20px;height:20px;fill:none;stroke:var(--fg);stroke-width:1.8}
-.hdr-title.tap{cursor:pointer;text-decoration:underline dotted var(--muted);text-underline-offset:4px}
+
+/* ホーム：上のタイルと車の状態の間 */
+#screen-home > .grid{margin-bottom:12px}
+/* 冷却水温が低い（暖機中）：行の印だけ黄色 */
+.hc-row.cold{--rc:var(--warn)}
+/* マイページ：枠を追加は横幅いっぱい */
+.mp-add{display:block;width:100%;margin-top:10px}
+/* 数値＋単位：収まらないときは単位を次の行に折り返す */
+.pid .val{flex-wrap:wrap;white-space:normal;align-content:center;column-gap:0}
+.pid .val .v{white-space:nowrap}
+.pid .val .u{white-space:nowrap}
+/* 時間：時間・分・秒で折り返す */
+.pid .v.dur{display:flex;flex-wrap:wrap;column-gap:.3em;row-gap:0;white-space:normal}
+.pid .v.dur .dur-p{white-space:nowrap}
+.pid .v.dur .u{margin-left:1px}
+/* 詳細画面：タイトル・数値・説明・表示単位 */
+.detail-val{font-size:1.9rem;font-weight:700;font-variant-numeric:tabular-nums;margin:2px 0 10px;word-break:break-all;line-height:1.25}
+.detail-val.hex{font-family:ui-monospace,Menlo,Consolas,monospace;font-size:1.1rem}
+.detail-desc{margin:0;color:var(--fg)}

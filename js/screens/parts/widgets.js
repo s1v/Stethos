@@ -1,7 +1,7 @@
 // 表示の種類（ウィジェット）。マイページ・ホームで共通
 // 項目 1 つを、数値・大きな数値・縦バー・グラフ・メーターのいずれかで表示する
 import { el } from '../../ui.js';
-import { createCard, currentUnit, fmt } from './pid-card.js';
+import { createCard, currentUnit, fmt, rememberValue } from './pid-card.js';
 
 /** 表示の種類。w × h はマスの数（横 × 縦） */
 export const STYLES = [
@@ -97,6 +97,7 @@ export function createWidget(d, ok, styleId, onClick) {
   else if (st.id === 'tall') w = createTall(d, ok, onClick);
   else if (st.id === 'graph' || st.id === 'graph2') w = createGraph(d, ok, onClick, st.id === 'graph2');
   else { w = createCard(d, ok, { onClick }); if (st.id === 'big') w.node.classList.add('w-big'); }
+  const up = w.update; w.update = (x) => { rememberValue(d.key, x); up(x); };
   w.node.style.gridColumn = `span ${st.w}`; w.node.style.gridRow = `span ${st.h}`;
   w.node.dataset.w = st.w;
   return w;

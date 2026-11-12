@@ -12,17 +12,18 @@ let stop = () => {};
 
 // ミニメーターに出す項目（pids.js の key）
 const METERS = ['speed', 'rpm', 'coolant', 'adapterVolt'];
-const LEVEL = { ok: 0, unk: 1, warn: 2, ng: 3 };
+// cold：冷却水温が低い（暖機中）。異常ではないので全体は緑のまま、行の印だけ黄色にする
+const LEVEL = { ok: 0, cold: 0, unk: 1, warn: 2, ng: 3 };
 const ICON = { ok: '\u2713', warn: '!', ng: '!', unk: '-' };
 const ROWS = ['hc-dtc', 'hc-mil', 'hc-batt', 'hc-cool'];
 
 /** 車の状態の 1 行を更新（level: ok / warn / ng / unk） */
 function setRow(id, level, text) {
-  const r = $(id); r.classList.remove('ok', 'warn', 'ng', 'unk'); r.classList.add(level);
+  const r = $(id); r.classList.remove('ok', 'cold', 'warn', 'ng', 'unk'); r.classList.add(level);
   r.dataset.level = level; r.querySelector('.hc-v').textContent = text;
   // 全体：一番悪い状態をカードの色と見出しにする
   const rows = ROWS.map((x) => $(x).dataset.level || 'unk');
-  const worst = rows.reduce((a, b) => (LEVEL[b] > LEVEL[a] ? b : a), 'ok');
+  const worst = rows.map((x) => (x === 'cold' ? 'ok' : x)).reduce((a, b) => (LEVEL[b] > LEVEL[a] ? b : a), 'ok');
   const n = rows.filter((x) => x === 'warn' || x === 'ng').length;
   $('hc').className = 'health ' + worst;
   $('hc-icon').textContent = ICON[worst];
@@ -38,7 +39,7 @@ function judgeBattery(v, rpm) {
 function judgeCoolant(c, d) {
   if (c == null) return ['unk', '取得不可'];
   const u = currentUnit(d), t = `${fmt({ ...d, decimals: u.decimals }, u.f(c))}${u.unit}`;
-  return c < 60 ? ['warn', `${t} 暖機中`] : c <= 105 ? ['ok', `${t} 正常`] : c <= 115 ? ['warn', `${t} 高め`] : ['ng', `${t} 過熱の疑い`];
+  return c < 60 ? ['cold', `${t} 暖機中`] : c <= 105 ? ['ok', `${t} 正常`] : c <= 115 ? ['warn', `${t} 高め`] : ['ng', `${t} 過熱の疑い`];
 }
 
 const LOOKUP_LABEL = '車種を調べる ›';

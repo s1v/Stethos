@@ -10,8 +10,7 @@ import status from './screens/status.js';
 import dtc from './screens/dtc.js';
 import mypage from './screens/mypage.js';
 import settings, { applySettings } from './screens/settings.js';
-import { openPresetList, openFirstPreset, renamePreset } from './screens/parts/presets.js';
-import { getPreset } from './storage.js';
+import { openPresetList, openFirstPreset } from './screens/parts/presets.js';
 
 const SCREENS = Object.fromEntries([top, uuidInput, uuidManage, home, status, mypage, dtc, settings].map((s) => [s.id, s]));
 let current = null;
@@ -48,7 +47,6 @@ export const app = {
     // 画面に説明があればヘッダーに「?」を出す
     $('hdr-help').hidden = !current.help;
     $('hdr-preset').hidden = id !== 'mypage'; // マイページだけプリセットの切り替えボタンを出す
-    $('hdr-title').classList.toggle('tap', id === 'mypage');
     if (withHeader) {
       $('hdr-title').textContent = current.title;
       $('hdr-debug').hidden = !session.debug;
@@ -113,8 +111,6 @@ function buildMenu() {
     m.append(b);
   }
   $('hdr-preset').onclick = () => openPresetList(app);
-  // マイページではヘッダーのプリセット名をタップすると名前を変更できる
-  $('hdr-title').onclick = () => { if (current?.id === 'mypage') renamePreset(getPreset(lastParams.mypage?.presetId)); };
   $('hdr-help').onclick = () => { if (current?.help) alertDialog(current.help.text, current.help.title); };
   $('menu-btn').onclick = (e) => { e.stopPropagation(); m.hidden = !m.hidden; };
   document.addEventListener('click', (e) => { if (!m.contains(e.target)) m.hidden = true; });
