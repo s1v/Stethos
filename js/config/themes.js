@@ -4,4 +4,8 @@ export const THEMES = [
   { id: 'standard', label: 'スタンダード', sample: '88°', themeColor: '#0b1120' },
   { id: 'retro', label: 'レトロデジタル', sample: '88.8', themeColor: '#050605' },
   { id: 'terminal', label: 'ターミナル', sample: '> 88_', themeColor: '#000000' },
+  { id: 'racing', label: 'レーシング', sample: '7500', themeColor: '#0a0a0b' },
+  { id: 'minimal', label: 'ミニマル', sample: '88', themeColor: '#ffffff' },
+  { id: 'luxury', label: 'ラグジュアリー', sample: '88°', themeColor: '#0a0e1a' },
+  { id: 'modern', label: 'モダンデジタル', sample: '0.3 G', themeColor: '#000000' },
 ];

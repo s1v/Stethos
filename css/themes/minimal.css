@@ -1,0 +1,31 @@
+/* テーマ：ミニマル（白黒に近い配色、枠線なし、細い文字。情報だけを見せる） */
+html[data-theme="minimal"]{
+  --bg:#ffffff; --s1:#f4f4f5; --s2:#e9e9ec; --line:transparent;
+  --fg:#111114; --muted:#71717a; --acc:#111114; --acc-ink:#fff;
+  --ok:#15803d; --warn:#b45309; --ng:#b91c1c;
+  --ok-bg:rgba(21,128,61,.07); --warn-bg:rgba(180,83,9,.08); --ng-bg:rgba(185,28,28,.07); --acc-bg:rgba(17,17,20,.04);
+  --r:8px; --hdr-bg:rgba(255,255,255,.94);
+}
+html[data-theme="minimal"] *,html[data-theme="minimal"] *::before,html[data-theme="minimal"] *::after{border-radius:8px!important;box-shadow:none!important}
+html[data-theme="minimal"] .spinner,html[data-theme="minimal"] .dot,html[data-theme="minimal"] .hc-icon,html[data-theme="minimal"] .s-icon{border-radius:50%!important}
+html[data-theme="minimal"] .card,html[data-theme="minimal"] .tile,html[data-theme="minimal"] .pid,html[data-theme="minimal"] .mtr,html[data-theme="minimal"] .cat,html[data-theme="minimal"] .health,html[data-theme="minimal"] .summary,html[data-theme="minimal"] .fold,html[data-theme="minimal"] .seg,html[data-theme="minimal"] .btn,html[data-theme="minimal"] .inp,html[data-theme="minimal"] .menu,html[data-theme="minimal"] .dlg-box,html[data-theme="minimal"] .sheet-box,html[data-theme="minimal"] .toast,html[data-theme="minimal"] .list-item,html[data-theme="minimal"] .dtc,html[data-theme="minimal"] .hc-row,html[data-theme="minimal"] .hdr-help,html[data-theme="minimal"] .menu-btn{border-color:transparent}
+html[data-theme="minimal"] header{border-bottom-color:#e4e4e7}
+html[data-theme="minimal"] .health,html[data-theme="minimal"] .summary{border-left-color:var(--hc,var(--line))}
+html[data-theme="minimal"] .slot-empty{border:1px dashed #d4d4d8!important;background:transparent}
+html[data-theme="minimal"] .slot-empty .plus{color:var(--muted)}
+html[data-theme="minimal"] .pid .v,html[data-theme="minimal"] .pid .deg,html[data-theme="minimal"] .mtr-v,html[data-theme="minimal"] .t-v,html[data-theme="minimal"] .s-num,html[data-theme="minimal"] h1,html[data-theme="minimal"] h2{font-weight:300}
+html[data-theme="minimal"] .pid .n,html[data-theme="minimal"] .mtr-n{font-weight:400}
+html[data-theme="minimal"] .toast{color:var(--fg)}
+html[data-theme="minimal"] .toast.error{background:#fee2e2;color:#7f1d1d}
+html[data-theme="minimal"] .btn.danger,html[data-theme="minimal"] .menu button.danger,html[data-theme="minimal"] .pick-item.danger{color:var(--ng)}
+html[data-theme="minimal"] .err{color:#7f1d1d}
+html[data-theme="minimal"] .empty{color:#14532d}
+html[data-theme="minimal"] .tag.m{color:#9a3412}
+html[data-theme="minimal"] .bar{height:2px}
+html[data-theme="minimal"] .mtr-track{stroke:var(--s2);stroke-width:2}
+html[data-theme="minimal"] .mtr-fill{stroke:var(--fg);stroke-width:2}
+html[data-theme="minimal"] .mtr-needle{stroke-width:1.2}
+html[data-theme="minimal"] .mtr-hub{r:2}
+html[data-theme="minimal"] .gr-line{stroke-width:1}
+html[data-theme="minimal"] .gr-area{fill:rgba(17,17,20,.05)}
+html[data-theme="minimal"] .logo img{filter:grayscale(1)}

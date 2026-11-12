@@ -1,0 +1,27 @@
+/* テーマ：ラグジュアリー（濃紺にゴールド、細い線、明朝系の見出し。高級車の内装風） */
+html[data-theme="luxury"]{
+  --bg:#0a0e1a; --s1:#10172a; --s2:#18213a; --line:rgba(201,169,97,.28);
+  --fg:#ece6d6; --muted:#9a927c; --acc:#c9a961; --acc-ink:#1a1405;
+  --ok:#7fb48a; --warn:#d8a24a; --ng:#c8645a;
+  --ok-bg:rgba(127,180,138,.08); --warn-bg:rgba(216,162,74,.10); --ng-bg:rgba(200,100,90,.10); --acc-bg:rgba(201,169,97,.06);
+  --r:6px; --hdr-bg:rgba(10,14,26,.94);
+  --serif:"Hiragino Mincho ProN","Yu Mincho","YuMincho","Noto Serif JP","Times New Roman",serif;
+}
+html[data-theme="luxury"] *,html[data-theme="luxury"] *::before,html[data-theme="luxury"] *::after{border-radius:6px!important}
+html[data-theme="luxury"] .spinner,html[data-theme="luxury"] .dot,html[data-theme="luxury"] .hc-icon,html[data-theme="luxury"] .s-icon{border-radius:50%!important}
+html[data-theme="luxury"] h1,html[data-theme="luxury"] h2,html[data-theme="luxury"] h3,html[data-theme="luxury"] .hdr-title,html[data-theme="luxury"] .s-state{font-family:var(--serif);font-weight:500;letter-spacing:.06em}
+html[data-theme="luxury"] h2{color:var(--acc);border-bottom:1px solid var(--line);padding-bottom:4px}
+html[data-theme="luxury"] .card,html[data-theme="luxury"] .tile,html[data-theme="luxury"] .pid,html[data-theme="luxury"] .mtr,html[data-theme="luxury"] .cat{border-width:1px;box-shadow:inset 0 1px 0 rgba(201,169,97,.12)}
+html[data-theme="luxury"] .pid .v,html[data-theme="luxury"] .pid .deg,html[data-theme="luxury"] .mtr-v,html[data-theme="luxury"] .t-v,html[data-theme="luxury"] .s-num{font-family:var(--serif);font-weight:400;letter-spacing:.02em}
+html[data-theme="luxury"] .pid .v.hex{font-family:ui-monospace,Menlo,monospace}
+html[data-theme="luxury"] .pid .n,html[data-theme="luxury"] .mtr-n,html[data-theme="luxury"] .t-l{letter-spacing:.08em;font-size:calc(.7rem * var(--pz))}
+html[data-theme="luxury"] .btn.primary{background:linear-gradient(180deg,#e3c98a,#b8924a);border:0;color:var(--acc-ink);letter-spacing:.08em}
+html[data-theme="luxury"] .bar{height:2px}
+html[data-theme="luxury"] .bar i,html[data-theme="luxury"] .vbar i{background:linear-gradient(90deg,#8a6f35,#e3c98a)}
+html[data-theme="luxury"] .vbar i{background:linear-gradient(0deg,#8a6f35,#e3c98a)}
+html[data-theme="luxury"] .mtr-track{stroke:rgba(201,169,97,.18);stroke-width:2}
+html[data-theme="luxury"] .mtr-fill{stroke:var(--acc);stroke-width:2.5}
+html[data-theme="luxury"] .mtr-needle{stroke:var(--acc);stroke-width:1.5}
+html[data-theme="luxury"] .mtr-hub{fill:var(--acc)}
+html[data-theme="luxury"] .gr-line{stroke:var(--acc);stroke-width:1}
+html[data-theme="luxury"] .gr-area{fill:rgba(201,169,97,.08)}

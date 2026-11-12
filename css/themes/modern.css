@@ -1,0 +1,40 @@
+/* テーマ：モダンデジタル（黒地にミント色、太めの角丸の枠、等幅の太字・大文字。車載 HUD 風） */
+html[data-theme="modern"]{
+  --bg:#000; --s1:#050807; --s2:#0c1512; --line:#5fe0b7;
+  --fg:#d9fff1; --muted:#8fa79e; --acc:#6ef0c4; --acc-ink:#002318;
+  --ok:#6ef0c4; --warn:#ffd166; --ng:#ff6b81;
+  --ok-bg:rgba(110,240,196,.07); --warn-bg:rgba(255,209,102,.08); --ng-bg:rgba(255,107,129,.09); --acc-bg:rgba(110,240,196,.05);
+  --r:14px; --hdr-bg:rgba(0,0,0,.94);
+  --mono:ui-monospace,"SF Mono","JetBrains Mono",Menlo,Consolas,"Noto Sans Mono CJK JP",monospace;
+}
+html[data-theme="modern"] body,html[data-theme="modern"] button,html[data-theme="modern"] input,html[data-theme="modern"] select{font-family:var(--mono)}
+/* 枠：太めのミントの線、角丸は 14px にそろえる（ボタン・トグルはピル型） */
+html[data-theme="modern"] *,html[data-theme="modern"] *::before,html[data-theme="modern"] *::after{border-radius:14px!important}
+html[data-theme="modern"] .spinner,html[data-theme="modern"] .dot,html[data-theme="modern"] .hc-icon,html[data-theme="modern"] .s-icon{border-radius:50%!important}
+html[data-theme="modern"] .btn,html[data-theme="modern"] .seg,html[data-theme="modern"] .lang-toggle,html[data-theme="modern"] .tag,html[data-theme="modern"] .badge-debug,html[data-theme="modern"] .hdr-help,html[data-theme="modern"] .menu-btn{border-radius:999px!important}
+html[data-theme="modern"] .card,html[data-theme="modern"] .tile,html[data-theme="modern"] .pid,html[data-theme="modern"] .mtr,html[data-theme="modern"] .cat,html[data-theme="modern"] .health,html[data-theme="modern"] .summary,html[data-theme="modern"] .fold,html[data-theme="modern"] .list-item,html[data-theme="modern"] .dtc,html[data-theme="modern"] .dlg-box,html[data-theme="modern"] .sheet-box,html[data-theme="modern"] .menu,html[data-theme="modern"] .toast{border:2px solid rgba(95,224,183,.75);background:var(--s1)}
+html[data-theme="modern"] .pid,html[data-theme="modern"] .mtr,html[data-theme="modern"] .cat{border-width:1.5px}
+html[data-theme="modern"] .na{border-color:rgba(95,224,183,.25)!important}
+html[data-theme="modern"] .slot-empty{border:1.5px dashed rgba(95,224,183,.35)!important;background:transparent!important}
+html[data-theme="modern"] .slot-empty .plus{color:var(--muted)}
+html[data-theme="modern"] .btn{border:2px solid var(--line);background:transparent}
+html[data-theme="modern"] .btn.primary{background:transparent;color:var(--acc);box-shadow:0 0 12px rgba(110,240,196,.25)}
+html[data-theme="modern"] .btn.primary::after{content:"";display:inline-block;width:.55em;height:.55em;margin-left:.6em;border-radius:50%!important;background:var(--acc);box-shadow:0 0 8px var(--acc);vertical-align:.08em}
+html[data-theme="modern"] .seg button[aria-checked="true"]{background:var(--acc);color:var(--acc-ink)}
+/* 文字：大文字・字間広め・数字はミントで太字 */
+html[data-theme="modern"] h1,html[data-theme="modern"] h2,html[data-theme="modern"] .hdr-title,html[data-theme="modern"] .pid .n,html[data-theme="modern"] .mtr-n,html[data-theme="modern"] .t-l,html[data-theme="modern"] .s-label{text-transform:uppercase;letter-spacing:.08em}
+html[data-theme="modern"] h2{color:var(--acc);font-weight:700}
+html[data-theme="modern"] .pid .v,html[data-theme="modern"] .pid .deg,html[data-theme="modern"] .mtr-v,html[data-theme="modern"] .t-v,html[data-theme="modern"] .s-num,html[data-theme="modern"] .s-state{color:var(--acc);font-weight:700;letter-spacing:.03em;text-shadow:0 0 10px rgba(110,240,196,.25)}
+html[data-theme="modern"] .pid .v.txt,html[data-theme="modern"] .pid .v.hex{color:var(--fg);text-shadow:none}
+/* 接続状態は光るドット */
+html[data-theme="modern"] .conn.on{text-transform:uppercase;letter-spacing:.06em;text-shadow:0 0 8px var(--ok)}
+/* バー・メーター・グラフ */
+html[data-theme="modern"] .bar{height:4px;background:rgba(95,224,183,.12)}
+html[data-theme="modern"] .bar i,html[data-theme="modern"] .vbar i{background:var(--acc);box-shadow:0 0 8px rgba(110,240,196,.6)}
+html[data-theme="modern"] .vbar{background:rgba(95,224,183,.12)}
+html[data-theme="modern"] .mtr-track{stroke:rgba(95,224,183,.14);stroke-width:6}
+html[data-theme="modern"] .mtr-fill{stroke:var(--acc);stroke-width:6;filter:drop-shadow(0 0 2px rgba(110,240,196,.8))}
+html[data-theme="modern"] .mtr-needle{stroke:var(--fg);stroke-width:2}
+html[data-theme="modern"] .mtr-hub{fill:var(--acc)}
+html[data-theme="modern"] .gr-line{stroke:var(--acc);stroke-width:1.4;filter:drop-shadow(0 0 2px rgba(110,240,196,.7))}
+html[data-theme="modern"] .gr-area{fill:rgba(110,240,196,.08)}

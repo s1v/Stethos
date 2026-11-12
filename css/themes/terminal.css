@@ -33,3 +33,19 @@ html[data-theme="terminal"] .mtr-needle{stroke-width:1.5}
 html[data-theme="terminal"] .gr-line{stroke-width:1}
 html[data-theme="terminal"] .gr-area{fill:none}
 html[data-theme="terminal"] .toast,html[data-theme="terminal"] .dlg-box,html[data-theme="terminal"] .sheet-box,html[data-theme="terminal"] .menu{border:1px solid var(--fg);background:#000}
+
+/* マイページの空き枠：項目ブロック（破線枠）と見分けられるよう、枠なし＋斜線の網掛け＋ [ + ] 表記 */
+html[data-theme="terminal"] .slot-empty{border:0!important;color:var(--muted);
+  background:repeating-linear-gradient(135deg,rgba(51,255,51,.10) 0 2px,transparent 2px 8px)!important}
+html[data-theme="terminal"] .slot-empty .plus{font-size:1rem;color:var(--fg)}
+html[data-theme="terminal"] .slot-empty .plus::before{content:"[ "}
+html[data-theme="terminal"] .slot-empty .plus::after{content:" ]"}
+html[data-theme="terminal"] .slot-empty .n::before{content:none}
+/* ミニメーター：針をやめ、目盛り状の弧（| | | |）と [ 値 ] の表示にする */
+html[data-theme="terminal"] .mtr-track{stroke:#0d2a0d;stroke-width:9;stroke-linecap:butt;stroke-dasharray:1.2 2.6}
+html[data-theme="terminal"] .mtr-fill{stroke:var(--fg);stroke-width:9;stroke-linecap:butt;stroke-dasharray:1.2 2.6}
+html[data-theme="terminal"] .mtr-needle,html[data-theme="terminal"] .mtr-hub{display:none}
+html[data-theme="terminal"] .mtr-v::before{content:"[";color:var(--muted);margin-right:.2em}
+html[data-theme="terminal"] .mtr-v::after{content:"]";color:var(--muted);margin-left:.2em}
+html[data-theme="terminal"] .mtr-n::before{content:"# "}
+html[data-theme="terminal"] .mtr-n{text-transform:uppercase}

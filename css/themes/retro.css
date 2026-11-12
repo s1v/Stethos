@@ -31,3 +31,7 @@ html[data-theme="retro"] .mtr-hub{fill:var(--warn)}
 html[data-theme="retro"] .gr-line{stroke:var(--acc);filter:drop-shadow(0 0 2px rgba(57,255,106,.7))}
 html[data-theme="retro"] .gr-area{fill:rgba(57,255,106,.10)}
 html[data-theme="retro"] .seg button[aria-checked="true"]{box-shadow:0 0 10px rgba(57,255,106,.4)}
+
+/* 角の丸みを全要素で 4px に統一（スピナーだけは円のまま） */
+html[data-theme="retro"] *,html[data-theme="retro"] *::before,html[data-theme="retro"] *::after{border-radius:4px!important}
+html[data-theme="retro"] .spinner{border-radius:50%!important}

@@ -1,0 +1,30 @@
+/* テーマ：レーシング（スポーツカーのメーター風。黒地に赤とオレンジ、斜めカットの枠、太い斜体の数字） */
+html[data-theme="racing"]{
+  --bg:#0a0a0b; --s1:#141416; --s2:#1e1e22; --line:#33333a;
+  --fg:#f4f4f5; --muted:#a1a1aa; --acc:#ff3b1f; --acc-ink:#fff;
+  --ok:#22c55e; --warn:#ff9f1a; --ng:#ff2d55;
+  --ok-bg:rgba(34,197,94,.10); --warn-bg:rgba(255,159,26,.12); --ng-bg:rgba(255,45,85,.12); --acc-bg:rgba(255,59,31,.08);
+  --r:0; --hdr-bg:rgba(10,10,11,.94);
+  --cut:polygon(10px 0,100% 0,100% calc(100% - 10px),calc(100% - 10px) 100%,0 100%,0 10px);
+}
+html[data-theme="racing"] *,html[data-theme="racing"] *::before,html[data-theme="racing"] *::after{border-radius:0!important}
+html[data-theme="racing"] .spinner{border-radius:50%!important}
+/* 斜めカットの枠（左上と右下を切り落とす） */
+html[data-theme="racing"] .card,html[data-theme="racing"] .tile,html[data-theme="racing"] .pid,html[data-theme="racing"] .mtr,html[data-theme="racing"] .btn,html[data-theme="racing"] .cat,html[data-theme="racing"] .health,html[data-theme="racing"] .summary,html[data-theme="racing"] .theme-opt{clip-path:var(--cut)}
+html[data-theme="racing"] .pid,html[data-theme="racing"] .mtr,html[data-theme="racing"] .tile{border-top:2px solid var(--acc)}
+html[data-theme="racing"] .slot-empty{border-top:1px dashed var(--line)}
+html[data-theme="racing"] h2{text-transform:uppercase;letter-spacing:.08em;font-style:italic;border-left:4px solid var(--acc);padding-left:8px}
+html[data-theme="racing"] .pid .v,html[data-theme="racing"] .pid .deg,html[data-theme="racing"] .mtr-v,html[data-theme="racing"] .t-v,html[data-theme="racing"] .s-num{font-style:italic;font-weight:900;letter-spacing:-.02em}
+html[data-theme="racing"] .pid .v.txt,html[data-theme="racing"] .pid .v.hex{font-style:normal;font-weight:600}
+html[data-theme="racing"] .pid .n,html[data-theme="racing"] .mtr-n{text-transform:uppercase;letter-spacing:.05em;font-weight:600}
+html[data-theme="racing"] .btn.primary{background:linear-gradient(90deg,#ff3b1f,#ff8a00);border:0;font-style:italic;text-transform:uppercase;letter-spacing:.05em}
+html[data-theme="racing"] .bar{height:5px;background:var(--s2)}
+html[data-theme="racing"] .bar i,html[data-theme="racing"] .vbar i{background:linear-gradient(90deg,#ffd000,#ff8a00 60%,#ff2d1f)}
+html[data-theme="racing"] .vbar i{background:linear-gradient(0deg,#ffd000,#ff8a00 60%,#ff2d1f)}
+/* メーター：太い弧（黄→赤）、赤い針 */
+html[data-theme="racing"] .mtr-track{stroke:#26262b;stroke-width:9;stroke-linecap:butt}
+html[data-theme="racing"] .mtr-fill{stroke:var(--warn);stroke-width:9;stroke-linecap:butt}
+html[data-theme="racing"] .mtr-needle{stroke:var(--acc);stroke-width:3}
+html[data-theme="racing"] .mtr-hub{fill:var(--acc)}
+html[data-theme="racing"] .gr-line{stroke:var(--warn);stroke-width:1.6}
+html[data-theme="racing"] .gr-area{fill:rgba(255,138,0,.14)}

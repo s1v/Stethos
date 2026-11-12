@@ -339,3 +339,7 @@ button.hc-row{cursor:pointer}
 .theme-sw.t-retro{background:#050605;color:#39ff6a;font-family:ui-monospace,Menlo,monospace;font-style:italic;text-shadow:0 0 6px rgba(57,255,106,.6);border-radius:3px}
 .theme-sw.t-terminal{background:#000;color:#33ff33;font-family:ui-monospace,Menlo,monospace;font-weight:400;border-radius:0;border:1px dashed #1e5c1e}
 .theme-name{font-size:.9rem;font-weight:600}
+.theme-sw.t-racing{background:#141416;color:#ff3b1f;font-style:italic;font-weight:900;border-top:3px solid #ff3b1f;border-radius:0;clip-path:polygon(10px 0,100% 0,100% calc(100% - 10px),calc(100% - 10px) 100%,0 100%,0 10px)}
+.theme-sw.t-minimal{background:#f4f4f5;color:#111114;font-weight:300}
+.theme-sw.t-luxury{background:#10172a;color:#c9a961;font-family:"Hiragino Mincho ProN","Yu Mincho","Noto Serif JP",serif;font-weight:400;border:1px solid rgba(201,169,97,.35)}
+.theme-sw.t-modern{background:#000;color:#6ef0c4;font-family:ui-monospace,Menlo,monospace;font-weight:700;letter-spacing:.06em;border:2px solid #5fe0b7;border-radius:12px}

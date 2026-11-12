@@ -795,5 +795,9 @@ export const EN = {
  "スタンダード": "Standard",
  "レトロデジタル": "Retro digital",
  "ターミナル": "Terminal",
- "配色・形・数字の書体・バーやメーターの描き方が変わります（画面の配置は変わりません）。": "Changes colors, shapes, number font, and how bars and meters are drawn (the layout stays the same)."
+ "配色・形・数字の書体・バーやメーターの描き方が変わります（画面の配置は変わりません）。": "Changes colors, shapes, number font, and how bars and meters are drawn (the layout stays the same).",
+ "レーシング": "Racing",
+ "ミニマル": "Minimal",
+ "ラグジュアリー": "Luxury",
+ "モダンデジタル": "Modern digital"
 };
