@@ -58,12 +58,14 @@
 
   <button id="btn-connect" class="btn primary big">接続する</button>
   <button id="btn-manage" class="btn link center">保存した UUID を管理 ›</button>
+  <div class="card"><div class="lbl" style="margin-top:0">言語 / Language</div><div class="lang-seg seg" role="radiogroup" aria-label="Language"><button type="button" role="radio" data-lang="ja">日本語</button><button type="button" role="radio" data-lang="en">English</button></div></div>
 
   <!-- DEBUG-START -->
   <div id="debug-entry" class="card debug">
-    <h2>デバッグモード</h2>
-    <p class="muted small">実機なしで疑似アダプターを使って動作を確認します（URL に <code>?debug=1</code> でも起動）。</p>
+    <h2>お試しモード</h2>
+    <p class="muted small">車やアダプターがなくても、疑似アダプターで画面や動作を試せます（URL に <code>?debug=1</code> でも起動）。</p>
     <label class="lbl" for="debug-scenario">状況</label>
+    <div class="trial-row">
     <select id="debug-scenario" class="inp">
       <option value="normal">通常（DTC あり）</option>
       <option value="nodtc">DTC 0 件</option>
@@ -73,11 +75,12 @@
       <option value="disconnect">接続 20 秒後に切断</option>
       <option value="no-multi">マルチ PID 非対応アダプター</option>
     </select>
-    <button id="btn-debug" class="btn">デバッグモードで起動</button>
+    <button id="btn-debug" class="btn primary">お試しで起動</button>
+    </div>
   </div>
   <!-- DEBUG-END -->
 
-  <p class="foot muted">走行中は画面を操作しないでください。<br><span class="small">Stethos v0.0.17</span></p>
+  <p class="foot muted">走行中は画面を操作しないでください。<br><span class="small">Stethos v0.0.19</span></p>
 </section>
 
 <!-- ========== UUID 入力 ========== -->
@@ -169,6 +172,8 @@
 
 <!-- ========== 設定 ========== -->
 <section id="screen-settings" class="screen" hidden>
+  <h2>言語 / Language</h2>
+  <div class="card"><div class="lang-seg seg" role="radiogroup" aria-label="Language"><button type="button" role="radio" data-lang="ja">日本語</button><button type="button" role="radio" data-lang="en">English</button></div></div>
   <h2>表示</h2>
   <div class="card">
     <div class="lbl" style="margin-top:0">ステータス項目の文字サイズ</div>
@@ -196,7 +201,7 @@
     <p class="small muted" style="margin-top:0">すべてのプリセットを削除し、空のマイページ 1 つ（12 枠）に戻します。</p>
     <button id="set-mp-reset" class="btn danger">マイページをリセット</button>
   </div>
-  <p class="foot muted small">Stethos v0.0.17</p>
+  <p class="foot muted small">Stethos v0.0.19</p>
 </section>
 
 <!-- ========== 診断情報 ========== -->

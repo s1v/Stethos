@@ -1,4 +1,5 @@
 // 起動・画面の切り替え
+import './i18n.js'; // 最初に読み込む（言語の切り替え）
 import { $, toast, confirmDialog, alertDialog, busy, el, closeOverlay, setRate } from './ui.js';
 import { session, connect, disconnect } from './connection.js';
 import { MENU_ITEMS } from './config/menu.js';

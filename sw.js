@@ -1,13 +1,13 @@
 // Stethos Service Worker
 // アプリを更新したら VERSION を変更してください（「更新があります」表示のきっかけになります）
 // BUILD は自動更新（Issue → known-uuids の追加）で 1 ずつ増やされます
-const APP_VERSION = '0.0.17';
+const APP_VERSION = '0.0.19';
 const BUILD = 0;
 const VERSION = `stethos-v${APP_VERSION}-${BUILD}`;
 const ASSETS = [
   './', './index.html', './manifest.webmanifest', './css/style.css',
   './icons/icon-192.png', './icons/icon-512.png', './icons/icon-maskable-512.png',
-  './js/app.js', './js/ble.js', './js/elm327.js', './js/obd.js', './js/storage.js', './js/ui.js', './js/connection.js', './js/vehicle.js', './js/poller.js',
+  './js/app.js', './js/i18n.js', './js/i18n/en.js', './js/ble.js', './js/elm327.js', './js/obd.js', './js/storage.js', './js/ui.js', './js/connection.js', './js/vehicle.js', './js/poller.js',
   './js/screens/top.js', './js/screens/uuid-input.js', './js/screens/uuid-manage.js',
   './js/screens/home.js', './js/screens/status.js', './js/screens/dtc.js', './js/screens/mypage.js', './js/screens/settings.js', './js/screens/parts/presets.js', './js/screens/parts/pid-card.js', './js/screens/parts/widgets.js',
   './js/config/known-uuids.js', './js/config/units.js', './js/screens/parts/icons.js', './js/config/pids.js', './js/config/dtc-codes.js', './js/config/menu.js', './js/config/wmi.js',

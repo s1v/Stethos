@@ -301,3 +301,9 @@ button.hc-row{cursor:pointer}
 .detail-val{font-size:1.9rem;font-weight:700;font-variant-numeric:tabular-nums;margin:2px 0 10px;word-break:break-all;line-height:1.25}
 .detail-val.hex{font-family:ui-monospace,Menlo,Consolas,monospace;font-size:1.1rem}
 .detail-desc{margin:0;color:var(--fg)}
+
+/* お試しモード：状況の選択と起動ボタン（横並び。狭い画面では縦に並べ、間隔を空ける） */
+.trial-row{display:flex;gap:10px;align-items:stretch;flex-wrap:wrap}
+.trial-row .inp{flex:1 1 220px;min-height:48px;margin:0}
+.trial-row .btn{flex:0 0 auto;min-height:48px;white-space:nowrap}
+@media (max-width:420px){.trial-row .btn{flex:1 1 100%}}
