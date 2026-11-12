@@ -30,6 +30,7 @@
 <main>
 <!-- ========== トップ ========== -->
 <section id="screen-top" class="screen" hidden>
+  <div class="lang-seg lang-toggle" role="radiogroup" aria-label="Language"><button type="button" role="radio" data-lang="ja">JA</button><button type="button" role="radio" data-lang="en">EN</button></div>
   <div class="logo"><img src="./icons/icon-192.png" alt="" width="72" height="72"><h1>Stethos</h1></div>
 
   <div id="unsupported" class="card caution" hidden>
@@ -37,28 +38,29 @@
     <ul><li>Android：<b>Chrome</b>（Edge / Samsung Internet も可）</li><li>iPhone：<b>Bluefy</b>（無料の Web Bluetooth 対応ブラウザ）</li><li>PC：Chrome / Edge</li></ul>
   </div>
 
-  <div class="card info">
-    <h2>接続の前に確認</h2>
-    <ul class="check">
-      <li>BLE（Bluetooth 5.1）対応アダプターを車の OBD ポートに挿している</li>
-      <li>エンジン（イグニッション）が ON</li>
-      <li>他の OBD アプリは閉じている</li>
-    </ul>
-  </div>
-
-  <details class="fold">
-    <summary>詳細設定（任意）</summary>
-    <div class="fold-body">
-      <label class="lbl" for="adv-uuid">今回の接続で使うサービス UUID</label>
-      <input id="adv-uuid" class="inp" placeholder="例: FFF0 または 128bit UUID" autocomplete="off" spellcheck="false">
-      <p id="adv-uuid-msg" class="hint"></p>
-      <p class="note">アダプターの UUID が分かっている場合だけ入力します。通常は空欄で構いません。<br>接続に成功した UUID は自動で保存され、<b>次回からは入力不要</b>です（「保存した UUID を管理」で確認・削除できます）。</p>
+  <div class="card connect-panel">
+    <div class="card info">
+      <h2>接続の前に確認</h2>
+      <ul class="check">
+        <li>BLE（Bluetooth 5.1）対応アダプターを車の OBD ポートに挿している</li>
+        <li>エンジン（イグニッション）が ON</li>
+        <li>他の OBD アプリは閉じている</li>
+      </ul>
     </div>
-  </details>
 
-  <button id="btn-connect" class="btn primary big">接続する</button>
-  <button id="btn-manage" class="btn link center">保存した UUID を管理 ›</button>
-  <div class="card"><div class="lbl" style="margin-top:0">言語 / Language</div><div class="lang-seg seg" role="radiogroup" aria-label="Language"><button type="button" role="radio" data-lang="ja">日本語</button><button type="button" role="radio" data-lang="en">English</button></div></div>
+    <details class="fold">
+      <summary>詳細設定（任意）</summary>
+      <div class="fold-body">
+        <label class="lbl" for="adv-uuid">今回の接続で使うサービス UUID</label>
+        <input id="adv-uuid" class="inp" placeholder="例: FFF0 または 128bit UUID" autocomplete="off" spellcheck="false">
+        <p id="adv-uuid-msg" class="hint"></p>
+        <p class="note">アダプターの UUID が分かっている場合だけ入力します。通常は空欄で構いません。<br>接続に成功した UUID は自動で保存され、<b>次回からは入力不要</b>です（「保存した UUID を管理」で確認・削除できます）。</p>
+      </div>
+    </details>
+
+    <button id="btn-connect" class="btn primary big">接続する</button>
+    <button id="btn-manage" class="btn link center">保存した UUID を管理 ›</button>
+  </div>
 
   <!-- DEBUG-START -->
   <div id="debug-entry" class="card debug">
@@ -80,7 +82,7 @@
   </div>
   <!-- DEBUG-END -->
 
-  <p class="foot muted">走行中は画面を操作しないでください。<br><span class="small">Stethos v0.0.19</span></p>
+  <p class="foot muted">走行中は画面を操作しないでください。<br><span class="small">Stethos v0.0.20</span></p>
 </section>
 
 <!-- ========== UUID 入力 ========== -->
@@ -134,14 +136,13 @@
 <!-- ========== ホーム ========== -->
 <section id="screen-home" class="screen" hidden>
   <div class="grid">
-    <div class="tile"><div class="t-l">接続中のアダプター</div><div id="h-device" class="t-v sm">-</div></div>
-    <button id="h-items-tile" class="tile tap"><div class="t-l">対応表示項目数</div><div id="h-items" class="t-v sm">-</div><div class="t-s">タップでステータス一覧へ &rsaquo;</div></button>
-    <div class="tile wide">
+    <div class="tile">
       <div class="t-l">車両</div>
       <div id="h-vehicle" class="t-v sm">-</div>
       <div id="h-vin" class="t-s muted mono">-</div>
       <button id="h-lookup" class="btn link small-link" hidden>車種を調べる &rsaquo;</button>
     </div>
+    <button id="h-items-tile" class="tile tap"><div class="t-l">対応表示項目数</div><div id="h-items" class="t-v sm">-</div><div class="t-s">タップでステータス一覧へ &rsaquo;</div></button>
   </div>
   <!-- 車の状態（健康診断カード） -->
   <section id="hc" class="health unk" aria-label="車の状態">
@@ -201,7 +202,7 @@
     <p class="small muted" style="margin-top:0">すべてのプリセットを削除し、空のマイページ 1 つ（12 枠）に戻します。</p>
     <button id="set-mp-reset" class="btn danger">マイページをリセット</button>
   </div>
-  <p class="foot muted small">Stethos v0.0.19</p>
+  <p class="foot muted small">Stethos v0.0.20</p>
 </section>
 
 <!-- ========== 診断情報 ========== -->

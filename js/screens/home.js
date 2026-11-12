@@ -81,7 +81,7 @@ export default {
   },
   async enter(app) {
     const my = ++token, s = app.session;
-    $('h-device').textContent = s.deviceName;
+    { const d = $('h-device'); if (d) d.textContent = s.deviceName; }
     renderVehicle(s);
     $('h-meters').innerHTML = '';
     for (const id of ROWS) setRow(id, 'unk', '-');

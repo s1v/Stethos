@@ -307,3 +307,17 @@ button.hc-row{cursor:pointer}
 .trial-row .inp{flex:1 1 220px;min-height:48px;margin:0}
 .trial-row .btn{flex:0 0 auto;min-height:48px;white-space:nowrap}
 @media (max-width:420px){.trial-row .btn{flex:1 1 100%}}
+
+/* トップ：ロゴの余白を詰める */
+.logo img{display:block;margin:0 auto}
+.logo h1{margin:6px 0 0}
+/* トップ：右上の言語トグル */
+#screen-top{position:relative}
+.lang-toggle{position:absolute;top:0;right:0;display:flex;border:1px solid var(--line);border-radius:999px;overflow:hidden;z-index:2}
+.lang-toggle button{min-width:44px;min-height:32px;padding:0 10px;background:var(--s2);border:0;color:var(--muted);font-size:.8rem;font-weight:700;cursor:pointer}
+.lang-toggle button.on{background:var(--acc);color:var(--acc-ink)}
+/* トップ：接続まわりをまとめる外側のブロック */
+.card.connect-panel{padding:12px}
+.connect-panel>.card,.connect-panel>.fold{margin:0 0 10px}
+.connect-panel>.btn.big{margin-top:2px}
+.connect-panel>.btn.link{display:block;width:100%;padding-bottom:2px}
