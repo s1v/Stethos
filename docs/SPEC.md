@@ -12,9 +12,10 @@
 |---|---|
 | アプリ名 | **Stethos**（聴診器 / Stethoscope に由来。「車の聴診器」） |
 | 形態 | GitHub Pages で公開する静的 Web アプリ（HTML / CSS / JS、SPA、ビルド不要） |
-| バージョン | 0.0.27（`sw.js` の `APP_VERSION`、`js/version.js`、トップ画面・設定画面のフッター表示） |
+| バージョン | 0.0.28（`sw.js` の `APP_VERSION`、`js/version.js`、トップ画面・設定画面のフッター表示） |
 | 言語 | 日本語 / English（14 章） |
 | リポジトリ | https://github.com/s1v/Stethos |
+| ライセンス | GPL-3.0（ルートの `LICENSE`。設定画面の一番下に「© 2026 s1v ／ GPL-3.0 License」と表示し、GitHub 上の LICENSE にリンク） |
 | PWA | **必須**（ホーム画面への追加、全画面表示、オフラインでの起動） |
 | 配信 | ストア配信なし（URL を開くだけで使える） |
 | 対象車両 | 車種を限定しない（OBD-II 対応車） |
@@ -366,6 +367,7 @@
 │  └ ISSUE_TEMPLATE/                Issue テンプレート（動作報告 / 不具合 / 要望）
 ├ .gitignore                         .DS_Store などを除外
 ├ .nojekyll                          Jekyll 処理を無効化
+├ LICENSE                            GPL-3.0 の全文
 ├ index.html / manifest.webmanifest / sw.js
 ├ icons/                             icon-192 / icon-512 / icon-maskable-512
 ├ css/style.css
