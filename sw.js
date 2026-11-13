@@ -1,7 +1,7 @@
 // Stethos Service Worker
 // アプリを更新したら VERSION を変更してください（「更新があります」表示のきっかけになります）
 // BUILD は自動更新（Issue → known-uuids の追加）で 1 ずつ増やされます
-const APP_VERSION = '0.0.36';
+const APP_VERSION = '0.0.37';
 const BUILD = 0;
 const VERSION = `stethos-v${APP_VERSION}-${BUILD}`;
 const ASSETS = [

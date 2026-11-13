@@ -358,3 +358,6 @@ button.hc-row{cursor:pointer}
 
 /* 長いダイアログはスクロール（スマホで見切れないように） */
 .dlg-box{max-height:calc(100dvh - 40px);overflow-y:auto;overscroll-behavior:contain}
+
+/* タップは常にブロック自身で受ける（中の文字は更新のたびに作り直されるため、そこで押すとタップが失われることがある） */
+.pid *,.mtr *{pointer-events:none}

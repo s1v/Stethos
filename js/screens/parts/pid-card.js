@@ -83,7 +83,7 @@ export function createCard(d, ok, { onClick } = {}) {
     val,
     // バーがない項目も同じ高さを確保して、位置をそろえる
     el('div', { class: 'bar' + (hasBar ? '' : ' none') }, bar));
-  let last = null;
+  let last = null, drawnOnce = false;
   const draw = () => {
     const u = currentUnit(d);
     const unit = ok && u.unit && d.format !== 'duration' && !isText ? u.unit : '';
@@ -102,7 +102,10 @@ export function createCard(d, ok, { onClick } = {}) {
     if (d.format === 'hex') v.classList.add('hex');
   };
   const update = (x) => {
-    last = x; latest.set(d.key, x);
+    latest.set(d.key, x);
+    // 値が変わらないときは描き直さない（中身を作り直し続けると、押している途中の要素が消えてタップが効かなくなるため）
+    if (x === last && drawnOnce) return;
+    last = x; drawnOnce = true;
     draw();
     if (hasBar && x != null) { const pct = Math.max(0, Math.min(100, ((x - d.min) / (d.max - d.min)) * 100)); bar.style.width = `${pct}%`; bar.style.setProperty('--pct', pct); }
   };
