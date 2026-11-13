@@ -16,7 +16,7 @@ export const findStyle = (id) => STYLES.find((s) => s.id === id) || STYLES[0];
 /** 数値の項目だけがバー・グラフ・メーターを使える（文字の項目は数値・大きな数値のみ） */
 export const stylesFor = (d) => STYLES.filter((s) => s.any || (!d.format && d.min != null));
 
-const HOT = 0.85, SHIFT_N = 7;
+const HOT = 0.85;
 /** メーターの弧のグラデーション（文書に 1 つだけ置き、色は CSS 変数 --mg0〜--mg2 で各テーマが決める） */
 function ensureMeterGradient() {
   if (document.getElementById('stethos-mtr-grad')) return;
@@ -37,10 +37,9 @@ export function createMeter(d, ok, { tag = 'div', onClick = null, cls = '' } = {
   svg.innerHTML = `<path d="${arc(A0, A0 + SPAN)}" class="mtr-track"/><path d="${arc(A0 + SPAN * HOT, A0 + SPAN)}" class="mtr-red"/><path class="mtr-fill" d=""/><line class="mtr-peak" x1="${CX}" y1="${CY - R - 5}" x2="${CX}" y2="${CY - R + 5}"/><line class="mtr-needle" x1="${CX}" y1="${CY}" x2="${CX}" y2="${CY - R + 8}"/><circle cx="${CX}" cy="${CY}" r="3.5" class="mtr-hub"/>`;
   const fill = svg.querySelector('.mtr-fill'), needle = svg.querySelector('.mtr-needle'), peakEl = svg.querySelector('.mtr-peak');
   let peak = 0;
-  // シフトランプ（回転数のメーターだけ）。60% から順に点き、上限付近で全灯・点滅
-  const shift = d.key === 'rpm' ? el('div', { class: 'shift' }, ...Array.from({ length: SHIFT_N }, (_, i) => el('i', { class: 'sl' + (i < 2 ? ' g' : i < 4 ? ' y' : ' r') }))) : null;
+
   const v = el('div', { class: 'mtr-v' }, ok ? '--' : '非対応'), u = el('div', { class: 'mtr-u' }, '');
-  const node = el(tag, { class: 'mtr' + (ok ? '' : ' na') + (cls ? ' ' + cls : ''), ...(tag === 'button' ? { type: 'button', onclick: onClick } : {}) }, shift, svg, el('div', { class: 'mtr-read' }, v, u), el('div', { class: 'mtr-n' }, d.name));
+  const node = el(tag, { class: 'mtr' + (ok ? '' : ' na') + (cls ? ' ' + cls : ''), ...(tag === 'button' ? { type: 'button', onclick: onClick } : {}) }, svg, el('div', { class: 'mtr-read' }, v, u), el('div', { class: 'mtr-n' }, d.name));
   const update = (x) => {
     if (!ok) return;
     const cu = currentUnit(d); u.textContent = cu.unit;
@@ -49,11 +48,10 @@ export function createMeter(d, ok, { tag = 'div', onClick = null, cls = '' } = {
     // 針は初期状態で真上（270 度）を向いているので、目標の角度との差だけ回す
     needle.setAttribute('transform', `rotate(${A0 + SPAN * p - 270} ${CX} ${CY})`);
     fill.setAttribute('d', p > 0.002 ? arc(A0, A0 + SPAN * p) : '');
-    // 上限付近の演出：hot（85% 以上）・max（95% 以上）、ピークホールド、シフトランプ
+    // 上限付近の演出：hot（85% 以上）・max（95% 以上）、ピークホールド
     node.classList.toggle('hot', p >= HOT); node.classList.toggle('max', p >= 0.95);
     node.style.setProperty('--heat', Math.max(0, (p - 0.6) / 0.4).toFixed(3));
     if (x != null && p > peak) { peak = p; peakEl.setAttribute('transform', `rotate(${A0 + SPAN * p - 270} ${CX} ${CY})`); peakEl.classList.add('on'); }
-    if (shift) [...shift.children].forEach((s, i) => s.classList.toggle('on', p >= 0.6 + (0.33 * i) / SHIFT_N));
   };
   update(null);
   return { node, update };

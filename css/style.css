@@ -355,9 +355,7 @@ button.hc-row{cursor:pointer}
 .mtr.hot .mtr-v{color:var(--ng)!important}
 .mtr.max .mtr-v{animation:mtr-flash .5s steps(1) infinite}
 @keyframes mtr-flash{50%{opacity:.35}}
-.shift{display:var(--shift-display,none);justify-content:center;gap:4px;margin:2px 0 2px}
-.shift .sl{width:9px;height:9px;border-radius:50%;background:var(--s2);border:1px solid var(--line)}
-.shift .sl.on.g{background:#22c55e;box-shadow:0 0 6px #22c55e}
-.shift .sl.on.y{background:#facc15;box-shadow:0 0 6px #facc15}
-.shift .sl.on.r{background:#ef4444;box-shadow:0 0 6px #ef4444}
-.mtr.max .shift .sl{animation:mtr-flash .25s steps(1) infinite}
+.theme-sw.t-modern{border:2px solid transparent!important;background:linear-gradient(#000,#000) padding-box,linear-gradient(120deg,#6ef0c4,#ffd166,#ff4d6d) border-box!important;color:#6ef0c4!important}
+
+/* 長いダイアログはスクロール（スマホで見切れないように） */
+.dlg-box{max-height:calc(100dvh - 40px);overflow-y:auto;overscroll-behavior:contain}

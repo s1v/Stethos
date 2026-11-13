@@ -37,6 +37,5 @@ html[data-theme="retro"] *,html[data-theme="retro"] *::before,html[data-theme="r
 html[data-theme="retro"] .spinner{border-radius:50%!important}
 
 /* 緑 → 琥珀 → 赤の LED（上限に近づくほど赤く） */
-html[data-theme="retro"]{--grad:linear-gradient(90deg,#39ff6a 0 60%,#ffb000 80%,#ff4433);--grad-v:linear-gradient(0deg,#39ff6a 0 60%,#ffb000 80%,#ff4433);--mg0:#39ff6a;--mg1:#9dff3a;--mg2:#ff4433;--shift-display:flex}
+html[data-theme="retro"]{--grad:linear-gradient(90deg,#39ff6a 0 60%,#ffb000 80%,#ff4433);--grad-v:linear-gradient(0deg,#39ff6a 0 60%,#ffb000 80%,#ff4433);--mg0:#39ff6a;--mg1:#9dff3a;--mg2:#ff4433}
 html[data-theme="retro"] .mtr-red{stroke-linecap:butt;stroke-dasharray:4 2}
-html[data-theme="retro"] .shift .sl{border-radius:2px!important}
