@@ -355,7 +355,6 @@ button.hc-row{cursor:pointer}
 .mtr.hot .mtr-v{color:var(--ng)!important}
 .mtr.max .mtr-v{animation:mtr-flash .5s steps(1) infinite}
 @keyframes mtr-flash{50%{opacity:.35}}
-.theme-sw.t-modern{border:2px solid transparent!important;background:linear-gradient(#000,#000) padding-box,linear-gradient(120deg,#6ef0c4,#ffd166,#ff4d6d) border-box!important;color:#6ef0c4!important}
 
 /* 長いダイアログはスクロール（スマホで見切れないように） */
 .dlg-box{max-height:calc(100dvh - 40px);overflow-y:auto;overscroll-behavior:contain}

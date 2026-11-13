@@ -1,85 +1,78 @@
-/* テーマ：モダンデジタル（黒地に、ミント→スカイブルー→ラベンダーのグラデーション。ボタンはコーラルレッド系。等幅の太字・大文字） */
+/* テーマ：モダンデジタル（黒地にミントの単色の線と発光。等幅の太字・大文字の車載 HUD 風）
+   グラデーション（ミント → 黄 → 赤）はバー・メーター・グラフなどの計器だけに使う */
 html[data-theme="modern"]{
-  --bg:#000; --s1:#06080c; --s2:#0d1218; --line:rgba(110,240,196,.35);
-  --fg:#e4f2ff; --muted:#93a3b8; --acc:#6ef0c4; --acc-ink:#00261a;
+  --bg:#000; --s1:#030605; --s2:#08100d; --line:#5fe0b7;
+  --fg:#d9fff1; --muted:#8fa79e; --acc:#6ef0c4; --acc-ink:#00261a;
   --ok:#6ef0c4; --warn:#ffd166; --ng:#ff4d6d;
-  --ok-bg:rgba(110,240,196,.07); --warn-bg:rgba(255,209,102,.08); --ng-bg:rgba(255,77,109,.09); --acc-bg:rgba(110,240,196,.06);
-  --r:14px; --hdr-bg:rgba(0,0,0,.94);
-  --g-a:#6ef0c4; --g-b:#ffd166; --g-c:#ff4d6d;          /* メインのグラデーション（ミント → 黄 → 赤） */
-  --b-a:#ff4d6d; --b-b:#ff8a5b;                         /* ボタンのグラデーション（コーラルレッド） */
-  --gm:linear-gradient(120deg,var(--g-a),var(--g-b) 55%,var(--g-c));
-  --gb:linear-gradient(90deg,var(--b-a),var(--b-b));
-  --grad:linear-gradient(90deg,var(--g-a),var(--g-b) 55%,var(--g-c));
-  --grad-v:linear-gradient(0deg,var(--g-a),var(--g-b) 55%,var(--g-c));
+  --ok-bg:rgba(110,240,196,.07); --warn-bg:rgba(255,209,102,.08); --ng-bg:rgba(255,77,109,.09); --acc-bg:rgba(110,240,196,.05);
+  --r:12px; --hdr-bg:rgba(0,0,0,.94);
+  --grad:linear-gradient(90deg,#6ef0c4,#ffd166 60%,#ff4d6d);
+  --grad-v:linear-gradient(0deg,#6ef0c4,#ffd166 60%,#ff4d6d);
   --mg0:#6ef0c4; --mg1:#ffd166; --mg2:#ff4d6d;
+  --glow:0 0 8px rgba(110,240,196,.35);
   --mono:ui-monospace,"SF Mono","JetBrains Mono",Menlo,Consolas,"Noto Sans Mono CJK JP",monospace;
 }
 html[data-theme="modern"] body,html[data-theme="modern"] button,html[data-theme="modern"] input,html[data-theme="modern"] select{font-family:var(--mono)}
-html[data-theme="modern"] body{background:radial-gradient(90% 50% at 85% -10%,rgba(255,77,109,.10),transparent 60%),radial-gradient(80% 40% at 0% 0%,rgba(110,240,196,.08),transparent 60%),#000;background-attachment:fixed}
+/* ごく薄い走査線（デジタル表示器の質感） */
+html[data-theme="modern"] body{background:repeating-linear-gradient(0deg,rgba(110,240,196,.018) 0 1px,transparent 1px 3px),#000}
 
-/* 角丸を統一（ブロック 12px、ボタン類はピル型、丸い点は円） */
+/* 角丸を統一（ブロック 12px・項目ブロック 10px、ボタン類はピル型、丸い点は円） */
 html[data-theme="modern"] *,html[data-theme="modern"] *::before,html[data-theme="modern"] *::after{border-radius:12px!important}
 html[data-theme="modern"] .spinner,html[data-theme="modern"] .dot,html[data-theme="modern"] .hc-icon,html[data-theme="modern"] .s-icon{border-radius:50%!important}
 html[data-theme="modern"] .btn,html[data-theme="modern"] .seg,html[data-theme="modern"] .seg button,html[data-theme="modern"] .lang-toggle,html[data-theme="modern"] .tag,html[data-theme="modern"] .badge-debug,html[data-theme="modern"] .hdr-help,html[data-theme="modern"] .menu-btn{border-radius:999px!important}
 html[data-theme="modern"] .pid,html[data-theme="modern"] .mtr,html[data-theme="modern"] .cat{border-radius:10px!important}
 
-/* ブロックの枠：グラデーションの線（背景は padding-box、線は border-box） */
-html[data-theme="modern"] .card,html[data-theme="modern"] .tile,html[data-theme="modern"] .pid,html[data-theme="modern"] .mtr,html[data-theme="modern"] .cat,html[data-theme="modern"] .health,html[data-theme="modern"] .summary,html[data-theme="modern"] .fold,html[data-theme="modern"] .list-item,html[data-theme="modern"] .dtc,html[data-theme="modern"] .dlg-box,html[data-theme="modern"] .sheet-box,html[data-theme="modern"] .menu,html[data-theme="modern"] .toast,html[data-theme="modern"] .theme-opt{
-  border:1.5px solid transparent;background:linear-gradient(var(--s1),var(--s1)) padding-box,var(--gm) border-box}
-html[data-theme="modern"] .card.info{background:linear-gradient(rgba(10,20,30,1),rgba(10,20,30,1)) padding-box,var(--gm) border-box}
-html[data-theme="modern"] .card.caution{background:var(--warn-bg);border:1.5px dashed var(--warn)}
-html[data-theme="modern"] .health,html[data-theme="modern"] .summary{border-left-width:1.5px}
+/* 枠：ミントの単色の線（四辺そろえる。一部の辺だけの線は使わない） */
+html[data-theme="modern"] .card,html[data-theme="modern"] .tile,html[data-theme="modern"] .health,html[data-theme="modern"] .summary,html[data-theme="modern"] .fold,html[data-theme="modern"] .list-item,html[data-theme="modern"] .dtc,html[data-theme="modern"] .dlg-box,html[data-theme="modern"] .sheet-box,html[data-theme="modern"] .menu,html[data-theme="modern"] .toast,html[data-theme="modern"] .theme-opt{border:2px solid rgba(95,224,183,.75)!important;background:var(--s1)}
+html[data-theme="modern"] .pid,html[data-theme="modern"] .mtr,html[data-theme="modern"] .cat,html[data-theme="modern"] .hc-row{border:1.5px solid rgba(95,224,183,.6)!important;background:var(--s1)}
+html[data-theme="modern"] .card.info{background:var(--acc-bg)}
+html[data-theme="modern"] .card.caution{background:var(--warn-bg);border:1.5px dashed var(--warn)!important}
+html[data-theme="modern"] .summary.ok,html[data-theme="modern"] .summary.warn,html[data-theme="modern"] .summary.ng,html[data-theme="modern"] .summary.unk{background:var(--s1)}
+html[data-theme="modern"] .theme-opt[aria-checked="true"]{border-color:var(--acc)!important;box-shadow:var(--glow)}
 html[data-theme="modern"] .na{opacity:.45}
-html[data-theme="modern"] .slot-empty{border:1.5px dashed rgba(110,240,196,.35)!important;background:transparent!important}
-html[data-theme="modern"] .slot-empty .plus{background:var(--gm);-webkit-background-clip:text;background-clip:text;color:transparent}
-html[data-theme="modern"] header{border-bottom:0;box-shadow:0 1px 0 0 rgba(110,240,196,.25)}
-html[data-theme="modern"] header::after{content:"";position:absolute;left:0;right:0;bottom:0;height:1.5px;background:var(--gm);border-radius:0!important}
-
-/* ボタン：コーラルレッドの枠線。主ボタンはグラデーションの枠＋光、押すと塗りつぶし */
-html[data-theme="modern"] .btn{border:1.5px solid var(--b-a);background:transparent;color:var(--fg);padding-left:22px;padding-right:22px;white-space:nowrap;letter-spacing:.06em;transition:background .15s,box-shadow .15s}
-html[data-theme="modern"] .btn:hover{box-shadow:0 0 12px rgba(255,77,109,.35)}
-html[data-theme="modern"] .btn.primary{border:2px solid transparent;background:linear-gradient(var(--bg),var(--bg)) padding-box,var(--gb) border-box;color:#fff;font-weight:700;text-transform:uppercase;box-shadow:0 0 18px rgba(255,77,109,.25)}
-html[data-theme="modern"] .btn.primary:active{background:var(--gb) padding-box,var(--gb) border-box;color:#1a0006}
-html[data-theme="modern"] .btn.primary::after{content:"";display:inline-block;width:.5em;height:.5em;margin-left:.6em;border-radius:50%!important;background:var(--b-b);box-shadow:0 0 8px var(--b-a);vertical-align:.08em}
-html[data-theme="modern"] .btn.danger{border-color:var(--ng);color:#ff9aac}
-html[data-theme="modern"] .btn.link{border:0!important;background:none!important;box-shadow:none!important;padding-left:2px;padding-right:2px;color:var(--b-b)}
-html[data-theme="modern"] .btn.link::after{content:none}
-html[data-theme="modern"] .hdr-help,html[data-theme="modern"] .menu-btn{border:1.5px solid var(--b-a);background:transparent}
-html[data-theme="modern"] .seg{border:1.5px solid var(--b-a)}
-html[data-theme="modern"] .seg button{background:transparent;border-right-color:rgba(255,77,109,.35)}
-html[data-theme="modern"] .seg button[aria-checked="true"]{background:var(--gb);color:#1a0006}
-html[data-theme="modern"] .inp{border:1.5px solid rgba(110,240,196,.4);background:#05080c}
-html[data-theme="modern"] .inp:focus{border-color:var(--g-b);box-shadow:0 0 0 3px rgba(110,240,196,.18)}
-
-/* 文字：大文字・字間広め。見出しと数値はグラデーション */
-html[data-theme="modern"] h1,html[data-theme="modern"] h2,html[data-theme="modern"] .hdr-title,html[data-theme="modern"] .pid .n,html[data-theme="modern"] .mtr-n,html[data-theme="modern"] .t-l,html[data-theme="modern"] .s-label{text-transform:uppercase;letter-spacing:.08em}
-html[data-theme="modern"] h2,html[data-theme="modern"] .logo h1,html[data-theme="modern"] .hdr-title{background:var(--gm);-webkit-background-clip:text;background-clip:text;color:transparent;font-weight:700}
-html[data-theme="modern"] .pid .v,html[data-theme="modern"] .pid .deg,html[data-theme="modern"] .mtr-v,html[data-theme="modern"] .t-v,html[data-theme="modern"] .s-num{
-  background:var(--gm);-webkit-background-clip:text;background-clip:text;color:transparent;font-weight:700;letter-spacing:.03em;filter:drop-shadow(0 0 6px rgba(110,240,196,.25))}
-html[data-theme="modern"] .pid .v.txt,html[data-theme="modern"] .pid .v.hex{background:none;color:var(--fg);filter:none}
-html[data-theme="modern"] .mtr.hot .mtr-v{background:none}
-html[data-theme="modern"] .pid .n,html[data-theme="modern"] .mtr-n{color:#a9b4d6}
-html[data-theme="modern"] .pid{padding:9px 10px 10px}
-html[data-theme="modern"] .conn.on{text-transform:uppercase;letter-spacing:.06em;text-shadow:0 0 8px var(--ok)}
-
-/* バー・メーター・グラフ */
-html[data-theme="modern"] .bar{height:4px;background:rgba(110,240,196,.12)}
-html[data-theme="modern"] .bar i,html[data-theme="modern"] .vbar i{box-shadow:0 0 8px rgba(110,240,196,.45)}
-html[data-theme="modern"] .vbar{background:rgba(110,240,196,.10)}
-html[data-theme="modern"] .vbar i{-webkit-mask:repeating-linear-gradient(0deg,#000 0 14px,transparent 14px 18px);mask:repeating-linear-gradient(0deg,#000 0 14px,transparent 14px 18px)}
-html[data-theme="modern"] .mtr-track{stroke:rgba(110,240,196,.12);stroke-width:6}
-html[data-theme="modern"] .mtr-red{stroke-width:6;opacity:.3}
-html[data-theme="modern"] .mtr-fill{stroke:url(#stethos-mtr-grad);stroke-width:6;filter:drop-shadow(0 0 2px rgba(110,240,196,.7))}
-html[data-theme="modern"] .mtr-needle{stroke:#fff;stroke-width:2}
-html[data-theme="modern"] .mtr-hub{fill:var(--b-a)}
-html[data-theme="modern"] .gr-line{stroke:url(#stethos-mtr-grad);stroke-width:1.4}
-html[data-theme="modern"] .gr-area{fill:rgba(110,240,196,.08)}
-html[data-theme="modern"] .menu button.active{background:linear-gradient(90deg,rgba(110,240,196,.12),rgba(255,77,109,.12))}
-
-/* 一部だけの枠線（左の帯・上の区切り線など）は使わない */
-html[data-theme="modern"] .menu button.active{box-shadow:none}
+html[data-theme="modern"] .slot-empty{border:1.5px dashed rgba(95,224,183,.35)!important;background:transparent!important}
+html[data-theme="modern"] .slot-empty .plus{color:var(--muted)}
+html[data-theme="modern"] header{border-bottom:1.5px solid rgba(95,224,183,.5)}
+html[data-theme="modern"] .menu button.active{background:rgba(110,240,196,.08);box-shadow:none;color:var(--acc)}
+html[data-theme="modern"] .menu button.active::before{content:"▸ "}
 html[data-theme="modern"] .menu button.danger{border-top:0}
 html[data-theme="modern"] .note{border-left:0;padding-left:0}
 html[data-theme="modern"] .preset-edit{border-left:0}
-html[data-theme="modern"] .summary,html[data-theme="modern"] .health{border-width:1.5px!important}
-html[data-theme="modern"] .summary.ok,html[data-theme="modern"] .summary.warn,html[data-theme="modern"] .summary.ng,html[data-theme="modern"] .summary.unk{background:linear-gradient(var(--s1),var(--s1)) padding-box,var(--gm) border-box}
+
+/* ボタン：コーラルレッドの単色の枠線。主ボタンは発光と光るドット */
+html[data-theme="modern"] .btn{border:1.5px solid var(--ng);background:transparent;color:var(--fg);padding-left:22px;padding-right:22px;white-space:nowrap;letter-spacing:.08em;text-transform:uppercase}
+html[data-theme="modern"] .btn:hover{box-shadow:0 0 10px rgba(255,77,109,.35)}
+html[data-theme="modern"] .btn.primary{border:2px solid var(--ng);background:transparent;color:#fff;font-weight:700;box-shadow:0 0 14px rgba(255,77,109,.25)}
+html[data-theme="modern"] .btn.primary:active{background:var(--ng);color:#1a0006}
+html[data-theme="modern"] .btn.primary::after{content:"";display:inline-block;width:.5em;height:.5em;margin-left:.6em;border-radius:50%!important;background:var(--ng);box-shadow:0 0 8px var(--ng);vertical-align:.08em}
+html[data-theme="modern"] .btn.danger{color:#ff9aac}
+html[data-theme="modern"] .btn.link{border:0!important;background:none!important;box-shadow:none!important;padding-left:2px;padding-right:2px;color:var(--acc);text-transform:none}
+html[data-theme="modern"] .btn.link::after{content:none}
+html[data-theme="modern"] .hdr-help,html[data-theme="modern"] .menu-btn{border:1.5px solid var(--ng);background:transparent}
+html[data-theme="modern"] .seg{border:1.5px solid var(--ng)}
+html[data-theme="modern"] .seg button{background:transparent;border-right-color:rgba(255,77,109,.35)}
+html[data-theme="modern"] .seg button[aria-checked="true"]{background:var(--ng);color:#1a0006}
+html[data-theme="modern"] .inp{border:1.5px solid rgba(95,224,183,.5);background:#020403}
+html[data-theme="modern"] .inp:focus{border-color:var(--acc);box-shadow:var(--glow)}
+
+/* 文字：等幅・大文字・字間広め。数値はミントの単色で発光（デジタル表示器風） */
+html[data-theme="modern"] h1,html[data-theme="modern"] h2,html[data-theme="modern"] .hdr-title,html[data-theme="modern"] .pid .n,html[data-theme="modern"] .mtr-n,html[data-theme="modern"] .t-l,html[data-theme="modern"] .s-label{text-transform:uppercase;letter-spacing:.08em}
+html[data-theme="modern"] h2{color:var(--acc);font-weight:700}
+html[data-theme="modern"] .pid .v,html[data-theme="modern"] .pid .deg,html[data-theme="modern"] .mtr-v,html[data-theme="modern"] .t-v,html[data-theme="modern"] .s-num,html[data-theme="modern"] .s-state{color:var(--acc);font-weight:700;letter-spacing:.03em;font-variant-numeric:tabular-nums slashed-zero;text-shadow:0 0 10px rgba(110,240,196,.35)}
+html[data-theme="modern"] .pid .v.txt,html[data-theme="modern"] .pid .v.hex{color:var(--fg);text-shadow:none}
+html[data-theme="modern"] .pid .n,html[data-theme="modern"] .mtr-n{color:var(--muted)}
+html[data-theme="modern"] .pid{padding:9px 10px 10px}
+html[data-theme="modern"] .conn.on{text-transform:uppercase;letter-spacing:.06em;text-shadow:0 0 8px var(--ok)}
+
+/* 計器：バー・メーター・グラフだけグラデーション（ミント → 黄 → 赤）。縦バーはブロック区切り、横バーはセグメント */
+html[data-theme="modern"] .bar{height:5px;background:rgba(95,224,183,.12)}
+html[data-theme="modern"] .bar i{-webkit-mask:repeating-linear-gradient(90deg,#000 0 6px,transparent 6px 8px);mask:repeating-linear-gradient(90deg,#000 0 6px,transparent 6px 8px);filter:drop-shadow(0 0 3px rgba(110,240,196,.5))}
+html[data-theme="modern"] .vbar{background:rgba(95,224,183,.10)}
+html[data-theme="modern"] .vbar i{-webkit-mask:repeating-linear-gradient(0deg,#000 0 14px,transparent 14px 18px);mask:repeating-linear-gradient(0deg,#000 0 14px,transparent 14px 18px)}
+html[data-theme="modern"] .mtr-track{stroke:rgba(95,224,183,.12);stroke-width:6;stroke-linecap:butt;stroke-dasharray:3 1.4}
+html[data-theme="modern"] .mtr-red{stroke-width:6;opacity:.3;stroke-linecap:butt;stroke-dasharray:3 1.4}
+html[data-theme="modern"] .mtr-fill{stroke:url(#stethos-mtr-grad);stroke-width:6;stroke-linecap:butt;stroke-dasharray:3 1.4;filter:drop-shadow(0 0 2px rgba(110,240,196,.7))}
+html[data-theme="modern"] .mtr-needle{stroke:#fff;stroke-width:2}
+html[data-theme="modern"] .mtr-hub{fill:var(--ng)}
+html[data-theme="modern"] .gr-line{stroke:url(#stethos-mtr-grad);stroke-width:1.4}
+html[data-theme="modern"] .gr-area{fill:rgba(110,240,196,.08)}
