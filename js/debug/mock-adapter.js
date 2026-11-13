@@ -37,7 +37,7 @@ function encodeGeneric(def, target, t) {
   if (nvar === 1) arr[offs] = best; else { arr[offs] = best >> 8; arr[offs + 1] = best & 255; }
   return arr.map(h2).join('');
 }
-const VIN = 'YV1DEBUG0K1234567'; // WMI=YV1（ボルボ）、10桁目 K=2019年式
+const VIN = 'YV1DEBUG0L1234567'; // WMI=YV1（ボルボ）、10桁目 K=2019年式
 const DTCS = ['P0301', 'P0420', 'P1234', 'U0100'];
 
 function bitmap(base) {
