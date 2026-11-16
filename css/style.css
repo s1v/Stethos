@@ -361,3 +361,7 @@ button.hc-row{cursor:pointer}
 
 /* タップは常にブロック自身で受ける（中の文字は更新のたびに作り直されるため、そこで押すとタップが失われることがある） */
 .pid *,.mtr *{pointer-events:none}
+/* トップ画面左上の GitHub リンク */
+.gh-link{position:absolute;top:0;left:0;width:36px;height:36px;display:flex;align-items:center;justify-content:center;color:var(--muted);border:1px solid var(--line);border-radius:999px;z-index:2}
+.gh-link:hover{color:var(--fg)}
+.gh-link svg{width:20px;height:20px;fill:currentColor}

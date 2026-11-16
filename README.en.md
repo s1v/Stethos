@@ -4,7 +4,7 @@ English | [日本語](./README.md)
 
 > No install needed. Read live vehicle data from BLE OBD2 adapters right in your browser via Web Bluetooth.
 
-**Stethos** reads your car's status in your phone's browser from a BLE (Bluetooth 5.1) adapter plugged into the car's OBD-II port. No app install needed — just open the URL.
+**Stethos** reads your car's status in your phone's browser from a BLE (Bluetooth 4.0 or later) adapter plugged into the car's OBD-II port. No app install needed — just open the URL.
 
 **Open the app: <https://s1v.github.io/Stethos/>**
 

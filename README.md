@@ -4,7 +4,7 @@
 
 > No install needed. Read live vehicle data from BLE OBD2 adapters right in your browser via Web Bluetooth.
 
-**Stethos** は、車の OBD-II ポートに挿した BLE（Bluetooth 5.1）対応アダプターから、車の状態をスマホのブラウザで読み取るアプリです。アプリのインストールは不要で、URL を開くだけで使えます。
+**Stethos** は、車の OBD-II ポートに挿した BLE（Bluetooth 4.0 以降）対応アダプターから、車の状態をスマホのブラウザで読み取るアプリです。アプリのインストールは不要で、URL を開くだけで使えます。
 
 **アプリを開く：<https://s1v.github.io/Stethos/>**
 

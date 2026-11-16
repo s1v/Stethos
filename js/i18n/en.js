@@ -687,7 +687,7 @@ export const EN = {
  "（無料の Web Bluetooth 対応ブラウザ）": "(free browser with Web Bluetooth)",
  "PC：Chrome / Edge": "PC: Chrome / Edge",
  "接続の前に確認": "Check before connecting",
- "BLE（Bluetooth 5.1）対応アダプターを車の OBD ポートに挿している": "A BLE (Bluetooth 5.1) adapter is plugged into the car's OBD port",
+ "BLE（Bluetooth 4.0 以降）対応アダプターを車の OBD ポートに挿している": "A BLE (Bluetooth 4.0 or later) adapter is plugged into the car's OBD port",
  "エンジン（イグニッション）が ON": "The engine (ignition) is ON",
  "他の OBD アプリは閉じている": "Other OBD apps are closed",
  "詳細設定（任意）": "Advanced (optional)",
@@ -801,5 +801,7 @@ export const EN = {
  "ラグジュアリー": "Luxury",
  "モダンデジタル": "Modern digital",
  "すべて表示": "Show all",
- "DTC あり": "With DTCs"
+ "DTC あり": "With DTCs",
+ "GitHub リポジトリ": "GitHub repository",
+ "車やアダプターがなくても、疑似アダプターで画面や動作を試せます。": "Try the screens and features with a mock adapter, without a car or adapter."
 };
