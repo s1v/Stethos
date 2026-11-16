@@ -165,12 +165,23 @@ export class Obd {
   }
 
   async readVin() {
+    // vinStatus：ok / unsupported（この車は VIN を返さない）/ nodata（応答なし）/ invalid（17 桁にならない）
+    this.vinStatus = 'nodata';
     const lines = await this.elm.query('0902', 5000).catch(() => null);
-    if (!lines) return null;
+    if (!lines) {
+      // Mode 09 の対応表（0900）で、VIN（PID 02）に対応しているか確かめる
+      const sup = await this.elm.query('0900', 5000).catch(() => null);
+      const line = sup && joinFrames(sup).find((l) => l.startsWith('4900'));
+      const b = line ? hexToBytes(line.slice(4)) : null;
+      this.vinStatus = !sup || (b && b.length >= 1 && !(b[0] & 0x40)) ? 'unsupported' : 'nodata';
+      return null;
+    }
     let s = joinFrames(lines).join('');
     s = s.replace(/4902[0-9A-F]{2}/g, '');
     const txt = hexToBytes(s).map((c) => String.fromCharCode(c)).join('').replace(/[^A-Z0-9]/g, '');
-    return txt.length >= 17 ? txt.slice(-17) : (txt || null);
+    if (txt.length >= 17) { this.vinStatus = 'ok'; return txt.slice(-17); }
+    this.vinStatus = 'invalid';
+    return null;
   }
 
   /** Mode 03：DTC 一覧 */

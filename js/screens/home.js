@@ -48,7 +48,14 @@ const onlineText = (r) => [r.make, r.model, r.trim].filter(Boolean).join(' ') + 
 
 function renderVehicle(s) {
   const btn = $('h-lookup');
-  if (!s.vin) { $('h-vehicle').textContent = '車両情報を取得できませんでした'; $('h-vin').textContent = 'VIN：-'; btn.hidden = true; return; }
+  // VIN が取れなかった車は、代わりに接続中のアダプターを表示する
+  if (!s.vin) {
+    $('h-veh-label').textContent = '接続中のアダプター';
+    $('h-vehicle').textContent = s.deviceName || '(名前なし)';
+    $('h-vin').textContent = ''; $('h-vin').hidden = true;
+    btn.hidden = true; return;
+  }
+  $('h-veh-label').textContent = '車両'; $('h-vin').hidden = false;
   $('h-vin').textContent = `VIN：${s.vin}`;
   const cached = getVehicleCache(s.vin);
   if (cached && (cached.make || cached.model)) { $('h-vehicle').textContent = onlineText(cached); btn.hidden = true; return; }

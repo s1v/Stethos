@@ -799,5 +799,7 @@ export const EN = {
  "レーシング": "Racing",
  "ミニマル": "Minimal",
  "ラグジュアリー": "Luxury",
- "モダンデジタル": "Modern digital"
+ "モダンデジタル": "Modern digital",
+ "すべて表示": "Show all",
+ "DTC あり": "With DTCs"
 };

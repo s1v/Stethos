@@ -14,6 +14,7 @@ const P = {
   exhaust: '<path d="M3 14h10l3-3h5v6h-5l-3-3"/><path d="M6 10c0-2 2-2 2-4M10 10c0-2 2-2 2-4"/>',
   clock: '<circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 2"/>',
   diag: '<path d="M3 12h4l2-5 4 10 2-5h6"/>',
+  all: '<rect x="3" y="3" width="7" height="7" rx="1.5"/><rect x="14" y="3" width="7" height="7" rx="1.5"/><rect x="3" y="14" width="7" height="7" rx="1.5"/><rect x="14" y="14" width="7" height="7" rx="1.5"/>',
   info: '<circle cx="12" cy="12" r="9"/><path d="M12 11v6"/><circle cx="12" cy="7.5" r=".8"/>',
 };
 export function icon(name) {

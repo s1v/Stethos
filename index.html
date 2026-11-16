@@ -76,8 +76,8 @@
     <label class="lbl" for="debug-scenario">状況</label>
     <div class="trial-row">
     <select id="debug-scenario" class="inp">
-      <option value="normal">通常（DTC あり）</option>
-      <option value="nodtc">DTC 0 件</option>
+      <option value="nodtc" selected>DTC 0 件</option>
+      <option value="normal">DTC あり</option>
       <option value="unknown">未登録アダプター（UUID 入力画面）</option>
       <option value="connect-error">接続エラー</option>
       <option value="no-elm">ELM327 の応答なし</option>
@@ -89,7 +89,7 @@
   </div>
   <!-- DEBUG-END -->
 
-  <p class="foot muted">走行中は画面を操作しないでください。<br><span class="small">Stethos v0.0.37</span></p>
+  <p class="foot muted">走行中は画面を操作しないでください。<br><span class="small">Stethos v0.0.39</span></p>
 </section>
 
 <!-- ========== UUID 入力 ========== -->
@@ -146,7 +146,7 @@
 <section id="screen-home" class="screen" hidden>
   <div class="grid">
     <div class="tile">
-      <div class="t-l">車両</div>
+      <div id="h-veh-label" class="t-l">車両</div>
       <div id="h-vehicle" class="t-v sm">-</div>
       <div id="h-vin" class="t-s muted mono">-</div>
       <button id="h-lookup" class="btn link small-link" hidden>車種を調べる &rsaquo;</button>
@@ -216,7 +216,7 @@
     <p class="small muted" style="margin-top:0">すべてのプリセットを削除し、空のマイページ 1 つ（12 枠）に戻します。</p>
     <button id="set-mp-reset" class="btn danger">マイページをリセット</button>
   </div>
-  <p class="foot muted small">Stethos v0.0.37<br>© 2026 s1v ／ <a href="https://github.com/s1v/Stethos/blob/main/LICENSE" target="_blank" rel="noopener">GPL-3.0 License</a></p>
+  <p class="foot muted small">Stethos v0.0.39<br>© 2026 s1v ／ <a href="https://github.com/s1v/Stethos/blob/main/LICENSE" target="_blank" rel="noopener">GPL-3.0 License</a></p>
 </section>
 
 <!-- ========== 診断情報 ========== -->

@@ -8,11 +8,16 @@ import { createCard } from './parts/pid-card.js';
 import { icon } from './parts/icons.js';
 
 let stop = () => {};
+const ALL = { id: 'all', label: 'すべて表示' };
 
 function renderCategories(app, sup) {
   const root = $('st-groups'); root.innerHTML = '';
   const grid = el('div', { class: 'cats' });
   let any = false;
+  // 先頭は「すべて表示」（対応している項目をカテゴリに分けずに並べる）
+  const allN = ALL_ITEMS.filter((d) => isItemSupported(d, sup)).length;
+  grid.append(el('button', { class: 'cat' + (allN ? '' : ' na'), type: 'button', onclick: () => app.show('status', { cat: ALL.id }) },
+    icon('all'), el('span', { class: 'cat-l' }, ALL.label), el('span', { class: 'cat-n' }, allN ? `${allN} / ${ALL_ITEMS.length} 項目` : '非対応')));
   for (const g of PID_GROUPS) {
     const items = ALL_ITEMS.filter((d) => d.group === g.id);
     if (!items.length) continue;
@@ -30,7 +35,7 @@ function renderCategory(app, g, sup) {
   const cards = {};
   const box = el('div', { class: 'pids' }), naBox = el('div', { class: 'pids' });
   let naCount = 0;
-  for (const d of ALL_ITEMS.filter((x) => x.group === g.id)) {
+  for (const d of ALL_ITEMS.filter((x) => g.id === ALL.id || x.group === g.id)) {
     const ok = isItemSupported(d, sup);
     const c = createCard(d, ok);
     if (ok) { cards[d.key] = c; box.append(c.node); } else { naBox.append(c.node); naCount++; }
@@ -49,7 +54,7 @@ export default {
   historyParams: true, // カテゴリの出入りもブラウザの戻る・進むで移動できるようにする
   enter(app, params = {}) {
     const sup = (pid) => app.session.obd.isSupported(pid);
-    const g = PID_GROUPS.find((x) => x.id === params.cat);
+    const g = params.cat === ALL.id ? ALL : PID_GROUPS.find((x) => x.id === params.cat);
     $('hdr-title').textContent = g ? g.label : 'ステータス';
     $('st-back').hidden = !g;
     $('st-back').onclick = () => history.back();
