@@ -1,35 +1,31 @@
-// VIN から車両情報（メーカー・年式）を推定する
+// VIN から車両情報（メーカー・年式）を推定する（オフラインのみ。外部への送信はしない）
 import { WMI } from './config/wmi.js';
 
-const YEAR_CODES = 'ABCDEFGHJKLMNPRSTVWXY123456789'; // 1980〜2009（30 年周期で繰り返し）
+// 10 桁目の年式コード。30 年ごとに同じ文字を使う（A=1980/2010 … Y=2000/2030、1=2001/2031 … 9=2009/2039）
+const YEAR_CODES = 'ABCDEFGHJKLMNPRSTVWXY123456789';
+// OBD-II の通信ができる車は 1996 年以降（米国 1996 年、欧州 2001 年、日本 2008 年に義務化）
+const OBD2_FIRST_YEAR = 1996;
+
+/**
+ * 年式を推定する。候補は「1980 + n」と「2010 + n」の 2 つ
+ * 1. 北米の VIN（先頭が 1〜5）：北米の規則で、7 桁目が数字なら古いほう、英字なら新しいほう
+ * 2. それ以外：来年を超えない、新しいほう
+ * 3. 共通：1996 年より前の候補は捨てる
+ */
+export function estimateYear(vin) {
+  const i = YEAR_CODES.indexOf(vin[9]);
+  if (i < 0) return null;
+  const limit = new Date().getFullYear() + 1;
+  const cands = [1980 + i, 2010 + i].filter((y) => y >= OBD2_FIRST_YEAR && y <= limit);
+  if (!cands.length) return null;
+  if (cands.length === 1) return cands[0];
+  if (/^[1-5]/.test(vin)) return /[0-9]/.test(vin[6]) ? cands[0] : cands[1];
+  return cands[1];
+}
 
 /** オフラインで推定：{ brand, year }（分からない項目は null） */
 export function decodeVin(vin) {
   if (!vin || vin.length !== 17) return null;
   const brand = WMI[vin.slice(0, 3)] || WMI[vin.slice(0, 2)] || null;
-  let year = null;
-  const i = YEAR_CODES.indexOf(vin[9]);
-  if (i >= 0) {
-    const limit = new Date().getFullYear() + 1;
-    year = 1980 + i;
-    while (year + 30 <= limit) year += 30;
-  }
-  return { brand, year };
-}
-
-/**
- * オンラインで車種を調べる（米国運輸省 NHTSA の無料 API。利用者がボタンを押したときだけ VIN を送信）
- * 北米向け以外の車は車種名が返らないことがある
- */
-export async function lookupVinOnline(vin) {
-  // 応答がないまま待ち続けないよう 10 秒で打ち切る
-  const ctrl = new AbortController();
-  const timer = setTimeout(() => ctrl.abort(), 10000);
-  let r;
-  try { r = await fetch(`https://vpic.nhtsa.dot.gov/api/vehicles/DecodeVinValues/${encodeURIComponent(vin)}?format=json`, { signal: ctrl.signal }); }
-  finally { clearTimeout(timer); }
-  if (!r.ok) throw new Error(`HTTP ${r.status}`);
-  const x = (await r.json()).Results?.[0] || {};
-  const clean = (v) => (v && v !== '0' && !/not applicable/i.test(v) ? v : null);
-  return { make: clean(x.Make), model: clean(x.Model), year: clean(x.ModelYear), trim: clean(x.Trim) };
+  return { brand, year: estimateYear(vin) };
 }

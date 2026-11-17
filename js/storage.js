@@ -34,17 +34,8 @@ export function removeUuid(uuid) {
 }
 
 // 車両情報（オンラインで調べた結果）を VIN ごとに保存
-const VKEY = 'stethos.vehicles.v1';
-export function getVehicleCache(vin) {
-  try { return (JSON.parse(localStorage.getItem(VKEY)) || {})[vin] || null; } catch { return null; }
-}
-export function setVehicleCache(vin, info) {
-  try {
-    const m = JSON.parse(localStorage.getItem(VKEY)) || {};
-    m[vin] = { ...info, savedAt: new Date().toISOString() };
-    localStorage.setItem(VKEY, JSON.stringify(m));
-  } catch { /* noop */ }
-}
+// 車種の保存（v0.0.42 で廃止）。以前の版が保存したデータを消す
+try { localStorage.removeItem('stethos.vehicles.v1'); localStorage.removeItem('stethos.vehicles.v2'); } catch { /* noop */ }
 
 // マイページの配置（枠ごとの項目 key。空の枠は null）
 const MKEY = 'stethos.mypage.v1';

@@ -69,8 +69,8 @@ Your adapter isn't registered in the app. Follow the on-screen guide to enter th
 
 ## Privacy
 - Data read from your car is **processed only on your device** and never sent elsewhere.
-- The only exception: when you press "Look up model" on Home, the VIN is sent to the public service of the US NHTSA.
-- Only UUIDs of adapters that connected successfully, looked-up vehicle info, your settings and My page layout are stored in your browser.
+- The app never sends data to external servers (except when you open the GitHub form to report an adapter).
+- Only UUIDs of adapters that connected successfully, your settings and My page layout are stored in your browser.
 
 ## Adapter & bug reports
 - If your adapter connected successfully, please report it. Press "**Report this adapter**" in "UUID management" or "Settings" to open a GitHub report form with the UUID filled in. You can also write one directly via [**Adapter report**](https://github.com/s1v/Stethos/issues/new?template=adapter-report.yml). After review it will be registered so others can connect without input.

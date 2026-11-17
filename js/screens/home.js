@@ -4,8 +4,7 @@ import { countDisplayable, findItem, isItemSupported } from '../config/pids.js';
 import { resolveTargets, startPolling } from '../poller.js';
 import { currentUnit, fmt } from './parts/pid-card.js';
 import { createMeter } from './parts/widgets.js';
-import { decodeVin, lookupVinOnline } from '../vehicle.js';
-import { getVehicleCache, setVehicleCache } from '../storage.js';
+import { decodeVin } from '../vehicle.js';
 
 let token = 0;
 let stop = () => {};
@@ -42,31 +41,22 @@ function judgeCoolant(c, d) {
   return c < 60 ? ['cold', `${t} 暖機中`] : c <= 105 ? ['ok', `${t} 正常`] : c <= 115 ? ['warn', `${t} 高め`] : ['ng', `${t} 過熱の疑い`];
 }
 
-const LOOKUP_LABEL = '車種を調べる ›';
-
-const onlineText = (r) => [r.make, r.model, r.trim].filter(Boolean).join(' ') + (r.year ? ` ／ ${r.year} 年式` : '');
-
 function renderVehicle(s) {
-  const btn = $('h-lookup');
   // VIN が取れなかった車は、代わりに接続中のアダプターを表示する
   if (!s.vin) {
     $('h-veh-label').textContent = '接続中のアダプター';
     $('h-vehicle').textContent = s.deviceName || '(名前なし)';
     $('h-vin').textContent = ''; $('h-vin').hidden = true;
-    btn.hidden = true; return;
+    return;
   }
   $('h-veh-label').textContent = '車両'; $('h-vin').hidden = false;
   $('h-vin').textContent = `VIN：${s.vin}`;
-  const cached = getVehicleCache(s.vin);
-  if (cached && (cached.make || cached.model)) { $('h-vehicle').textContent = onlineText(cached); btn.hidden = true; return; }
+  // メーカーと年式（推定）だけを表示する（車名は VIN から確実には判定できないため表示しない）
   const info = decodeVin(s.vin);
   const parts = [];
   if (info?.brand) parts.push(info.brand);
   if (info?.year) parts.push(`${info.year} 年式（推定）`);
   $('h-vehicle').textContent = parts.length ? parts.join(' ／ ') : 'メーカー不明';
-  // 一度調べて見つからなかった車はボタンを出さない
-  btn.hidden = !!cached || !navigator.onLine;
-  btn.textContent = LOOKUP_LABEL; btn.disabled = false;
 }
 
 export default {
@@ -75,16 +65,6 @@ export default {
     $('hc-dtc').onclick = () => app.show('dtc');
     $('hc-mil').onclick = () => app.show('dtc');
     $('h-items-tile').onclick = () => app.show('status');
-    $('h-lookup').onclick = async () => {
-      const vin = app.session.vin; if (!vin) return;
-      const btn = $('h-lookup'); btn.disabled = true; btn.textContent = '調べています…';
-      try {
-        const r = await lookupVinOnline(vin);
-        setVehicleCache(vin, r); // 結果を保存（次回からは調べない）
-        if (!(r.make || r.model)) toast('車種名は見つかりませんでした（北米向け以外の車は登録がないことがあります）');
-      } catch { toast('オンラインで調べられませんでした。ネット接続を確認してください。', { error: true }); }
-      renderVehicle(app.session);
-    };
   },
   async enter(app) {
     const my = ++token, s = app.session;

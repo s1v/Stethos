@@ -112,13 +112,35 @@ export class Obd {
     return line ? hexToBytes(line.slice(4)) : null;
   }
 
+  /** 対応表（0100・0120…）を、応答した全 ECU 分まとめて（OR して）返す。応答がなければ null */
+  async supportBitmap(b) {
+    const lines = await this.elm.query('01' + b, 5000).catch(() => null);
+    if (!lines) return null;
+    let out = null;
+    for (const l of joinFrames(lines)) {
+      if (!l.startsWith('41' + b)) continue;
+      const bytes = hexToBytes(l.slice(4));
+      if (bytes.length < 4) continue;
+      out = out || [0, 0, 0, 0];
+      for (let i = 0; i < 4; i++) out[i] |= bytes[i];
+    }
+    return out;
+  }
+
   async loadSupported() {
+    // 車には複数の ECU（エンジン・変速機・ハイブリッドなど）があり、それぞれが対応表を返す。
+    // 先に届いた 1 つだけを使うと、どの ECU が先に答えたかで対応数が変わるため、全部をまとめる。
+    // 返事の遅い ECU を取りこぼさないよう、同じ問い合わせを 2 回送って結果を重ねる。
     this.supported.clear();
     for (let base = 0; base <= 0xC0; base += 0x20) {
       const b = base.toString(16).padStart(2, '0').toUpperCase();
       let bytes = null;
-      try { bytes = await this.mode01Raw(b, 5000); } catch { bytes = null; }
-      if (!bytes || bytes.length < 4) break;
+      for (let t = 0; t < 2; t++) {
+        let r = null;
+        try { r = await this.supportBitmap(b); } catch { r = null; }
+        if (r) bytes = bytes ? bytes.map((x, i) => x | r[i]) : r;
+      }
+      if (!bytes) break;
       for (let i = 0; i < 32; i++) {
         if (bytes[i >> 3] & (0x80 >> (i & 7))) this.supported.add((base + i + 1).toString(16).padStart(2, '0').toUpperCase());
       }
