@@ -4,12 +4,14 @@ export class ElmError extends Error { constructor(code, message) { super(message
 export class Elm327 {
   constructor(transport) {
     this.t = transport; this.buf = ''; this.pending = null; this.timer = null; this.queue = Promise.resolve();
+    this.stale = false; this.lastDataAt = 0; this.drainWake = null; // 時間切れ後の読み捨て用
     this.version = ''; this.protocol = '';
     transport.onData((text) => this._onData(text));
   }
 
   _onData(text) {
-    this.buf += text;
+    this.buf += text; this.lastDataAt = Date.now();
+    if (this.drainWake) this.drainWake();
     const i = this.buf.indexOf('>');
     if (i >= 0 && this.pending) {
       const raw = this.buf.slice(0, i); this.buf = this.buf.slice(i + 1);
@@ -18,14 +20,29 @@ export class Elm327 {
     }
   }
 
+  /**
+   * 時間切れの後、遅れて届く前のコマンドの応答を読み捨てる（次のコマンドの応答と取り違えないように）
+   * 終わりの印（>）が届くまで最大 1.5 秒待つ。途中まで届いて 300ms 途切れたときは、そこで打ち切る
+   */
+  async _drain() {
+    const start = Date.now();
+    while (!this.buf.includes('>') && Date.now() - start < 1500) {
+      if (this.buf && Date.now() - this.lastDataAt >= 300) break;
+      await new Promise((r) => { this.drainWake = r; setTimeout(r, 50); });
+      this.drainWake = null;
+    }
+    this.buf = ''; this.stale = false;
+  }
+
   /** 生の応答（行の配列）を返す。直列化して 1 コマンドずつ送る */
   send(cmd, timeout = 2500) {
-    const run = () => new Promise((resolve, reject) => {
+    const run = () => (this.stale ? this._drain() : Promise.resolve()).then(() => new Promise((resolve, reject) => {
       this.buf = '';
       this.pending = { resolve, reject };
-      this.timer = setTimeout(() => { this.pending = null; reject(new ElmError('timeout', `応答なし: ${cmd}`)); }, timeout);
+      // 時間切れ：次のコマンドの前に残りの応答を読み捨てる
+      this.timer = setTimeout(() => { this.pending = null; this.stale = true; reject(new ElmError('timeout', `応答なし: ${cmd}`)); }, timeout);
       this.t.write(cmd + '\r').catch((e) => { clearTimeout(this.timer); this.pending = null; reject(e); });
-    }).then((raw) => raw.split(/[\r\n]+/).map((l) => l.trim()).filter((l) => l && l !== cmd && !/^SEARCHING/i.test(l)));
+    })).then((raw) => raw.split(/[\r\n]+/).map((l) => l.trim()).filter((l) => l && l !== cmd && !/^SEARCHING/i.test(l)));
     const p = this.queue.then(run, run);
     this.queue = p.catch(() => {});
     return p;
