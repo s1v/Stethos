@@ -207,12 +207,17 @@ export class Obd {
   }
 
   /** Mode 03：DTC 一覧 */
-  async readDtcs() {
-    const lines = await this.elm.query('03', 6000);
+  /**
+   * 故障コードの一覧
+   * @param {'03'|'07'|'0A'} mode 03：記録された（確定）／07：保留中（未確定）／0A：永久（消去しても残る記録）
+   */
+  async readDtcs(mode = '03') {
+    const lines = await this.elm.query(mode, 6000);
     if (!lines) return [];
+    const res = (0x40 + parseInt(mode, 16)).toString(16).toUpperCase(); // 応答の先頭（43 / 47 / 4A）
     const codes = [];
     for (const l of joinFrames(lines)) {
-      if (!l.startsWith('43')) continue;
+      if (!l.startsWith(res)) continue;
       let bytes = hexToBytes(l.slice(2));
       if (bytes.length % 2 === 1) bytes = bytes.slice(1); // CAN：先頭は件数
       for (let i = 0; i + 1 < bytes.length; i += 2) {

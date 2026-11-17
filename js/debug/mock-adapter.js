@@ -14,14 +14,14 @@ const h4 = (n) => h2(Math.floor(n / 256)) + h2(n % 256);
 const MOCK_UUID_KNOWN = normalizeUuid('fff0');
 const MOCK_UUID_UNKNOWN = normalizeUuid('abcd');
 // デバッグでは全ステータス項目に対応している車として振る舞う
-const SUPPORTED = [...new Set(['01', '03', '13', '20', '40', '60', '80', 'A0', ...PIDS.filter((p) => p.pid).map((p) => p.pid)])];
+const SUPPORTED = [...new Set(['01', '02', '03', '41', '13', '20', '40', '60', '80', 'A0', ...PIDS.filter((p) => p.pid).map((p) => p.pid)])];
 const ENUM_MOCK = { '51': 1, '1C': 11 }; // ガソリン / JOBD・OBD-II
 
 /** 定義の計算式から逆算して、表示範囲内のそれらしい値になるバイト列を作る */
 function encodeGeneric(def, target, t) {
   if (def.format === 'enum') return h2(ENUM_MOCK[def.pid] ?? 1);
   if (def.format === 'hex') return ['3A', '0F', 'C2', '01'].join(''); // 16 進表示の項目は固定の疑似データ
-  if (def.format === 'text') return { '13': '33', '1D': '11', '4F': '0280FA10', '64': 'A0C8B4AA96', '65': '0F03', '90': '400012', '91': '0100120003', '92': 'FF0F', '8B': '073F', 'A9': '01000000', '81': '1F' + '00000E10'.repeat(10) }[def.pid] || '00000000';
+  if (def.format === 'text') return { '02': '0301', '41': '00076521', '13': '33', '1D': '11', '4F': '0280FA10', '64': 'A0C8B4AA96', '65': '0F03', '90': '400012', '91': '0100120003', '92': 'FF0F', '8B': '073F', 'A9': '01000000', '81': '1F' + '00000E10'.repeat(10) }[def.pid] || '00000000';
   const bytes = def.bytes || 1;
   if (def.key === 'runtimeTotal') return '01' + h2(0) + h2(0x12) + h2(0x34) + h2(0x56) + '00'.repeat(8);
   if (def.key === 'gearRatio') return '0000' + h4(1650 + Math.round(Math.sin(t / 5) * 600));
@@ -39,6 +39,8 @@ function encodeGeneric(def, target, t) {
 }
 const VIN = 'YV1DEBUG0P1234567'; // WMI=YV1（ボルボ）、10桁目 P=2023年式
 const DTCS = ['P0301', 'P0420', 'P1234', 'U0100'];
+const PENDING = ['P0171']; // 保留中（Mode 07）。消去で消える
+const PERMANENT = ['P0420']; // 永久（Mode 0A）。消去しても消えない
 
 function bitmap(base) {
   let bits = [0, 0, 0, 0];
@@ -112,6 +114,8 @@ export class MockTransport {
       const list = this.cleared ? [] : DTCS;
       return '43' + h2(list.length) + list.map(encodeDtc).join('');
     }
+    if (cmd === '07') { const list = this.cleared ? [] : PENDING; return '47' + h2(list.length) + list.map(encodeDtc).join(''); }
+    if (cmd === '0A') { const list = this.scenario === 'nodtc' ? [] : PERMANENT; return '4A' + h2(list.length) + list.map(encodeDtc).join(''); }
     if (cmd === '04') { this.cleared = true; return '44'; }
     if (cmd === '0902') {
       const payload = '490201' + [...VIN].map((c) => h2(c.charCodeAt(0))).join('');

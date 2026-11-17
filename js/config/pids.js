@@ -30,6 +30,15 @@ const ab = (A, B) => A * 256 + B;
 const s16 = (A, B) => (((A << 8) | B) << 16) >> 16;
 const trim = (A) => A * 100 / 128 - 100;
 const BANK = ['B1S1', 'B1S2', 'B1S3', 'B1S4', 'B2S1', 'B2S2', 'B2S3', 'B2S4'];
+/** 故障コード（2 バイト）を P0301 のような文字にする */
+const dtcOf = (a, b) => 'PCBU'[a >> 6] + ((a >> 4) & 3) + (a & 0x0f).toString(16).toUpperCase() + b.toString(16).padStart(2, '0').toUpperCase();
+/** PID 41：今回の運転サイクルの自己診断。対象（対応している診断）のうち完了した数 */
+function monitorCycle(A, B, C, D) {
+  let total = 0, done = 0;
+  for (let i = 0; i < 3; i++) if (B & (1 << i)) { total++; if (!(B & (1 << (i + 4)))) done++; }
+  for (let i = 0; i < 8; i++) if (C & (1 << i)) { total++; if (!(D & (1 << i))) done++; }
+  return total ? `完了 ${done} / ${total}` : '対象なし';
+}
 const hexOf = (...b) => b.map((x) => x.toString(16).padStart(2, '0').toUpperCase()).join(' ');
 const RAW_NOTE = 'この項目は計算式が公開されていない、または中身が車ごとに異なるため、車から受け取ったデータを 16 進数のまま表示します。';
 const pctR = (x) => x * 100 / 255;
@@ -193,6 +202,14 @@ export const PIDS = [
   // ---- v0.0.11 追加（みんカラ記事の PID 一覧に対応） ----
   { pid: '01', key: 'monitor', name: 'チェックランプと故障コード数', unit: '', bytes: 4, format: 'text', calc: (A) => `${A & 0x80 ? '点灯' : '消灯'}・${A & 0x7f} 件`, group: 'diag',
     desc: 'チェックランプ（MIL）の状態と、記録されている故障コードの件数です（故障コードを消してからの自己診断の状態もこの PID に含まれます）。' },
+  { pid: '02', key: 'ffDtc', name: 'フリーズフレームの故障コード', unit: '', bytes: 2, format: 'text', calc: (A, B) => (A || B ? dtcOf(A, B) : 'なし'), group: 'diag',
+    desc: 'フリーズフレーム（故障が記録された瞬間の車の状態）を保存するきっかけになった故障コードです。「なし」はフリーズフレームが保存されていないことを表します。' },
+  { pid: '41', key: 'monitorCycle', name: '今回の走行の自己診断', unit: '', bytes: 4, format: 'text', calc: monitorCycle, group: 'diag',
+    desc: 'エンジンをかけてから今までの走行（今回の運転サイクル）で、排ガス関連の自己診断（触媒・O2 センサー・エバポなど）がいくつ完了したかです。走り始めは未完了が多く、走るにつれて完了していきます。' },
+  { pid: '93', key: 'injTiming93', name: '燃料噴射時期（PID 93）', unit: '°', bytes: 2, calc: (A, B) => ab(A, B) / 128 - 210, min: -210, max: 302, decimals: 1, group: 'engine',
+    desc: '燃料を噴射するタイミング（クランク角度）です。Wikipedia の記載に基づく項目で、PID 5D の「燃料噴射時期」と同じ計算式です。資料によって内容が異なるため、参考値として扱ってください。' },
+  { pid: '97', key: 'torqueDemand97', name: '運転者要求トルク（PID 97）', unit: '%', bytes: 1, calc: (A) => A - 125, min: -125, max: 130, decimals: 0, group: 'engine',
+    desc: 'ドライバーのアクセル操作から求めた、エンジンに要求する力の割合です。Wikipedia の記載に基づく項目で、PID 61 の「要求トルク」と同じ計算式です。資料によって内容が異なるため、参考値として扱ってください。' },
   { pid: '03', key: 'fuelSys', name: '燃料系統の制御状態', unit: '', bytes: 2, format: 'enum', calc: (A) => A, group: 'fuel',
     enum: { 0: 'なし', 1: '開ループ（暖機中）', 2: '閉ループ（通常）', 4: '開ループ（加速・減速）', 8: '開ループ（故障）', 16: '閉ループ（センサー異常あり）' },
     desc: '燃料の量を O2 センサーの値で補正している（閉ループ）か、決められた値で出している（開ループ）かです。暖機後の普通の走行では「閉ループ」になります。' },
