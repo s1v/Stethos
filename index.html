@@ -90,7 +90,7 @@
   </div>
   <!-- DEBUG-END -->
 
-  <p class="foot muted">走行中は画面を操作しないでください。<br><span class="small">Stethos v0.0.46</span></p>
+  <p class="foot muted">走行中は画面を操作しないでください。<br><span class="small">Stethos v0.0.47</span></p>
 </section>
 
 <!-- ========== UUID 入力 ========== -->
@@ -221,59 +221,15 @@
     <p class="small muted" style="margin-top:0">すべてのプリセットを削除し、空のマイページ 1 つ（12 枠）に戻します。</p>
     <button id="set-mp-reset" class="btn danger">マイページをリセット</button>
   </div>
-  <p class="foot muted small">Stethos v0.0.46<br>© 2026 s1v ／ <a href="https://github.com/s1v/Stethos/blob/main/LICENSE" target="_blank" rel="noopener">GPL-3.0 License</a></p>
+  <p class="foot muted small">Stethos v0.0.47<br>© 2026 s1v ／ <a href="https://github.com/s1v/Stethos/blob/main/LICENSE" target="_blank" rel="noopener">GPL-3.0 License</a></p>
 </section>
 
 <!-- ========== UDS 探索 ========== -->
 <section id="screen-uds" class="screen" hidden>
-  <div class="card warn"><b>上級者向け・読み取り専用</b>
-    <p class="small muted" style="margin:6px 0 0">結果の「参考」は読み方の目安で、値の意味は確認できていません。停車して行い、終わったら下の「ログをコピー」で結果を貼り付けてください。</p></div>
   <div class="card">
     <button id="uds-auto" class="btn primary big">調査を開始</button>
-    <p class="small muted" style="margin-bottom:0">ボタンを押すだけで、必要な調査を自動で行います（エンジンをかけた停車中に行ってください）。終わると、結果のログが自動でコピーされます。コピーされなかったときは、下の「ログをコピー」を押して、その内容を貼り付けてください。</p>
-    <label class="chk"><input type="checkbox" id="uds-auto-scan" checked> データ番号の周辺も探す（時間がかかります）</label>
+    <p class="small muted" style="margin-bottom:0">エンジンをかけた停車中に、ボタンを押してください。読み取りだけを自動で行い（5〜10 分）、終わると結果がコピーされます。コピーされなかったときは、下の「ログをコピー」を押して、内容をそのまま貼り付けてください。</p>
   </div>
-  <details class="card"><summary>詳細設定（手動で調べる・上級者向け）</summary>
-  <h2>共通の設定</h2>
-  <div class="card">
-    <div class="lbl" style="margin-top:0">宛先（ECU）</div>
-    <div id="uds-targets"></div>
-    <p class="hint">7E0・7E1 以外は裏付けのない候補です。</p>
-    <div class="lbl">問い合わせの間隔</div>
-    <select id="uds-interval" class="inp"><option value="50">50 ms</option><option value="100" selected>100 ms（標準）</option><option value="200">200 ms</option><option value="300">300 ms</option></select>
-    <label class="chk"><input type="checkbox" id="uds-ext"> 拡張診断セッション（10 03）を使う</label>
-    <p class="hint">標準のセッションで読めない DID がある場合に試します。使うと、終了時に標準へ戻します。</p>
-    <label class="chk"><input type="checkbox" id="uds-mask" checked> VIN をログで伏せる</label>
-  </div>
-  <h2>1. 宛先の判定</h2>
-  <div class="card">
-    <p class="small muted" style="margin-top:0">選んだ宛先に、標準の DID（F190・F187・F197）を送り、応答があるかを調べます。</p>
-    <label class="chk"><input type="checkbox" id="uds-dtc"> 故障コード（19 02 FF）も読む</label>
-    <button id="uds-probe" class="btn primary">宛先を判定</button>
-    <details style="margin-top:12px"><summary>手動で 1 件送る（29bit など）</summary>
-      <div class="lbl">プロトコル</div>
-      <select id="uds-man-proto" class="inp"><option value="">今のまま</option><option value="6">6：11bit 500kbps</option><option value="7">7：29bit 500kbps</option></select>
-      <div class="lbl">ヘッダー（16 進 3 桁または 6 桁）</div><input id="uds-man-hdr" class="inp" placeholder="7E0" autocomplete="off">
-      <div class="lbl">優先度 CP（16 進 2 桁・任意）</div><input id="uds-man-cp" class="inp" placeholder="" autocomplete="off">
-      <div class="lbl">受信 ID（16 進 3 桁または 8 桁・任意）</div><input id="uds-man-cra" class="inp" placeholder="" autocomplete="off">
-      <div class="lbl">要求（22xxxx / 1902xx / 1001 / 1003 / 3E00）</div><input id="uds-man-req" class="inp" placeholder="22F190" autocomplete="off">
-      <button id="uds-man-go" class="btn" style="margin-top:10px">送信</button>
-    </details>
-  </div>
-  <h2>2. 候補 DID の読み取り</h2>
-  <div class="card">
-    <p class="small muted" style="margin-top:0">1 行に 1 つ、先頭に 16 進 4 桁の DID を書きます（後ろはメモ）。選んだ宛先すべてで試します。</p>
-    <textarea id="uds-dids" class="inp mono" rows="10" spellcheck="false"></textarea>
-    <button id="uds-dids-go" class="btn primary" style="margin-top:10px">候補 DID を読む</button>
-  </div>
-  <h2>3. 範囲スキャン</h2>
-  <div class="card">
-    <p class="small muted" style="margin-top:0">範囲内の DID を順に読み、応答のあるものだけを記録します（1 回 4096 件まで）。</p>
-    <div class="lbl">宛先</div><select id="uds-scan-target" class="inp"></select>
-    <div class="row gap" style="margin-top:8px"><div style="flex:1"><div class="lbl">開始（16 進）</div><input id="uds-scan-from" class="inp mono" value="4000" autocomplete="off"></div><div style="flex:1"><div class="lbl">終了（16 進）</div><input id="uds-scan-to" class="inp mono" value="40FF" autocomplete="off"></div></div>
-    <button id="uds-scan-go" class="btn" style="margin-top:10px">範囲スキャンを始める</button>
-  </div>
-  </details>
   <button id="uds-stop" class="btn danger uds-stop" hidden>停止</button>
   <h2>ログ</h2>
   <div class="card">

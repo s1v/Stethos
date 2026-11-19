@@ -5,9 +5,9 @@ import { joinFrames } from './obd.js';
 export const sleep = (ms) => new Promise((r) => setTimeout(r, ms));
 
 // ELM327 の設定コマンド（宛先・受信フィルター・プロトコル・ヘッダー表示だけ）
-const AT_OK = [/^ATSH(?:[0-9A-F]{3}|[0-9A-F]{6})$/, /^ATCRA(?:[0-9A-F]{3}|[0-9A-F]{8})?$/, /^ATCP[0-9A-F]{2}$/, /^ATSP[067]$/, /^ATH[01]$/];
+const AT_OK = [/^ATSH(?:[0-9A-F]{3}|[0-9A-F]{6})$/, /^ATCRA(?:[0-9A-F]{3}|[0-9A-F]{8})?$/, /^ATCP[0-9A-F]{2}$/, /^ATSP[067]$/, /^ATH[01]$/, /^ATS[01]$/];
 // 車への要求：DID の読み取り(22)・故障コードの読み取り(19 02)・診断セッション(10 01 / 10 03)・接続維持(3E 00)
-const REQ_OK = [/^22[0-9A-F]{4}$/, /^1902[0-9A-F]{2}$/, /^10(?:01|03)$/, /^3E00$/];
+const REQ_OK = [/^01[0-9A-F]{2}$/, /^22[0-9A-F]{4}$/, /^1902[0-9A-F]{2}$/, /^10(?:01|03)$/, /^3E00$/];
 
 export const isAllowed = (cmd) => AT_OK.some((r) => r.test(cmd)) || REQ_OK.some((r) => r.test(cmd));
 export const isRequest = (cmd) => REQ_OK.some((r) => r.test(cmd));
@@ -98,16 +98,35 @@ export class Uds {
     this.sent++;
     const r = await this.raw(cmd, timeout);
     const p = r.timeout ? { kind: 'timeout', raw: '' } : parseReply(r.lines, cmd);
+    p.lines = r.lines;
     await sleep(this.interval);
     return p;
   }
   async keepAlive() {
     if (this.ext && Date.now() - this.lastTP > 2000) { this.lastTP = Date.now(); await this.raw('3E00', 1000); }
   }
-  async setTarget(hdr) {
-    const a = await this.raw('ATSH' + hdr), b = await this.raw('ATCRA' + rxOf(hdr));
+  async setTarget(hdr, cra = rxOf(hdr)) {
+    const a = await this.raw('ATSH' + hdr), b = await this.raw('ATCRA' + (cra || ''));
     return !a.timeout && !b.timeout;
   }
   async startSession() { if (!this.ext) return null; const r = await this.req('1003'); this.lastTP = Date.now(); return r; }
   async endSession() { if (this.ext) { try { await this.req('1001'); } catch { /* noop */ } } }
+}
+
+/** 応答の最初の ID（ヘッダー表示ありのとき）。無ければ null */
+export function responderId(lines) {
+  for (const l of lines || []) { const m = /^([0-9A-F]{3}|[0-9A-F]{8})\s/.exec(l.trim().toUpperCase()); if (m) return m[1]; }
+  return null;
+}
+
+/** CAN の通信を聞くだけ（ATMA）。送信はしない。どの ID の通信が流れているかを返す */
+export async function monitorCan(uds, ms = 3000) {
+  await uds.raw('ATH1'); await uds.raw('ATS1');
+  const e = uds.elm;
+  let text = '', timedOut = false;
+  try { text = (await e.send('ATMA', ms)).join('\n'); } catch (err) { if (err.code !== 'timeout') throw err; timedOut = true; text = e.buf || ''; }
+  if (timedOut) { try { await e.t.write('\r'); } catch { /* noop */ } } // 何か 1 文字送ると監視が止まる
+  const ids = new Map(); let frames = 0;
+  for (const l of text.split(/[\r\n]+/)) { const m = /^([0-9A-F]{3}|[0-9A-F]{8})\s/.exec(l.trim().toUpperCase()); if (m) { frames++; ids.set(m[1], (ids.get(m[1]) || 0) + 1); } }
+  return { frames, ids: [...ids.entries()].sort((a, b) => b[1] - a[1]), full: /BUFFERFULL|BUFFER FULL/i.test(text) };
 }
