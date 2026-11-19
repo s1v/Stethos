@@ -109,7 +109,10 @@ export class MockTransport {
     if (cmd === 'ATI') return 'ELM327 v1.5';
     if (cmd === 'ATRV') return this.volt().toFixed(1) + 'V';
     if (cmd === 'ATDPN') return 'A6';
+    if (cmd.startsWith('ATSH')) this.hdr = cmd.slice(4);
+    if (cmd === 'ATSP0') this.hdr = '7DF';
     if (cmd.startsWith('AT')) return 'OK';
+    const uds = this.udsRespond(cmd); if (uds != null) return uds;
     if (cmd === '03') {
       const list = this.cleared ? [] : DTCS;
       return '43' + h2(list.length) + list.map(encodeDtc).join('');
@@ -166,6 +169,23 @@ export class MockTransport {
       return '41' + pid + out.map(h2).join('');
     }
     return '41' + pid + encodeGeneric(def, target, t);
+  }
+
+  /** UDS 探索の確認用：宛先 7E0 だけが応答する疑似 ECU */
+  udsRespond(cmd) {
+    if (!/^(22[0-9A-F]{4}|1902[0-9A-F]{2}|10(01|03)|3E00)$/.test(cmd)) return null;
+    if (this.hdr !== '7E0') return 'NO DATA';
+    if (cmd === '1001') return '5001003201F4';
+    if (cmd === '1003') return '5003003201F4';
+    if (cmd === '3E00') return '7E00';
+    if (cmd.startsWith('1902')) return '5902FF';
+    const did = cmd.slice(2);
+    const f32 = (v) => { const b = new DataView(new ArrayBuffer(4)); b.setFloat32(0, v); return [0, 1, 2, 3].map((i) => h2(b.getUint8(i))).join(''); };
+    const t = (Date.now() - this.t0) / 1000;
+    const DID = { F190: [...VIN].map((c) => h2(c.charCodeAt(0))).join(''), F187: '3130303031323334', F197: '4232303436543200',
+      DA62: f32(85 + Math.sin(t / 5)), DADF: f32(1.2), DADC: f32(320), DBE6: f32(412.5), D9A1: h2(95 + 60) };
+    if (!DID[did]) return '7F2231';
+    return canFrames('62' + did + DID[did]);
   }
 
   engineOn() { return ((Date.now() - this.t0) / 1000) % 60 > 15; }

@@ -367,3 +367,10 @@ button.hc-row{cursor:pointer}
 .gh-link svg{width:20px;height:20px;fill:currentColor}
 .dtc-h{font-size:1rem;margin:18px 0 2px}
 .dtc-note{margin:0 0 6px}
+
+/* UDS 探索 */
+.chk{display:flex;gap:8px;align-items:center;min-height:40px;font-size:.95rem}
+.chk input{width:20px;height:20px}
+.uds-log{white-space:pre-wrap;word-break:break-all;font:.72rem/1.45 ui-monospace,Menlo,Consolas,monospace;max-height:50vh;min-height:6em;overflow:auto;background:var(--s2);border:1px solid var(--line);border-radius:10px;padding:10px;margin:0 0 10px}
+.uds-stop{position:sticky;bottom:12px;width:100%;z-index:5}
+textarea.inp{resize:vertical}

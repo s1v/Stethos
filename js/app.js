@@ -10,10 +10,11 @@ import home from './screens/home.js';
 import status from './screens/status.js';
 import dtc from './screens/dtc.js';
 import mypage from './screens/mypage.js';
+import uds from './screens/uds.js';
 import settings, { applySettings } from './screens/settings.js';
 import { openPresetList, openFirstPreset } from './screens/parts/presets.js';
 
-const SCREENS = Object.fromEntries([top, uuidInput, uuidManage, home, status, mypage, dtc, settings].map((s) => [s.id, s]));
+const SCREENS = Object.fromEntries([top, uuidInput, uuidManage, home, status, mypage, dtc, settings, uds].map((s) => [s.id, s]));
 let current = null;
 const lastParams = {};
 // 接続中として扱う画面か（neutral の画面＝設定は、接続中ならヘッダー付きで表示）

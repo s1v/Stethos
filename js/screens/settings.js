@@ -60,6 +60,7 @@ export default {
     for (const b of $('set-size').children) {
       b.onclick = () => { setSetting('pidSize', b.dataset.v); applySettings(); renderSize(); };
     }
+    $('set-uds').onclick = () => app.show('uds');
     $('set-mp-reset').onclick = async () => {
       if (!(await confirmDialog('すべてのプリセットを削除し、空のマイページ 1 つに戻します。', { title: 'マイページをリセットしますか？', ok: 'リセット', danger: true }))) return;
       resetMyPage(); toast('マイページをリセットしました');
